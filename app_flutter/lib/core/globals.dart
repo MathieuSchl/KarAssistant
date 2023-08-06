@@ -1,0 +1,2 @@
+String? envBaseUrl;
+String? tokenApi;
