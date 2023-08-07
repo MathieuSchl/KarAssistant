@@ -50,14 +50,14 @@ module.exports.start = async () => {
   console.log("\n\x1b[33mEncode sentences finished\x1b[0m\n");
 };
 
-module.exports.query = async (query) => {
+module.exports.query = async ({ query }) => {
   const embedding = await encodeSentence(query);
   let result = { similarity: 1, bestPhrase: "" };
   for (const vector of vectors) {
     const similarity = await compareSentences(vector.embedding, embedding);
     if (similarity < 0.1) {
       const lang = vector.lang;
-      return { result: await require(__dirname + "/../skills/" + vector.skill).execute({ lang }) };
+      return { result: await require(__dirname + "/../skills/" + vector.skill).execute({ lang }), similarity };
     } else if (similarity < result.similarity) {
       result.similarity = similarity;
       result.bestPhrase = vector.phrase;
