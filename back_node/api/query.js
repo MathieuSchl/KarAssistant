@@ -21,16 +21,23 @@ const use = require("../universalSentenceEncoder/index");
  *               type: object
  *               properties:
  *                 result:
- *                   type: "string"
- *                   description: Phrase from Kara (always present)
+ *                   type: string
+ *                   description: Phrase from Kara
+ *                 lang:
+ *                   type: string
+ *                   description: Language of the question
+ *                 skill:
+ *                   type: string
+ *                   description: Skill aked for the question
  *                 similarity:
  *                   type: number
- *                   description: Value of similarity between the answer and the query or bestPhrase (if the question is invalid)
+ *                   description: Value of similarity between the answer and the query or bestPhrase
  *                 bestPhrase:
- *                   type: "string"
- *                   description: The sentence that comes closest (invalid question)
+ *                   type: string
+ *                   description: The sentence that comes closest
  *               example:
  *                 result: Bonjour je suis Kara
+ *                 lang: fr
  */
 
 module.exports.start = (app) => {
