@@ -5,6 +5,22 @@ const start = require("./universalSentenceEncoder").start;
 
 const vectors = [];
 
+let lineProgress = "";
+function progressLog(text) {
+  for (let index = 0; index < text.length; index++) {
+    if (text[index] !== lineProgress[index]) {
+      process.stdout.cursorTo(index);
+      process.stdout.write(text[index]);
+    }
+  }
+
+  for (let index = text.length; index < lineProgress.length; index++) {
+    process.stdout.write(" ");
+  }
+
+  lineProgress = text;
+}
+
 module.exports.start = async () => {
   await start();
   const files = fs.readdirSync(__dirname + "/../skills", { withFileTypes: true });
@@ -23,14 +39,14 @@ module.exports.start = async () => {
 
   console.log("\n\x1b[33mStart encode sentences\x1b[34m");
   const length = vectors.length;
+  progressLog(`0/${length} 00.00%`);
   for (let index = 0; index < vectors.length; index++) {
     vectors[index].embedding = await encodeSentence(vectors[index].phrase);
-    process.stdout.clearLine(0);
-    process.stdout.cursorTo(0);
-    if (index === vectors.length - 1) process.stdout.write("\x1b[32m");
-    process.stdout.write(`${index + 1}/${length} ${(((index + 1) / length) * 100).toFixed(2)}%`);
-    //console.log(`${index + 1}/${length} ${(((index + 1) / length) * 100).toFixed(2)}%`);
+    progressLog(`${index + 1}/${length} ${(((index + 1) / length) * 100).toFixed(2)}%`);
   }
+  process.stdout.clearLine(0);
+  process.stdout.cursorTo(0);
+  process.stdout.write(`\x1b[32m${length}/${length} 100.00%`);
   console.log("\n\x1b[33mEncode sentences finished\x1b[0m\n");
 };
 
