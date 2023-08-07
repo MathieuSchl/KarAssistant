@@ -63,10 +63,21 @@ function dateDiff(dateStart, dateEnd) {
 module.exports.start = async () => {
   await start();
   const dateStart = new Date();
-  const files = fs.readdirSync(__dirname + "/../skills", { withFileTypes: true });
-  const folders = files.filter((file) => file.isDirectory()).map((file) => file.name);
 
-  for (const folder of folders) {
+  console.log(__dirname + "/../skills/" + process.argv[2] + ".js");
+  const limitSkills = !process.argv[2]
+    ? false
+    : fs.existsSync(__dirname + "/../skills/" + process.argv[2] + "/index.js");
+  if (!limitSkills && process.argv[2])
+    console.log(`\x1b[31mThe skill '${process.argv[2]}' doesn't exist.\nSkipping limit, loading all skills\x1b[0m`);
+  const files = limitSkills ? process.argv[2] : fs.readdirSync(__dirname + "/../skills", { withFileTypes: true });
+  const folders = limitSkills ? [process.argv[2]] : files.filter((file) => file.isDirectory()).map((file) => file.name);
+
+  console.log(`\n\x1b[34m├─ skills`);
+  for (let index = 0; index < folders.length; index++) {
+    const folder = folders[index];
+
+    console.log(`${index !== folders.length - 1 ? "├" : "└"}─── ${folder}`);
     const file = require(__dirname + "/../skills/" + folder);
     const phrases = file.data.phrases;
     const langs = Object.keys(phrases);
