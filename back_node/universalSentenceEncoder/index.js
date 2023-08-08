@@ -64,7 +64,6 @@ module.exports.start = async () => {
   await start();
   const dateStart = new Date();
 
-  console.log(__dirname + "/../skills/" + process.argv[2] + ".js");
   const limitSkills = !process.argv[2]
     ? false
     : fs.existsSync(__dirname + "/../skills/" + process.argv[2] + "/index.js");
@@ -108,14 +107,24 @@ module.exports.query = async ({ query }) => {
   let result = { similarity: 1, bestPhrase: "" };
   for (const vector of vectors) {
     const similarity = await compareSentences(vector.embedding, embedding);
-    if (similarity < 0.1) {
-      const lang = vector.lang;
-      return { result: await require(__dirname + "/../skills/" + vector.skill).execute({ lang }), similarity };
-    } else if (similarity < result.similarity) {
+
+    if (similarity < result.similarity) {
       result.similarity = similarity;
+      result.lang = vector.lang;
       result.bestPhrase = vector.phrase;
+      result.skill = vector.skill;
+      if (result.similarity < 0.1) {
+        result.result = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang });
+        return result;
+      }
     }
   }
-  result.result = "Je n'ai pas compris ce vous voulez dire";
+
+  if (result.similarity < 0.2) {
+    result.result = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang });
+  } else {
+    result.result = "Je n'ai pas compris ce vous voulez dire";
+  }
+
   return result;
 };
