@@ -1,7 +1,8 @@
 FROM node:18.13.0
 
-COPY ./package*.json /home/node/Karassistant/
+ARG project_path
+COPY ./$project_path/package*.json /home/node/Karassistant/
 WORKDIR /home/node/Karassistant/
-RUN npm install
-COPY . .
+RUN npm install --omit=dev
+COPY ./$project_path .
 CMD ["npm", "run", "start"]
