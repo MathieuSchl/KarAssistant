@@ -9,7 +9,8 @@ let lineProgress = "";
 function progressLog(text) {
   for (let index = 0; index < text.length; index++) {
     if (text[index] !== lineProgress[index]) {
-      process.stdout.cursorTo(index);
+      if (process.stdout.cursorTo) process.stdout.cursorTo(index);
+      else process.stdout.write("\n");
       process.stdout.write(text[index]);
     }
   }
@@ -94,8 +95,11 @@ module.exports.start = async () => {
     vectors[index].embedding = await encodeSentence(vectors[index].phrase);
     progressLog(`${index + 1}/${length} ${(((index + 1) / length) * 100).toFixed(2)}%`);
   }
-  process.stdout.clearLine(0);
-  process.stdout.cursorTo(0);
+
+  if (process.stdout.cursorTo) {
+    process.stdout.clearLine(0);
+    process.stdout.cursorTo(0);
+  } else process.stdout.write("\n");
   process.stdout.write(`\x1b[32m${length}/${length} 100.00%`);
   const dateEnd = new Date();
   const elapsedTimeText = dateDiff(dateStart, dateEnd);
