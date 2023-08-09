@@ -10,14 +10,14 @@ require("./api/index").startApi(app);
 if (process.env.SHOWSWAGGER === "true") {
   const swaggerUI = require("swagger-ui-express");
   const swaggerJsDoc = require("swagger-jsdoc");
-  const servers = [
-    {
+  const servers = [];
+  if (!process.env.IS_PROD)
+    servers.push({
       url: `http://localhost:${port}`,
-    },
-  ];
+    });
   if (process.env.PROD_URL)
     servers.push({
-      url: process.envPROD_URL,
+      url: `${process.env.PROD_URL}`,
     });
   const options = {
     definition: {

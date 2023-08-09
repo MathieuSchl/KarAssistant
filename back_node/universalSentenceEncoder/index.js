@@ -7,19 +7,22 @@ const vectors = [];
 
 let lineProgress = "";
 function progressLog(text) {
-  for (let index = 0; index < text.length; index++) {
-    if (text[index] !== lineProgress[index]) {
-      if (process.stdout.cursorTo) process.stdout.cursorTo(index);
-      else process.stdout.write("\n");
-      process.stdout.write(text[index]);
+  if (process.stdout.cursorTo) {
+    for (let index = 0; index < text.length; index++) {
+      if (text[index] !== lineProgress[index]) {
+        process.stdout.cursorTo(index);
+        process.stdout.write(text[index]);
+      }
     }
-  }
 
-  for (let index = text.length; index < lineProgress.length; index++) {
-    process.stdout.write(" ");
-  }
+    for (let index = text.length; index < lineProgress.length; index++) {
+      process.stdout.write(" ");
+    }
 
-  lineProgress = text;
+    lineProgress = text;
+  } else {
+    console.log(text);
+  }
 }
 
 function dateDiff(dateStart, dateEnd) {
