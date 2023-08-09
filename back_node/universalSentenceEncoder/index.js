@@ -123,8 +123,25 @@ module.exports.query = async ({ query }) => {
   if (result.similarity < 0.2) {
     result.result = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang });
   } else {
+    if (result.similarity < 0.3) {
+      saveQueryClose(result, query);
+    }
     result.result = "Je n'ai pas compris ce vous voulez dire";
   }
 
   return result;
 };
+
+async function saveQueryClose(result, query) {
+  const dataRead = fs.readFileSync(__dirname + "/../data/querriesClose.json", "utf8");
+  const content = JSON.parse(dataRead);
+  content.push({
+    query,
+    similarity: result.similarity,
+    lang: result.lang,
+    skill: result.skill,
+    bestPhrase: result.bestPhrase,
+  });
+  const dataWrite = JSON.stringify(content);
+  fs.writeFileSync(__dirname + "/../data/querriesClose.json", dataWrite, "utf8");
+}

@@ -4,6 +4,7 @@ require("dotenv").config();
 const use = require("./universalSentenceEncoder/index");
 const port = process.env.PORT ? process.env.PORT : 3000;
 
+require("./utils/prepareFolders").prepareFolders();
 require("./api/index").startApi(app);
 
 if (process.env.SHOWSWAGGER === "true") {
