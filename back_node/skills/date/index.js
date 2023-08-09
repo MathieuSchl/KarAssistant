@@ -1,21 +1,4 @@
-module.exports.data = {
-  phrases: {
-    fr: [
-      "quel jour sommes-nous",
-      "on est quel jour",
-      "Quelle est la date d'aujourd'hui",
-      "Pourriez-vous m'indiquer la date actuelle",
-      "Pouvez-vous me dire la date du jour",
-    ],
-    en: [
-      "what is today's date",
-      "could you tell me the date today",
-      "can you inform me of the current date",
-      "do you know what day it is",
-      "do you have today's date",
-    ],
-  },
-};
+module.exports.data = require("./text.json");
 
 module.exports.execute = (data) => {
   const date = new Date();
