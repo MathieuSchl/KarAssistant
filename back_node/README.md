@@ -62,7 +62,7 @@ This will convert the samples sentences into vectors.
 When a customer makes a request, the request phrase is embedded and compared with other vectors.
 If the result of the comparison is close to 0, this means that the two sentences in question are similar and the skill code can be executed. The skill will then send the response sentence back to the client.
 
-To see the skills [click here](back_node/skills)
+To see the skills [click here](skills)
 
 ## Install & start
 
