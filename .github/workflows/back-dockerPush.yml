@@ -76,7 +76,7 @@ jobs:
           tags: "${{ secrets.DOCKERHUB_USERNAME }}/karassistant-back:latest"
           build-args: project_path=back_node
 
-      - id: "Create tag"
+      - id: Create tag
         uses: rickstaa/action-create-tag@v1
         with:
           tag: "back-${{ needs.Check.outputs.version }}"
