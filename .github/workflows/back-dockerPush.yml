@@ -1,8 +1,9 @@
 name: "[BACK] Docker push"
 run-name: "[BACK] DockerPush : ${{ github.actor }} push '${{ github.event.head_commit.message }}' 🚀"
-on: push
-#    paths:
-#      - back_node/**
+on:
+  push:
+    paths:
+      - back_node/**
 jobs:
   Check:
     runs-on: ubuntu-latest
