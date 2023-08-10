@@ -1,5 +1,9 @@
 # KarAssistant
 
+<p align="center">
+  <a href="https://github.com/MathieuSchl/KarAssistant/actions/workflows/back-dockerPush.yml"><img src="https://github.com/MathieuSchl/KarAssistant/actions/workflows/back-dockerPush.yml/badge.svg" /></a>
+</p>
+
 <div id="header" align="center">
   <img src="https://steamuserimages-a.akamaihd.net/ugc/923681227278185275/D579055CC4A7504CFFF832EA33FAACC296B7B937/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false"/>
   <p>Kara is a personal assistant. Its purpose is to answer questions asked by a client.</p>
