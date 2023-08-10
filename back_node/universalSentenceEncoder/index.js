@@ -64,30 +64,56 @@ function dateDiff(dateStart, dateEnd) {
   return result.trim();
 }
 
+function loadSkill({ skill }) {
+  console.log("-- " + skill);
+  const file = require(__dirname + "/../skills/" + skill);
+  const phrases = file.data.phrases;
+  const langs = Object.keys(phrases);
+  for (const lang of langs) {
+    for (const phrase of phrases[lang]) {
+      vectors.push({ skill: skill, lang, phrase });
+    }
+  }
+}
+
+function getAllSkills(path) {
+  let result = [];
+  if (fs.lstatSync(__dirname + "/../skills/" + path).isDirectory()) {
+    const elementExist = fs.existsSync(__dirname + "/../skills/" + path + "/index.js");
+    const elementIsFile = elementExist ? fs.lstatSync(__dirname + "/../skills/" + path + "/index.js").isFile() : false;
+
+    if (elementExist && elementIsFile) {
+      result.push(path);
+    } else {
+      const elements = fs.readdirSync(__dirname + "/../skills/" + path);
+      for (const element of elements) {
+        const resultFolder = getAllSkills(`${path}${path != "" ? "/" : ""}${element}`);
+        result = result.concat(resultFolder);
+      }
+    }
+  }
+  return result;
+}
+
 module.exports.start = async () => {
   await start();
   const dateStart = new Date();
 
+  console.log(`\n\x1b[34mskills`);
   const limitSkills = !process.argv[2]
     ? false
     : fs.existsSync(__dirname + "/../skills/" + process.argv[2] + "/index.js");
   if (!limitSkills && process.argv[2])
     console.log(`\x1b[31mThe skill '${process.argv[2]}' doesn't exist.\nSkipping limit, loading all skills\x1b[0m`);
-  const files = limitSkills ? process.argv[2] : fs.readdirSync(__dirname + "/../skills", { withFileTypes: true });
-  const folders = limitSkills ? [process.argv[2]] : files.filter((file) => file.isDirectory()).map((file) => file.name);
+  if (limitSkills) {
+    loadSkill({ folder: process.argv[2] });
+  } else {
+    const folders = getAllSkills("");
 
-  console.log(`\n\x1b[34m├─ skills`);
-  for (let index = 0; index < folders.length; index++) {
-    const folder = folders[index];
+    for (let index = 0; index < folders.length; index++) {
+      const folder = folders[index];
 
-    console.log(`${index !== folders.length - 1 ? "├" : "└"}─── ${folder}`);
-    const file = require(__dirname + "/../skills/" + folder);
-    const phrases = file.data.phrases;
-    const langs = Object.keys(phrases);
-    for (const lang of langs) {
-      for (const phrase of phrases[lang]) {
-        vectors.push({ skill: folder, lang, phrase });
-      }
+      loadSkill({ skill: folder });
     }
   }
 
