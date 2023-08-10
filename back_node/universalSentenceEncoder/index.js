@@ -147,15 +147,17 @@ module.exports.query = async ({ query }) => {
       result.bestPhrase = vector.phrase;
       result.skill = vector.skill;
       if (result.similarity < 0.1) {
-        result.result = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang });
-        return result;
+        const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang });
+        result.result = skillResult.text;
+        break;
       }
     }
   }
 
-  if (result.similarity < 0.2) {
-    result.result = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang });
-  } else {
+  if (!result.result && result.similarity < 0.2) {
+    const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang });
+    result.result = skillResult.text;
+  } else if (!result.result) {
     if (result.similarity < 0.3) {
       saveQueryClose(result, query);
     }

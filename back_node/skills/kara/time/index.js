@@ -9,12 +9,12 @@ module.exports.execute = (data) => {
       const ampm = hours >= 12 ? "pm" : "am";
       let hours12 = hours % 12;
       hours12 = hours12 ? hours12 : 12; // the hour '0' should be '12'
-      return `It is ${hours12}:${minutes} ${ampm}`;
+      return { text: `It is ${hours12}:${minutes} ${ampm}` };
 
     case "fr":
-      return `Il est ${hours} heure ${minutes}`;
+      return { text: `Il est ${hours} heure ${minutes}` };
 
     default:
-      return `Undefined language for time`;
+      return { text: `Undefined language for time` };
   }
 };

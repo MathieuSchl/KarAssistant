@@ -75,3 +75,14 @@ jobs:
           push: true
           tags: "${{ secrets.DOCKERHUB_USERNAME }}/karassistant-back:latest"
           build-args: project_path=back_node
+
+      - name: Create tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/back-${{ needs.Check.outputs.version }}',
+              sha: context.sha
+            })
