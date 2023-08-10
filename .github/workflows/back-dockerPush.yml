@@ -37,6 +37,7 @@ jobs:
 
   Build_Push:
     runs-on: ubuntu-latest
+    permissions: write-all
     needs:
       - Check
     if: ${{ needs.Check.outputs.RUN_BUILD == 'yes' }}
