@@ -1,7 +1,6 @@
 name: "[BACK] Docker push"
 run-name: "[BACK] DockerPush : ${{ github.actor }} push '${{ github.event.head_commit.message }}' 🚀"
-on:
-  push:
+on: push
 #    paths:
 #      - back_node/**
 jobs:
