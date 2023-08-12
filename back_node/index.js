@@ -6,6 +6,7 @@ const port = process.env.PORT ? process.env.PORT : 3000;
 
 require("./utils/prepareFolders").prepareFolders();
 require("./api/index").startApi(app);
+require("./cron/index").startCron(app);
 
 if (process.env.SHOWSWAGGER === "true") {
   const swaggerUI = require("swagger-ui-express");

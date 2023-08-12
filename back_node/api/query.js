@@ -2,7 +2,7 @@ const use = require("../universalSentenceEncoder/index");
 
 /**
  * @swagger
- * /api/query/:
+ * /api/heyKara/:
  *   get:
  *     summary: Ask something to Kara
  *     tags: []
@@ -48,7 +48,7 @@ const use = require("../universalSentenceEncoder/index");
  */
 
 module.exports.start = (app) => {
-  app.get("/api/query", async function (req, res) {
+  app.get("/api/heyKara", async function (req, res) {
     const result = await use.query({ query: req.query.query.toLowerCase(), token: req.query.token });
     res.json(result);
   });
