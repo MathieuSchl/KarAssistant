@@ -6,4 +6,4 @@ WORKDIR /home/node/Karassistant/
 RUN npm install --omit=dev
 RUN npm install @tensorflow/tfjs-node
 COPY ./$project_path .
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "startSever"]

@@ -3,12 +3,13 @@ version: "3"
 services:
   karassistant-back:
     #build: .
-    image: codyisthesenate/karassistant-back:1.1.8
+    image: codyisthesenate/karassistant-back:1.1.9
     restart: always
     container_name: karassistant-back
     volumes:
       - .env:/home/node/Karassistant/.env
       - ./data:/home/node/Karassistant/data
+      - ./logs:/home/node/Karassistant/logs
     ports:
       - ${PORT_BACK}:3000
     networks:
