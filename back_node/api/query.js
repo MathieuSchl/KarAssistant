@@ -12,6 +12,10 @@ const use = require("../universalSentenceEncoder/index");
  *       description: "The question"
  *       required: true
  *       type: string
+ *     - name: "token"
+ *       in: "query"
+ *       description: "Token for response"
+ *       type: string
  *     responses:
  *       200:
  *         description: "Get all ticlets data from a user"
@@ -23,6 +27,9 @@ const use = require("../universalSentenceEncoder/index");
  *                 result:
  *                   type: string
  *                   description: Phrase from Kara
+ *                 token:
+ *                   type: string
+ *                   description: Token given to aswer a question from Kara
  *                 lang:
  *                   type: string
  *                   description: Language of the question
@@ -42,7 +49,7 @@ const use = require("../universalSentenceEncoder/index");
 
 module.exports.start = (app) => {
   app.get("/api/query", async function (req, res) {
-    const result = await use.query({ query: req.query.query.toLowerCase() });
+    const result = await use.query({ query: req.query.query.toLowerCase(), token: req.query.token });
     res.json(result);
   });
 };
