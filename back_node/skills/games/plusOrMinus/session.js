@@ -19,7 +19,7 @@ module.exports.execute = ({ query, lang, data }) => {
           return { text: `My number is greater than ` + userValue, data };
 
         case "fr":
-          return { text: `Mon nombre est plus grande que ` + userValue, data };
+          return { text: `Mon nombre est plus grand que ` + userValue, data };
 
         default:
           return { text: `Undefined language for gessTheNumber/session` };
