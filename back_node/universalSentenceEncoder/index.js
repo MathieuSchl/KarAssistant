@@ -61,6 +61,10 @@ function dateDiff(dateStart, dateEnd) {
     result += `${seconds} second${seconds > 1 ? "s" : ""} `;
   }
 
+  if(result == ""){
+    result += `${timeDifference} millisecond${timeDifference > 1 ? "s" : ""} `;
+  }
+
   return result.trim();
 }
 
@@ -117,11 +121,15 @@ module.exports.start = async () => {
     }
   }
 
+  const vectorToFile = {}
+  const vectorSaved = JSON.parse(fs.readFileSync(__dirname + "/../data/vectors.json", "utf8"));
   console.log("\n\x1b[33mStart encode sentences\x1b[34m");
   const length = vectors.length;
   progressLog(`0/${length} 00.00%`);
   for (let index = 0; index < vectors.length; index++) {
-    vectors[index].embedding = await encodeSentence(vectors[index].phrase);
+    if(vectorSaved[vectors[index].phrase] != null) vectors[index].embedding = vectorSaved[vectors[index].phrase];
+    else vectors[index].embedding = await encodeSentence(vectors[index].phrase);
+    vectorToFile[vectors[index].phrase] = vectors[index].embedding;
     progressLog(`${index + 1}/${length} ${(((index + 1) / length) * 100).toFixed(2)}%`);
   }
 
@@ -129,6 +137,10 @@ module.exports.start = async () => {
     process.stdout.clearLine(0);
     process.stdout.cursorTo(0);
   } else process.stdout.write("\n");
+
+
+  fs.writeFileSync(__dirname + "/../data/vectors.json", JSON.stringify(vectorToFile));
+
   process.stdout.write(`\x1b[32m${length}/${length} 100.00%`);
   const dateEnd = new Date();
   const elapsedTimeText = dateDiff(dateStart, dateEnd);

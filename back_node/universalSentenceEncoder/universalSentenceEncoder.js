@@ -8,8 +8,20 @@ let model = use.load();
 module.exports.encodeSentence = async (sentence) => {
   // Encodage de la phrase en vecteur
   const embeddings = await model.embed(sentence);
+  const result = {
+    kept: embeddings.kept,
+    isDisposedInternal: embeddings.isDisposedInternal,
+    shape: embeddings.shape,
+    dtype: embeddings.dtype,
+    size: embeddings.size,
+    strides: embeddings.strides,
+    dataId: embeddings.dataId,
+    id: embeddings.id,
+    rankType: embeddings.rankType,
+    scopeId: embeddings.scopeId
+  }
 
-  return embeddings;
+  return result;
 };
 
 module.exports.compareSentences = async (embedding1, embedding2) => {
