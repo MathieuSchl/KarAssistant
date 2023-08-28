@@ -16,6 +16,10 @@ const use = require("../universalSentenceEncoder/index");
  *       in: "query"
  *       description: "Token for response"
  *       type: string
+ *     - name: "timeZone"
+ *       in: "query"
+ *       description: "TimeZone from the user"
+ *       type: string
  *     responses:
  *       200:
  *         description: "Get all ticlets data from a user"
@@ -49,7 +53,7 @@ const use = require("../universalSentenceEncoder/index");
 
 module.exports.start = (app) => {
   app.get("/api/heyKara", async function (req, res) {
-    const result = await use.query({ query: req.query.query.toLowerCase(), token: req.query.token });
+    const result = await use.query({ query: req.query.query.toLowerCase(), token: req.query.token, timeZone: req.query.timeZone });
     res.json(result);
   });
 };

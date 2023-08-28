@@ -135,7 +135,7 @@ module.exports.start = async () => {
   console.log(`\n\x1b[33mEncode sentences finished in \x1b[35m${elapsedTimeText}\x1b[0m\n`);
 };
 
-module.exports.query = async ({ query, token }) => {
+module.exports.query = async ({ query, token, timeZone }) => {
   const embedding = await encodeSentence(query);
   const result = { similarity: 1, bestPhrase: "" };
   const resData = {};
@@ -148,6 +148,7 @@ module.exports.query = async ({ query, token }) => {
 
     const skillResult = await require(__dirname + "/../skills/" + content.skill + "/session").execute({
       query,
+      timeZone,
       lang: content.lang,
       data: content.data,
     });
@@ -172,7 +173,7 @@ module.exports.query = async ({ query, token }) => {
         result.skill = vector.skill;
         //Execute skill if very close
         if (result.similarity < 0.1) {
-          const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang });
+          const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang, timeZone });
           result.result = skillResult.text;
           resData.data = skillResult.data;
           break;
@@ -183,7 +184,7 @@ module.exports.query = async ({ query, token }) => {
 
   //Exeption of the closest competence
   if (!result.result && result.similarity < 0.2) {
-    const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang });
+    const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang, timeZone });
     result.result = skillResult.text;
     resData.data = skillResult.data;
   } else if (!result.result) {
