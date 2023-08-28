@@ -151,28 +151,32 @@ module.exports.query = async ({ query, token }) => {
       lang: content.lang,
       data: content.data,
     });
-    result.result = skillResult.text;
-    resData.data = skillResult.data;
-    resData.lang = skillResult.lang ? skillResult.lang : content.lang;
-    resData.skill = content.skill;
+    if(skillResult != null){
+      result.result = skillResult.text;
+      resData.data = skillResult.data;
+      resData.lang = skillResult.lang ? skillResult.lang : content.lang;
+      resData.skill = content.skill;
+    }
   }
 
-  //Loop on all skills
-  for (const vector of vectors) {
-    if (result.result) break;
-    const similarity = await compareSentences(vector.embedding, embedding);
+  if(result.result == null){
+    //Loop on all skills
+    for (const vector of vectors) {
+      if (result.result) break;
+      const similarity = await compareSentences(vector.embedding, embedding);
 
-    if (similarity < result.similarity) {
-      result.similarity = similarity;
-      result.lang = vector.lang;
-      result.bestPhrase = vector.phrase;
-      result.skill = vector.skill;
-      //Execute skill if very close
-      if (result.similarity < 0.1) {
-        const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang });
-        result.result = skillResult.text;
-        resData.data = skillResult.data;
-        break;
+      if (similarity < result.similarity) {
+        result.similarity = similarity;
+        result.lang = vector.lang;
+        result.bestPhrase = vector.phrase;
+        result.skill = vector.skill;
+        //Execute skill if very close
+        if (result.similarity < 0.1) {
+          const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang });
+          result.result = skillResult.text;
+          resData.data = skillResult.data;
+          break;
+        }
       }
     }
   }
