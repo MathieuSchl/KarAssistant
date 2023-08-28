@@ -3,7 +3,7 @@ version: "3"
 services:
   karassistant-back:
     #build: .
-    image: codyisthesenate/karassistant-back:1.1.10.1
+    image: codyisthesenate/karassistant-back:1.1.10.2
     restart: always
     container_name: karassistant-back
     volumes:

@@ -1,11 +1,11 @@
 {
   "name": "karassistantback",
-  "version": "1.1.10.1",
+  "version": "1.1.10.2",
   "description": "Back end for karassistant",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "startSever": "node index.js >> logs/log-$(date +'%Y-%m-%d').txt",
+    "startSever": "node index.js 2>&1 | tee -a logs/log-$(date +'%Y-%m-%d').txt",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -188,7 +188,7 @@ module.exports.query = async ({ query, token }) => {
     if (result.similarity < 0.3) {
       saveQueryClose(result, query);
     }
-    result.result = "Je n'ai pas compris ce vous voulez dire";
+    result.result = "Je n'ai pas compris ce que vous voulez dire";
   }
 
   //Save data if Kara ask something to user
