@@ -6,6 +6,7 @@ const port = process.env.PORT ? process.env.PORT : 3000;
 
 require("./utils/prepareFolders").prepareFolders();
 require("./api/index").startApi(app);
+require("./cron/index").startCron(app);
 
 if (process.env.SHOWSWAGGER === "true") {
   const swaggerUI = require("swagger-ui-express");
@@ -23,7 +24,7 @@ if (process.env.SHOWSWAGGER === "true") {
     definition: {
       openapi: "3.0.0",
       info: {
-        title: "KarAssistant API",
+        title: `[${process.env.ENV_NAME}] KarAssistant API`,
         version: require("./package.json").version,
         description:
           "Hello and welcome to the API documentation of the KarAssistant.\n" +

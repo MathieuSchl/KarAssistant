@@ -1,25 +1,23 @@
+const isValidTimeZone = require("../../../utils/isValidTimeZone").isValidTimeZone;
+const moment = require('moment-timezone');
 module.exports.data = require("./text.json");
 
 module.exports.execute = (data) => {
-  const date = new Date();
-  const hours = ("0" + date.getHours()).slice(-2);
-  const minutes = ("0" + date.getMinutes()).slice(-2);
+  //ISO 639-1 https://www.andiamo.co.uk/resources/iso-language-codes/
+  //TimeZone  https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  const timeZone = isValidTimeZone(data.timeZone) ? data.timeZone : "Europe/London";
+  const momentNow = moment().tz(timeZone)
   switch (data.lang) {
     case "en":
-      const dayNameEn = date.toLocaleString("en-us", { weekday: "long" });
-      const monthNameEn = date.toLocaleString("en-us", { month: "long" });
-      const ampm = hours >= 12 ? "pm" : "am";
-      let hours12 = hours % 12;
-      hours12 = hours12 ? hours12 : 12; // the hour '0' should be '12'
+      momentNow.locale("en")
       return {
-        text: `The date today is: ${dayNameEn} ${monthNameEn} ${date.getDate()} ${date.getFullYear()} and it is ${hours12}:${minutes} ${ampm}`,
+        text: momentNow.format("[The date today is:] dddd [the] Do MMMM, YYYY [and it is] hh:mm a"),
       };
 
     case "fr":
-      const dayNameFr = date.toLocaleString("fr-fr", { weekday: "long" });
-      const monthNameFr = date.toLocaleString("fr-fr", { month: "long" });
+      momentNow.locale("fr")
       return {
-        text: `Aujourd'hui nous sommes le ${dayNameFr} ${date.getDate()} ${monthNameFr} ${date.getFullYear()} et il est ${hours} heure ${minutes}`,
+        text: momentNow.format("[Aujourd'hui nous sommes le] dddd D MMMM YYYY [et il est] HH [heures] mm"),
       };
 
     default:

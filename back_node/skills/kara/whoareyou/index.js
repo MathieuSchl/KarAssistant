@@ -9,7 +9,7 @@ module.exports.execute = (data) => {
 
     case "fr":
       return {
-        text: `Mon nom est Kara. Je suis un assistant personnel dévellopé par Cody et Caz. Posez-moi une question et j'y répondrais.`,
+        text: `Mon nom est Kara. Je suis un assistant personnel développé par Cody et Caz. Posez-moi une question et j'y répondrais.`,
       };
 
     default:
