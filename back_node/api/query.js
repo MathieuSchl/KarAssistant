@@ -2,7 +2,7 @@ const use = require("../universalSentenceEncoder/index");
 
 /**
  * @swagger
- * /api/query/:
+ * /api/heyKara/:
  *   get:
  *     summary: Ask something to Kara
  *     tags: []
@@ -11,6 +11,14 @@ const use = require("../universalSentenceEncoder/index");
  *       in: "query"
  *       description: "The question"
  *       required: true
+ *       type: string
+ *     - name: "token"
+ *       in: "query"
+ *       description: "Token for response"
+ *       type: string
+ *     - name: "timeZone"
+ *       in: "query"
+ *       description: "TimeZone from the user"
  *       type: string
  *     responses:
  *       200:
@@ -23,6 +31,9 @@ const use = require("../universalSentenceEncoder/index");
  *                 result:
  *                   type: string
  *                   description: Phrase from Kara
+ *                 token:
+ *                   type: string
+ *                   description: Token given to aswer a question from Kara
  *                 lang:
  *                   type: string
  *                   description: Language of the question
@@ -41,8 +52,8 @@ const use = require("../universalSentenceEncoder/index");
  */
 
 module.exports.start = (app) => {
-  app.get("/api/query", async function (req, res) {
-    const result = await use.query({ query: req.query.query.toLowerCase() });
+  app.get("/api/heyKara", async function (req, res) {
+    const result = await use.query({ query: req.query.query.toLowerCase(), token: req.query.token, timeZone: req.query.timeZone });
     res.json(result);
   });
 };

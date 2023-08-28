@@ -106,7 +106,7 @@ module.exports.start = async () => {
   if (!limitSkills && process.argv[2])
     console.log(`\x1b[31mThe skill '${process.argv[2]}' doesn't exist.\nSkipping limit, loading all skills\x1b[0m`);
   if (limitSkills) {
-    loadSkill({ folder: process.argv[2] });
+    loadSkill({ skill: process.argv[2] });
   } else {
     const folders = getAllSkills("");
 
@@ -135,33 +135,75 @@ module.exports.start = async () => {
   console.log(`\n\x1b[33mEncode sentences finished in \x1b[35m${elapsedTimeText}\x1b[0m\n`);
 };
 
-module.exports.query = async ({ query }) => {
+module.exports.query = async ({ query, token, timeZone }) => {
   const embedding = await encodeSentence(query);
-  let result = { similarity: 1, bestPhrase: "" };
-  for (const vector of vectors) {
-    const similarity = await compareSentences(vector.embedding, embedding);
+  const result = { similarity: 1, bestPhrase: "" };
+  const resData = {};
 
-    if (similarity < result.similarity) {
-      result.similarity = similarity;
-      result.lang = vector.lang;
-      result.bestPhrase = vector.phrase;
-      result.skill = vector.skill;
-      if (result.similarity < 0.1) {
-        const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang });
-        result.result = skillResult.text;
-        break;
+  //Used saved sessions
+  if (token && fs.existsSync(__dirname + "/../data/sessions/" + token + ".json")) {
+    const dataRead = fs.readFileSync(__dirname + "/../data/sessions/" + token + ".json", "utf8");
+    fs.unlinkSync(__dirname + "/../data/sessions/" + token + ".json");
+    const content = JSON.parse(dataRead);
+
+    const skillResult = await require(__dirname + "/../skills/" + content.skill + "/session").execute({
+      query,
+      timeZone,
+      lang: content.lang,
+      data: content.data,
+    });
+    if(skillResult != null){
+      result.result = skillResult.text;
+      resData.data = skillResult.data;
+      resData.lang = skillResult.lang ? skillResult.lang : content.lang;
+      resData.skill = content.skill;
+    }
+  }
+
+  if(result.result == null){
+    //Loop on all skills
+    for (const vector of vectors) {
+      if (result.result) break;
+      const similarity = await compareSentences(vector.embedding, embedding);
+
+      if (similarity < result.similarity) {
+        result.similarity = similarity;
+        result.lang = vector.lang;
+        result.bestPhrase = vector.phrase;
+        result.skill = vector.skill;
+        //Execute skill if very close
+        if (result.similarity < 0.1) {
+          const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang, timeZone });
+          result.result = skillResult.text;
+          resData.data = skillResult.data;
+          break;
+        }
       }
     }
   }
 
+  //Exeption of the closest competence
   if (!result.result && result.similarity < 0.2) {
-    const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang });
+    const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang, timeZone });
     result.result = skillResult.text;
+    resData.data = skillResult.data;
   } else if (!result.result) {
+    //Save if it's close, but not too close
+    //This is used for logs
     if (result.similarity < 0.3) {
       saveQueryClose(result, query);
     }
-    result.result = "Je n'ai pas compris ce vous voulez dire";
+    result.result = "Je n'ai pas compris ce que vous voulez dire";
+  }
+
+  //Save data if Kara ask something to user
+  if (resData.data) {
+    if (!resData.lang) resData.lang = result.lang;
+    if (!resData.skill) resData.skill = result.skill;
+    resData.date = new Date();
+    const token = require("../utils/makeToken").generateToken();
+    result.token = token;
+    fs.writeFileSync(__dirname + "/../data/sessions/" + token + ".json", JSON.stringify(resData));
   }
 
   return result;
