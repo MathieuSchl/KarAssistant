@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:karAssistant/screens/home_page/view/home_page.dart';
+import 'package:kar_assistant/screens/home_page/view/home_page.dart';
+import 'package:kar_assistant/services/utils_controller.dart';
 
 void main() {
+  UtilsController().initEnv();
   runApp(const MyApp());
 }
 
@@ -12,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'KarAssistant',
+      title: 'kar_assistant',
       theme: ThemeData(
         // This is the theme of your application.
         //

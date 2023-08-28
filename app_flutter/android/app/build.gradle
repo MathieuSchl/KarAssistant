@@ -45,8 +45,8 @@ android {
 
     defaultConfig {
         applicationId "kar_assistant.app_flutter"
-        minSdkVersion 30
-        targetSdkVersion 31
+        minSdkVersion 28
+        targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }

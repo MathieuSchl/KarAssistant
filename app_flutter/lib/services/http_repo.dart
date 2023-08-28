@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:karAssistant/core/globals.dart' as globals;
+import 'package:kar_assistant/core/globals.dart' as globals;
 import 'package:http/http.dart' as http;
-import 'package:karAssistant/services/http_repository.dart';
+import 'package:kar_assistant/services/http_repository.dart';
 
 class HttpRepo implements HttpRepository {
   int timeOutSeconds = 20;
@@ -15,7 +15,6 @@ class HttpRepo implements HttpRepository {
       header = {'Content-Type': 'application/json; charset=UTF-8', 'Accept': 'application/json', 'Authorization': 'Bearer ${globals.tokenApi}'};
     } else {
       header = {
-        'Content-Type': 'application/json; charset=UTF-8',
         'Accept': 'application/json',
       };
     }
@@ -67,8 +66,9 @@ class HttpRepo implements HttpRepository {
   Future<http.Response> getRequestParams(String url, Map<String, dynamic> parameters) async {
     http.Response response;
     try {
+      print(parameters.toString());
       response = await http
-          .get(getUri(url, parameters: parameters), headers: header)
+          .get(getUri(url, parameters:parameters), headers: header)
           .timeout(
             Duration(seconds: timeOutSeconds),
             onTimeout: () => http.Response(responseTimeOut, 408),
@@ -90,13 +90,14 @@ class HttpRepo implements HttpRepository {
     http.Response response;
 
     try {
+      print(Uri.encodeFull(jsonEncode(data)));
       response = await http
-          .post(getUri(url), headers: header, body: jsonEncode(data))
-          .timeout(
-            Duration(seconds: timeOutSeconds),
-            onTimeout: () => http.Response(responseTimeOut, 408),
-          )
-          .onError((error, stackTrace) => http.Response(responseOtherError, 503));
+        .post(getUri(url), headers: header, body: Uri.encodeFull(jsonEncode(data)))
+        .timeout(
+          Duration(seconds: timeOutSeconds),
+          onTimeout: () => http.Response(responseTimeOut, 408),
+        )
+        .onError((error, stackTrace) => http.Response(responseOtherError, 503));
 
       if (response.statusCode < 200 || response.statusCode > 299) {
         final error = json.decode(response.body);
