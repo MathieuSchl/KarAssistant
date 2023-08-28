@@ -5,7 +5,7 @@ services:
     #build: .
     image: codyisthesenate/karassistant-back:1.1.10.2
     restart: always
-    container_name: karassistant-back
+    container_name: karassistant-back-${ENV_NAME}
     volumes:
       - .env:/home/node/Karassistant/.env
       - ./data:/home/node/Karassistant/data
