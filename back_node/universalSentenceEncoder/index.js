@@ -1,5 +1,6 @@
 const fs = require("fs");
 const encodeSentence = require("./universalSentenceEncoder").encodeSentence;
+const createVector = require("./universalSentenceEncoder").createVector;
 const compareSentences = require("./universalSentenceEncoder").compareSentences;
 const start = require("./universalSentenceEncoder").start;
 
@@ -127,9 +128,10 @@ module.exports.start = async () => {
   const length = vectors.length;
   progressLog(`0/${length} 00.00%`);
   for (let index = 0; index < vectors.length; index++) {
-    if(vectorSaved[vectors[index].phrase] != null) vectors[index].embedding = vectorSaved[vectors[index].phrase];
-    else vectors[index].embedding = await encodeSentence(vectors[index].phrase);
-    vectorToFile[vectors[index].phrase] = vectors[index].embedding;
+    const values = vectorSaved[vectors[index].phrase] != null ? vectorSaved[vectors[index].phrase] : await encodeSentence(vectors[index].phrase);
+    const vector = createVector(values);
+    vectors[index].embedding = vector
+    vectorToFile[vectors[index].phrase] = values;
     progressLog(`${index + 1}/${length} ${(((index + 1) / length) * 100).toFixed(2)}%`);
   }
 
