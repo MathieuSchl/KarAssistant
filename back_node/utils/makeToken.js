@@ -13,6 +13,7 @@ function generateToken() {
 
   const dateTimeShuffled = array.join("");
   const token = sha1(dateTimeShuffled).toString();
-  if (fs.existsSync(__dirname + "/../data/sessions/" + token + ".json")) return generateToken();
+  if (fs.existsSync(__dirname + "/../data/sessions/" + token + ".json"))
+    return generateToken();
   return token;
 }

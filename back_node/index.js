@@ -45,7 +45,10 @@ async function start() {
   await use.start();
   app.listen(port);
   console.log(`\x1b[33mApp is listening port : ${port}\x1b[0m`);
-  if (process.env.SHOWSWAGGER) console.log(`Documentation available here : http://localhost:${port}/api-docs\n`);
+  if (process.env.SHOWSWAGGER)
+    console.log(
+      `Documentation available here : http://localhost:${port}/api-docs\n`,
+    );
 }
 
 start();

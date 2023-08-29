@@ -14,8 +14,8 @@ module.exports.encodeSentence = async (sentence) => {
 };
 
 module.exports.createVector = (values) => {
-  return tf.tensor(values, [1, 512], 'float32')
-}
+  return tf.tensor(values, [1, 512], "float32");
+};
 
 module.exports.compareSentences = async (embedding1, embedding2) => {
   return (await tf.losses.cosineDistance(embedding1, embedding2).data())[0];
