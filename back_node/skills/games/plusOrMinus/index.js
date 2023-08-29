@@ -1,16 +1,14 @@
-module.exports.data = require("./text.json");
+const text = require("./text.json");
+module.exports.data = text;
 
 module.exports.execute = (data) => {
+  //Lang unknown
+  if(!text.response[data.lang]) return { text: text.error };
+
   const randomNumber = Math.floor(Math.random() * 100);
   const resData = { randomNumber };
-  switch (data.lang) {
-    case "en":
-      return { text: `I have a number in my mind between 0 and 100 try to find it`, data: resData };
-
-    case "fr":
-      return { text: `J'ai un nombre en tête entre 0 et 100 essaye de le trouver`, data: resData };
-
-    default:
-      return { text: `Undefined language for gessTheNumber` };
+  return {
+    text: text.response[data.lang].startGame,
+    data: resData
   }
 };

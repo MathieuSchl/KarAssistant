@@ -14,5 +14,14 @@
       "pourriez-vous m'indiquer la date actuelle",
       "pouvez-vous me dire la date du jour"
     ]
-  }
+  },
+  "response": {
+    "en": {
+      "date": "[The date today is:] dddd [the] Do MMMM, YYYY [and it is] hh:mm a"
+    },
+    "fr": {
+      "date": "[Aujourd'hui nous sommes le] dddd D MMMM YYYY [et il est] HH [heures] mm"
+    }
+  },
+  "error": "Undefined language for kara/date"
 }
