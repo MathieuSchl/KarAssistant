@@ -5,6 +5,7 @@ const use = require("./universalSentenceEncoder/index");
 const port = process.env.PORT ? process.env.PORT : 3000;
 
 require("./utils/prepareFolders").prepareFolders();
+require("./utils/logPurge").logPurge();
 require("./api/index").startApi(app);
 require("./cron/index").startCron(app);
 
