@@ -35,12 +35,27 @@ jobs:
             echo "version=$version" >> "$GITHUB_OUTPUT"
           fi
 
+
+  Tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          cd back_node/ && npm install
+      - name: Create summary
+        run: |
+          cd back/ && export NODE_OPTIONS=--no-experimental-fetch && npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
+          awk 'NR>5' /tmp/coverage0.txt > /tmp/coverage1.txt && sed '$ d' /tmp/coverage1.txt > $GITHUB_STEP_SUMMARY && echo -e "" >> $GITHUB_STEP_SUMMARY && cat /tmp/results.txt >> $GITHUB_STEP_SUMMARY
+
   Build_Push:
     runs-on: ubuntu-latest
     permissions: write-all
     needs:
       - Check
-    if: ${{ needs.Check.outputs.RUN_BUILD == 'yes' }}
+      - Tests
+    if: ${{ needs.Check.outputs.RUN_BUILD == 'yes' && needs.Tests.result == 'success' }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
