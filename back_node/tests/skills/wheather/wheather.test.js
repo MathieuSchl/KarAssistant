@@ -41,6 +41,7 @@ describe("Skill wheather/wheather", () => {
       await require("../../../skills/wheather/wheather/index").execute({
         lang: "fr",
         query: "quel temps fait il à paris",
+        forceData: true,
       });
 
     //Test

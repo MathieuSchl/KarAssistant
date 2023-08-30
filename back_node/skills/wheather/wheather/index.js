@@ -25,18 +25,18 @@ function getCity(query) {
 
 module.exports.data = text;
 
-module.exports.execute = async ({ query, lang, forceNoData }) => {
+module.exports.execute = async ({ query, lang, forceNoData, forceData }) => {
   //Lang unknown
   if (!text.response[lang]) return { text: text.error };
 
   const city = getCity(query);
   if (!city) return { text: text.response[lang].noCity, data: {} };
-  return getCityWeather({ city, lang, forceNoData });
+  return getCityWeather({ city, lang, forceNoData, forceData });
 };
 
 module.exports.getCityWeather = getCityWeather;
-async function getCityWeather({ city, lang, forceNoData }) {
-  const wheatherResult = await getWheather({ city, forceNoData });
+async function getCityWeather({ city, lang, forceNoData, forceData }) {
+  const wheatherResult = await getWheather({ city, forceNoData, forceData });
   if (!wheatherResult) {
     const textResult = text.response[lang].noDataForCity;
     return {

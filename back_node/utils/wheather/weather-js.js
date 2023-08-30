@@ -9,9 +9,7 @@ module.exports.getWheather = async ({ city }) => {
       },
     );
   });
-  /* c8 ignore start */
   if (err) return null;
-  /* c8 ignore stop */
 
   return result;
 };

@@ -195,3 +195,7 @@ module.exports = {
   //globalTeardown: "./tests/jestGlobalTeardown.js",
   //setupFilesAfterEnv: ["@alex_neo/jest-expect-message"],
 };
+
+process.env = Object.assign(process.env, {
+  IS_TEST: true,
+});
