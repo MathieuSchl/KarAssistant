@@ -30,6 +30,7 @@ jobs:
             echo -e "\e[31mVersion $version already exist"
             echo "Version $version already exist" >> $GITHUB_STEP_SUMMARY
           else
+            echo "Build image version $version" >> $GITHUB_STEP_SUMMARY
             echo -e "\e[32mBuild image version $version"
             echo "run_build=yes" >> "$GITHUB_OUTPUT"
             echo "version=$version" >> "$GITHUB_OUTPUT"
@@ -96,3 +97,7 @@ jobs:
         uses: rickstaa/action-create-tag@v1
         with:
           tag: "back-${{ needs.Check.outputs.version }}"
+
+      - name: Create summury
+        run: |
+          echo "image build 'karassistant-back:${{ needs.Check.outputs.version }}' succeed" >> $GITHUB_STEP_SUMMARY
