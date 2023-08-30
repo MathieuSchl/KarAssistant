@@ -53,11 +53,17 @@ const use = require("../universalSentenceEncoder/index");
 
 module.exports.start = (app) => {
   app.get("/api/heyKara", async function (req, res) {
-    const result = await use.query({
-      query: req.query.query.toLowerCase(),
-      token: req.query.token,
-      timeZone: req.query.timeZone,
-    });
-    res.json(result);
+    try {
+      const result = await use.query({
+        query: req.query.query.toLowerCase(),
+        token: req.query.token,
+        timeZone: req.query.timeZone,
+      });
+      res.json(result);
+    } catch (error) {
+      console.log("ERROR: GET /api/heyKara");
+      console.log(error);
+      res.sendStatus(500);
+    }
   });
 };
