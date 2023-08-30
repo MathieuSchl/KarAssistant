@@ -1,5 +1,6 @@
-node_modules
-data
-logs
+node_modules/
+data/
+logs/
+coverage/
 .env
 runDev.sh

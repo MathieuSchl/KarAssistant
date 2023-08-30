@@ -2,7 +2,8 @@ const sha1 = require("crypto-js/sha1");
 const fs = require("fs");
 
 module.exports.generateToken = generateToken;
-function generateToken() {
+function generateToken(params) {
+  const forceToken = params ? params.token : false;
   const dateTime = `${new Date().getTime()} `;
 
   const array = dateTime.split("");
@@ -12,7 +13,7 @@ function generateToken() {
   }
 
   const dateTimeShuffled = array.join("");
-  const token = sha1(dateTimeShuffled).toString();
+  const token = forceToken ? forceToken : sha1(dateTimeShuffled).toString();
   if (fs.existsSync(__dirname + "/../data/sessions/" + token + ".json"))
     return generateToken();
   return token;

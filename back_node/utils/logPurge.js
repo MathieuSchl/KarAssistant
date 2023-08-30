@@ -9,6 +9,7 @@ module.exports.logPurge = (params) => {
     const mtime = stats.mtime;
     const differenceInTime = nowDate.getTime() - mtime.getTime();
     const differenceInDay = differenceInTime / (1000 * 3600 * 24);
-    if (differenceInDay > 7 || force) fs.unlinkSync(__dirname + "/../logs/" + logsFile);
+    if (differenceInDay > 7 || force)
+      fs.unlinkSync(__dirname + "/../logs/" + logsFile);
   }
 };
