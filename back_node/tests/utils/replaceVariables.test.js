@@ -1,5 +1,3 @@
-const fs = require("fs");
-
 describe("Replace variable", () => {
   test("Replace variables", async () => {
     //Execute
