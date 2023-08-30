@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-describe("sendApiRequest", () => {
+describe("Garbage session collector", () => {
   test("session valid", async () => {
     //Prepare
     fs.writeFileSync(
