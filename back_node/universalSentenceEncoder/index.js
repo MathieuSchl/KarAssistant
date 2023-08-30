@@ -216,8 +216,11 @@ module.exports.query = async ({ query, token, timeZone }) => {
         if (result.similarity < 0.1) {
           const skillResult = await require(
             __dirname + "/../skills/" + result.skill,
-          ).execute({ 
-            query, lang: result.lang, timeZone });
+          ).execute({
+            query,
+            lang: result.lang,
+            timeZone,
+          });
           result.result = skillResult.text;
           resData.data = skillResult.data;
           break;
@@ -230,8 +233,11 @@ module.exports.query = async ({ query, token, timeZone }) => {
   if (!result.result && result.similarity < 0.2) {
     const skillResult = await require(
       __dirname + "/../skills/" + result.skill,
-    ).execute({ 
-      query,lang: result.lang, timeZone });
+    ).execute({
+      query,
+      lang: result.lang,
+      timeZone,
+    });
     result.result = skillResult.text;
     resData.data = skillResult.data;
   } else if (!result.result) {

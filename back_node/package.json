@@ -1,6 +1,6 @@
 {
   "name": "karassistantback",
-  "version": "1.2.5",
+  "version": "1.2.5.1",
   "description": "Back end for karassistant",
   "main": "index.js",
   "scripts": {

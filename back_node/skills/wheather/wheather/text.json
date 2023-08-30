@@ -1,7 +1,10 @@
 {
   "phrases": {
-    "en": [],
-    "fr": ["quel temps fait il à paris"]
+    "en": [
+      "what's the weather like in paris",
+      "what is the weather like in paris"
+    ],
+    "fr": ["quel temps fait il à paris", "quel météo fait il à paris"]
   },
   "response": {
     "en": {
