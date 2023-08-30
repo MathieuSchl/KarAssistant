@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kar_assistant/assests/bottom_app_bar.dart';
+import 'package:kar_assistant/assets/bottom_app_bar.dart';
 import 'package:kar_assistant/screens/home_page/view/kara_talking.dart';
 import 'package:kar_assistant/screens/home_page/controller/kara_controller.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';

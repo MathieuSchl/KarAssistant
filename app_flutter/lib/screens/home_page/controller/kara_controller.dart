@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:kar_assistant/core/models/kara_response.dart';
 import 'package:kar_assistant/core/repository/kara_repo.dart';
 
@@ -13,7 +14,9 @@ final KaraRepo karaRepo = KaraRepo();
     };
     KaraResponse result;
     result = await karaRepo.heyKara(data);
-    print(result.toJson());
+    if (kDebugMode) {
+      print(result.toJson());
+    }
     karaLastResponse=result;
     return result;
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MyAppBarBottom extends StatelessWidget {
-  const MyAppBarBottom({
+  const MyAppBarBottom({super.key, 
     this.shape,
   });
   final NotchedShape? shape;

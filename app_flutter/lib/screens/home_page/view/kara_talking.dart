@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 import 'dart:math';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:kar_assistant/core/models/kara_response.dart';
-import 'package:kar_assistant/core/widgets/animation_widget/ripple_animation.dart';
+import 'package:kar_assistant/core/widgets/animation_widget/ripple_custom_animation.dart';
 import 'package:kar_assistant/screens/home_page/controller/kara_controller.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -28,7 +27,7 @@ class _KaraTalkingState extends State<KaraTalking> {
   bool _speechEnabled = false;
   String _lastWords = '';
   List<String> listResponse = [];
-  
+  GlobalKey<RippleCustomAnimationState> animationKey = GlobalKey<RippleCustomAnimationState>();
   late FlutterTts flutterTts;
   String? language;
   String? engine;
@@ -58,23 +57,36 @@ class _KaraTalkingState extends State<KaraTalking> {
 
   // ear Section
   void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize();
+    _speechEnabled = await _speechToText.initialize(
+      onError: (errorNotification) => animationKey.currentState!.stopAnimate(),
+      onStatus: (status) {
+        if(status == 'notListening'){
+          animationKey.currentState!.stopAnimate();
+        }
+      }
+    );
     setState(() {});
+  }
+  void _logEvent(String eventDescription) {
+  
+    var eventTime = DateTime.now().toIso8601String();
+    debugPrint('TEST$eventTime $eventDescription');
   }
 
   void _startListening() async {
+    animationKey.currentState!.startAnimate();
     await _speechToText.listen(
       onResult: _onSpeechResult,
       localeId: 'FR',
       listenMode: ListenMode.dictation,
+      cancelOnError: true
     );
     setState(() {});
   }
-
   void _stopListening() async {
+    animationKey.currentState!.stopAnimate();
     await _speechToText.stop();
   }
-
   /// This is the callback that the SpeechToText plugin calls when
   /// the platform returns recognized words.
   void _onSpeechResult(SpeechRecognitionResult result) {
@@ -82,13 +94,11 @@ class _KaraTalkingState extends State<KaraTalking> {
       _lastWords = result.recognizedWords;
     });
     if(result.finalResult==true){
+      animationKey.currentState!.stopAnimate();
       widget.karaController.askedKara(result.recognizedWords).then((KaraResponse response){
         setState(() {
           _speak(response.result);
           listResponse.add(response.result);
-          if(response.token!= null){
-            
-          }
         });
       });
     }
@@ -113,7 +123,9 @@ class _KaraTalkingState extends State<KaraTalking> {
 
     flutterTts.setStartHandler(() {
       setState(() {
-        print("Playing");
+        if (kDebugMode) {
+         
+        }
         ttsState = TtsState.playing;
       });
     });
@@ -121,14 +133,14 @@ class _KaraTalkingState extends State<KaraTalking> {
     if (isAndroid) {
       flutterTts.setInitHandler(() {
         setState(() {
-          print("TTS Initialized");
+          
         });
       });
     }
 
     flutterTts.setCompletionHandler(() {
       setState(() {
-        print("Complete");
+       
         ttsState = TtsState.stopped;
         if(widget.karaController.verifIsToken()){
           _startListening();
@@ -138,7 +150,7 @@ class _KaraTalkingState extends State<KaraTalking> {
 
     flutterTts.setErrorHandler((msg) {
       setState(() {
-        print("error: $msg");
+       
         ttsState = TtsState.stopped;
       });
     });
@@ -186,24 +198,28 @@ class _KaraTalkingState extends State<KaraTalking> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        //RipplesAnimation
-        IconButton(
-          color: Colors.red,
-          icon: Icon(
-            _speechToText.isListening
-            ? MdiIcons.microphoneSettings
-            : MdiIcons.microphone,
-            size: 50,
-          ), 
-          onPressed: () {
-            if(_speechToText.isListening){
-              _stopListening();
-            }else {
-              _startListening();
-            }
-            setState(() {
-            });
-          },
+        RippleCustomAnimation(
+          key: animationKey,
+          repeat: false,
+          ripplesCount: 7,
+          size: const Size(100, 100),
+          minRadius: 80,
+          color: Colors.black,
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            child:const CircleAvatar(
+              backgroundImage: AssetImage('image/kara_PP_circle.png'),
+            ),
+            onTap: () {
+              if(_speechToText.isListening){
+                _stopListening();
+              }else {
+                _startListening();
+              }
+              setState(() {
+              });
+            },
+          )
         ),
         Container(
           padding: const EdgeInsets.all(16),
@@ -234,3 +250,4 @@ class _KaraTalkingState extends State<KaraTalking> {
   }
 
 }
+

@@ -66,7 +66,6 @@ class HttpRepo implements HttpRepository {
   Future<http.Response> getRequestParams(String url, Map<String, dynamic> parameters) async {
     http.Response response;
     try {
-      print(parameters.toString());
       response = await http
           .get(getUri(url, parameters:parameters), headers: header)
           .timeout(
@@ -90,7 +89,6 @@ class HttpRepo implements HttpRepository {
     http.Response response;
 
     try {
-      print(Uri.encodeFull(jsonEncode(data)));
       response = await http
         .post(getUri(url), headers: header, body: Uri.encodeFull(jsonEncode(data)))
         .timeout(
