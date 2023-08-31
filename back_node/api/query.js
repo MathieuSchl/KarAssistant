@@ -60,9 +60,7 @@ module.exports.start = (app) => {
         timeZone: req.query.timeZone,
       });
       res.json(result);
-    } catch (error) {
-      console.log("ERROR: GET /api/heyKara");
-      console.log(error);
+    } catch {
       res.sendStatus(500);
     }
   });

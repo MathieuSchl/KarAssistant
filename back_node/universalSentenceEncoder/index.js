@@ -185,19 +185,25 @@ module.exports.query = async ({ query, token, timeZone }) => {
     fs.unlinkSync(__dirname + "/../data/sessions/" + token + ".json");
     const content = JSON.parse(dataRead);
 
-    const skillResult = await require(
-      __dirname + "/../skills/" + content.skill + "/session",
-    ).execute({
-      query,
-      timeZone,
-      lang: content.lang,
-      data: content.data,
-    });
-    if (skillResult != null) {
-      result.result = skillResult.text;
-      resData.data = skillResult.data;
-      resData.lang = skillResult.lang ? skillResult.lang : content.lang;
-      resData.skill = content.skill;
+    try {
+      const skillResult = await require(
+        __dirname + "/../skills/" + content.skill + "/session",
+      ).execute({
+        query,
+        timeZone,
+        lang: content.lang,
+        data: content.data,
+      });
+      if (skillResult != null) {
+        result.result = skillResult.text;
+        resData.data = skillResult.data;
+        resData.lang = skillResult.lang ? skillResult.lang : content.lang;
+        resData.skill = content.skill;
+      }
+    } catch (error) {
+      console.log("ERROR: skill " + result.skill);
+      console.log(error);
+      throw error;
     }
   }
 
@@ -214,16 +220,22 @@ module.exports.query = async ({ query, token, timeZone }) => {
         result.skill = vector.skill;
         //Execute skill if very close
         if (result.similarity < 0.1) {
-          const skillResult = await require(
-            __dirname + "/../skills/" + result.skill,
-          ).execute({
-            query,
-            lang: result.lang,
-            timeZone,
-          });
-          result.result = skillResult.text;
-          resData.data = skillResult.data;
-          break;
+          try {
+            const skillResult = await require(
+              __dirname + "/../skills/" + result.skill,
+            ).execute({
+              query,
+              lang: result.lang,
+              timeZone,
+            });
+            result.result = skillResult.text;
+            resData.data = skillResult.data;
+            break;
+          } catch (error) {
+            console.log("ERROR: skill " + result.skill);
+            console.log(error);
+            throw error;
+          }
         }
       }
     }
@@ -231,15 +243,21 @@ module.exports.query = async ({ query, token, timeZone }) => {
 
   //Exeption of the closest competence
   if (!result.result && result.similarity < 0.2) {
-    const skillResult = await require(
-      __dirname + "/../skills/" + result.skill,
-    ).execute({
-      query,
-      lang: result.lang,
-      timeZone,
-    });
-    result.result = skillResult.text;
-    resData.data = skillResult.data;
+    try {
+      const skillResult = await require(
+        __dirname + "/../skills/" + result.skill,
+      ).execute({
+        query,
+        lang: result.lang,
+        timeZone,
+      });
+      result.result = skillResult.text;
+      resData.data = skillResult.data;
+    } catch (error) {
+      console.log("ERROR: skill " + result.skill);
+      console.log(error);
+      throw error;
+    }
   } else if (!result.result) {
     //Save if it's close, but not too close
     //This is used for logs
