@@ -3,7 +3,9 @@ const fs = require("fs");
 describe("Make token", () => {
   test("Generate token", async () => {
     //Execute
-    const result = require("../../utils/makeToken").generateToken();
+    const result = require("../../utils/makeToken").generateToken({
+      type: "data/sessions",
+    });
 
     //Test
     expect(result != null).toBe(true);
@@ -18,7 +20,10 @@ describe("Make token", () => {
     );
 
     //Execute
-    const result = require("../../utils/makeToken").generateToken({ token });
+    const result = require("../../utils/makeToken").generateToken({
+      type: "data/sessions",
+      token,
+    });
 
     //Test
     expect(result != null).toBe(true);

@@ -170,21 +170,40 @@ module.exports.start = async () => {
   );
 };
 
-module.exports.query = async ({ query, token, timeZone }) => {
+module.exports.query = async ({ query, userToken, convToken, timeZone }) => {
   const embedding = await encodeSentence(query);
-  const result = { similarity: 1, bestPhrase: "" };
+  const userExist =
+    userToken &&
+    fs.existsSync(__dirname + "/../data/users/users/" + userToken + ".json");
+  const convExist =
+    convToken &&
+    fs.existsSync(__dirname + "/../data/sessions/" + convToken + ".json");
+  const result = { similarity: 1, bestPhrase: "", userExist };
   const resData = {};
 
-  //Used saved sessions
-  if (
-    token &&
-    fs.existsSync(__dirname + "/../data/sessions/" + token + ".json")
-  ) {
+  //Used saved users
+  if (userExist) {
     const dataRead = fs.readFileSync(
-      __dirname + "/../data/sessions/" + token + ".json",
+      __dirname + "/../data/users/users/" + userToken + ".json",
       "utf8",
     );
-    fs.unlinkSync(__dirname + "/../data/sessions/" + token + ".json");
+    const content = JSON.parse(dataRead);
+
+    if (!timeZone && content.timeZone) timeZone = content.timeZone;
+
+    content.lastRequestDate = new Date();
+    fs.writeFileSync(
+      __dirname + "/../data/users/users/" + userToken + ".json",
+      JSON.stringify(content),
+    );
+  }
+
+  //Used saved sessions
+  if (convExist) {
+    const dataRead = fs.readFileSync(
+      __dirname + "/../data/sessions/" + convToken + ".json",
+      "utf8",
+    );
     const content = JSON.parse(dataRead);
 
     try {
@@ -260,13 +279,16 @@ module.exports.query = async ({ query, token, timeZone }) => {
       console.log(error);
       throw null;
     }
-  } else if (!result.result) {
+  }
+  if (!result.result) {
     //Save if it's close, but not too close
     //This is used for logs
     if (result.similarity < 0.3) {
       saveQueryClose(result, query);
     }
     result.result = "Je n'ai pas compris ce que vous voulez dire";
+  } else if (convExist) {
+    fs.unlinkSync(__dirname + "/../data/sessions/" + convToken + ".json");
   }
 
   //Save data if Kara ask something to user
@@ -274,10 +296,12 @@ module.exports.query = async ({ query, token, timeZone }) => {
     if (!resData.lang) resData.lang = result.lang;
     if (!resData.skill) resData.skill = result.skill;
     resData.date = new Date();
-    const token = require("../utils/makeToken").generateToken();
-    result.token = token;
+    const convToken = require("../utils/makeToken").generateToken({
+      type: "data/sessions",
+    });
+    result.convToken = convToken;
     fs.writeFileSync(
-      __dirname + "/../data/sessions/" + token + ".json",
+      __dirname + "/../data/sessions/" + convToken + ".json",
       JSON.stringify(resData),
     );
   }

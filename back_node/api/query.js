@@ -13,9 +13,13 @@ const reIpAddress = new RegExp("(?:[0-9]{1,3}.){3}[0-9]{1,3}");
  *       description: "The question"
  *       required: true
  *       type: string
- *     - name: "token"
+ *     - name: "userToken"
  *       in: "query"
- *       description: "Token for response"
+ *       description: "User token"
+ *       type: string
+ *     - name: "convToken"
+ *       in: "query"
+ *       description: "Conversation token for response"
  *       type: string
  *     - name: "timeZone"
  *       in: "query"
@@ -32,7 +36,7 @@ const reIpAddress = new RegExp("(?:[0-9]{1,3}.){3}[0-9]{1,3}");
  *                 result:
  *                   type: string
  *                   description: Phrase from Kara
- *                 token:
+ *                 convToken:
  *                   type: string
  *                   description: Token given to aswer a question from Kara
  *                 lang:
@@ -49,7 +53,13 @@ const reIpAddress = new RegExp("(?:[0-9]{1,3}.){3}[0-9]{1,3}");
  *                   description: The sentence that comes closest
  *               example:
  *                 result: Bonjour je suis Kara
+ *                 convToken: 899b048af6c033e29682c4cdf30c0050d3590959
  *                 lang: fr
+ *                 skill: kara/greetings
+ *                 similarity: 0.212
+ *                 bestPhrase: Bonjour
+ *       500:
+ *         description: "Error in back"
  */
 
 module.exports.start = (app) => {
@@ -57,7 +67,8 @@ module.exports.start = (app) => {
     try {
       const result = await use.query({
         query: req.query.query.toLowerCase(),
-        token: req.query.token,
+        userToken: req.query.userToken,
+        convToken: req.query.convToken,
         timeZone: req.query.timeZone,
         ipAddress: req.socket.remoteAddress.match(reIpAddress)[0],
       });
