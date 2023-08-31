@@ -1,14 +1,14 @@
 const text = require("./text.json");
 module.exports.data = text;
 
-module.exports.execute = (data) => {
+module.exports.execute = ({ lang }) => {
   //Lang unknown
-  if (!text.response[data.lang]) return { text: text.error };
+  if (!text.response[lang]) return { text: text.error };
 
   const randomNumber = Math.floor(Math.random() * 100);
   const resData = { randomNumber };
   return {
-    text: text.response[data.lang].startGame,
+    text: text.response[lang].startGame,
     data: resData,
   };
 };

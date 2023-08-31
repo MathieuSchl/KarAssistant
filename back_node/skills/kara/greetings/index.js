@@ -1,11 +1,11 @@
 const text = require("./text.json");
 module.exports.data = text;
 
-module.exports.execute = (data) => {
+module.exports.execute = ({ lang }) => {
   //Lang unknown
-  if (!text.response[data.lang]) return { text: text.error };
+  if (!text.response[lang]) return { text: text.error };
 
-  const availableResults = text.response[data.lang].results;
+  const availableResults = text.response[lang].results;
   const result =
     availableResults[Math.floor(Math.random() * availableResults.length)];
 
