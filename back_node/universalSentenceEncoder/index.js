@@ -201,9 +201,9 @@ module.exports.query = async ({ query, token, timeZone }) => {
         resData.skill = content.skill;
       }
     } catch (error) {
-      console.log("ERROR: skill " + result.skill);
+      console.log("\x1b[31mERROR: skill " + result.skill + "\x1b[0m");
       console.log(error);
-      throw error;
+      throw null;
     }
   }
 
@@ -232,9 +232,9 @@ module.exports.query = async ({ query, token, timeZone }) => {
             resData.data = skillResult.data;
             break;
           } catch (error) {
-            console.log("ERROR: skill " + result.skill);
+            console.log("\x1b[31mERROR: skill " + result.skill + "\x1b[0m");
             console.log(error);
-            throw error;
+            throw null;
           }
         }
       }
@@ -254,9 +254,9 @@ module.exports.query = async ({ query, token, timeZone }) => {
       result.result = skillResult.text;
       resData.data = skillResult.data;
     } catch (error) {
-      console.log("ERROR: skill " + result.skill);
+      console.log("\x1b[31mERROR: skill " + result.skill + "\x1b[0m");
       console.log(error);
-      throw error;
+      throw null;
     }
   } else if (!result.result) {
     //Save if it's close, but not too close

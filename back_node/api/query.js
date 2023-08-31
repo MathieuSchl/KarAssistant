@@ -1,4 +1,5 @@
 const use = require("../universalSentenceEncoder/index");
+const reIpAddress = new RegExp("(?:[0-9]{1,3}.){3}[0-9]{1,3}");
 
 /**
  * @swagger
@@ -58,9 +59,12 @@ module.exports.start = (app) => {
         query: req.query.query.toLowerCase(),
         token: req.query.token,
         timeZone: req.query.timeZone,
+        ipAddress: req.socket.remoteAddress.match(reIpAddress)[0],
       });
       res.json(result);
-    } catch {
+    } catch (e) {
+      if (e) console.log(e);
+      console.log();
       res.sendStatus(500);
     }
   });
