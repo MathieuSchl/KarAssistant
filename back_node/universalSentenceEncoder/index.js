@@ -141,6 +141,8 @@ module.exports.start = async () => {
     const values =
       vectorSaved[vectors[index].phrase] != null
         ? vectorSaved[vectors[index].phrase]
+        : vectorToFile[vectors[index].phrase]
+        ? vectorToFile[vectors[index].phrase]
         : await encodeSentence(vectors[index].phrase);
     const vector = createVector(values);
     vectors[index].embedding = vector;
