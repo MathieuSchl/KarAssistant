@@ -9,23 +9,22 @@ class MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.center,
-        child: Container(
-          decoration: ShapeDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            shape: MessageBorder(
-            ),
-          ),
-          child: Padding(
-            padding:const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
-            child:Text(
-               msg,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 15.0,
-              ),
+      child: Container(
+        decoration: ShapeDecoration(
+          color: Theme.of(context).colorScheme.primary,
+          shape: MessageBorder(),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          child: Text(
+            msg,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 15.0,
             ),
           ),
         ),
+      ),
     );
   }
 }

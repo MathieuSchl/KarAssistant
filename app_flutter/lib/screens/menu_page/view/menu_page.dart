@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class MenuPage extends StatefulWidget {
   final BottomNavigationBarItem item;
-  const MenuPage(this.item,{super.key});
+  const MenuPage(this.item, {super.key});
 
   @override
   State<MenuPage> createState() => _MenuPageState();

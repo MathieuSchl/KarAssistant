@@ -6,13 +6,25 @@ import 'package:kar_assistant/services/http_repository.dart';
 
 class HttpRepo implements HttpRepository {
   int timeOutSeconds = 20;
-  String responseTimeOut = jsonEncode({'type': 'error', 'status': 408, 'message': 'Le serveur a mis trop de temps à répondre'});
-  String responseOtherError = jsonEncode({'type': 'error', 'status': 404, 'message': 'Le serveur semble ne pas être accessible'});
+  String responseTimeOut = jsonEncode({
+    'type': 'error',
+    'status': 408,
+    'message': 'Le serveur a mis trop de temps à répondre'
+  });
+  String responseOtherError = jsonEncode({
+    'type': 'error',
+    'status': 404,
+    'message': 'Le serveur semble ne pas être accessible'
+  });
   Map<String, String>? header;
   String baseUrl = globals.envBaseUrl!;
   HttpRepo() {
     if (globals.tokenApi != null) {
-      header = {'Content-Type': 'application/json; charset=UTF-8', 'Accept': 'application/json', 'Authorization': 'Bearer ${globals.tokenApi}'};
+      header = {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${globals.tokenApi}'
+      };
     } else {
       header = {
         'Accept': 'application/json',
@@ -33,7 +45,7 @@ class HttpRepo implements HttpRepository {
     } else {
       chemin = "${listUrl.join("/")}/$url";
     }
-    if (baseUrl.contains("http://")) {   
+    if (baseUrl.contains("http://")) {
       return Uri.http(base, chemin, parameters);
     } else {
       return Uri.https(base, chemin, parameters);
@@ -50,7 +62,8 @@ class HttpRepo implements HttpRepository {
             Duration(seconds: timeOutSeconds),
             onTimeout: () => http.Response(responseTimeOut, 408),
           )
-          .onError((error, stackTrace) => http.Response(responseOtherError, 503));
+          .onError(
+              (error, stackTrace) => http.Response(responseOtherError, 503));
 
       if (response.statusCode < 200 || response.statusCode > 299) {
         final error = json.decode(response.body);
@@ -63,16 +76,18 @@ class HttpRepo implements HttpRepository {
   }
 
   @override
-  Future<http.Response> getRequestParams(String url, Map<String, dynamic> parameters) async {
+  Future<http.Response> getRequestParams(
+      String url, Map<String, dynamic> parameters) async {
     http.Response response;
     try {
       response = await http
-          .get(getUri(url, parameters:parameters), headers: header)
+          .get(getUri(url, parameters: parameters), headers: header)
           .timeout(
             Duration(seconds: timeOutSeconds),
             onTimeout: () => http.Response(responseTimeOut, 408),
           )
-          .onError((error, stackTrace) => http.Response(responseOtherError, 503));
+          .onError(
+              (error, stackTrace) => http.Response(responseOtherError, 503));
 
       if (response.statusCode < 200 || response.statusCode > 299) {
         final error = json.decode(response.body);
@@ -85,17 +100,20 @@ class HttpRepo implements HttpRepository {
   }
 
   @override
-  Future<http.Response> postRequest(String url, Map<String, dynamic> data) async {
+  Future<http.Response> postRequest(
+      String url, Map<String, dynamic> data) async {
     http.Response response;
 
     try {
       response = await http
-        .post(getUri(url), headers: header, body: Uri.encodeFull(jsonEncode(data)))
-        .timeout(
-          Duration(seconds: timeOutSeconds),
-          onTimeout: () => http.Response(responseTimeOut, 408),
-        )
-        .onError((error, stackTrace) => http.Response(responseOtherError, 503));
+          .post(getUri(url),
+              headers: header, body: Uri.encodeFull(jsonEncode(data)))
+          .timeout(
+            Duration(seconds: timeOutSeconds),
+            onTimeout: () => http.Response(responseTimeOut, 408),
+          )
+          .onError(
+              (error, stackTrace) => http.Response(responseOtherError, 503));
 
       if (response.statusCode < 200 || response.statusCode > 299) {
         final error = json.decode(response.body);

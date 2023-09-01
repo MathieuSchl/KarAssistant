@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ParametersPage extends StatefulWidget {
   final BottomNavigationBarItem item;
-  const ParametersPage(this.item,{super.key});
+  const ParametersPage(this.item, {super.key});
 
   @override
   State<ParametersPage> createState() => _ParametersPageState();

@@ -1,4 +1,5 @@
 import 'package:http/http.dart' as http;
+
 abstract class HttpRepository {
   Future<http.Response> getRequest(String url);
 
@@ -7,5 +8,4 @@ abstract class HttpRepository {
   Future<http.Response> getRequestParams(String url, Map<String, dynamic> data);
 
   Future<http.Response> postRequest(String url, Map<String, dynamic> data);
-
 }

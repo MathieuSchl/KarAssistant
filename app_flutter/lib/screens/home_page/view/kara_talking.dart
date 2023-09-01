@@ -16,7 +16,8 @@ class KaraTalking extends StatefulWidget {
   final KaraController karaController;
   final int currentIndexPage;
   final Function() updateParents;
-  const KaraTalking(this.karaController,{required this.updateParents,required this.currentIndexPage, super.key});
+  const KaraTalking(this.karaController,
+      {required this.updateParents, required this.currentIndexPage, super.key});
 
   @override
   _KaraTalkingState createState() => _KaraTalkingState();
@@ -28,7 +29,8 @@ class _KaraTalkingState extends State<KaraTalking> {
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
   bool showKaraAnswer = false;
-  GlobalKey<RippleCustomAnimationState> animationKey = GlobalKey<RippleCustomAnimationState>();
+  GlobalKey<RippleCustomAnimationState> animationKey =
+      GlobalKey<RippleCustomAnimationState>();
   late FlutterTts flutterTts;
   String? language;
   String? engine;
@@ -36,7 +38,7 @@ class _KaraTalkingState extends State<KaraTalking> {
   double pitch = 1.0;
   double rate = 0.6;
   bool isCurrentLanguageInstalled = false;
-  
+
   TtsState ttsState = TtsState.stopped;
 
   get isPlaying => ttsState == TtsState.playing;
@@ -59,31 +61,32 @@ class _KaraTalkingState extends State<KaraTalking> {
   // ear Section
   void _initSpeech() async {
     _speechEnabled = await _speechToText.initialize(
-      onError: (errorNotification) => animationKey.currentState!.stopAnimate(),
-      onStatus: (status) {
-        if(status == 'notListening'){
-          animationKey.currentState!.stopAnimate();
-        }
-      }
-    );
+        onError: (errorNotification) =>
+            animationKey.currentState!.stopAnimate(),
+        onStatus: (status) {
+          if (status == 'notListening') {
+            animationKey.currentState!.stopAnimate();
+          }
+        });
     setState(() {});
   }
 
   void _startListening() async {
     animationKey.currentState!.startAnimate();
     await _speechToText.listen(
-      onResult: _onSpeechResult,
-      localeId: 'FR',
-      listenMode: ListenMode.dictation,
-      cancelOnError: true
-    );
+        onResult: _onSpeechResult,
+        localeId: 'FR',
+        listenMode: ListenMode.dictation,
+        cancelOnError: true);
     setState(() {});
   }
+
   void _stopListening() async {
     widget.karaController.listResponse.removeLast();
     animationKey.currentState!.stopAnimate();
     await _speechToText.stop();
   }
+
   /// This is the callback that the SpeechToText plugin calls when
   /// the platform returns recognized words.
   void _onSpeechResult(SpeechRecognitionResult result) {
@@ -91,36 +94,41 @@ class _KaraTalkingState extends State<KaraTalking> {
       widget.karaController.lastWords = result.recognizedWords;
       widget.updateParents();
     });
-    if(result.finalResult==true){
-      MessageConversation saidUSer = MessageConversation(type: TypeConversation.user, text: result.recognizedWords, urlImage: '');
+    if (result.finalResult == true) {
+      MessageConversation saidUSer = MessageConversation(
+          type: TypeConversation.user,
+          text: result.recognizedWords,
+          urlImage: '');
       widget.karaController.listResponse.insertAll(0, [saidUSer]);
       animationKey.currentState!.stopAnimate();
       widget.updateParents();
-      widget.karaController.askedKara(result.recognizedWords).then((KaraResponse response){
+      widget.karaController
+          .askedKara(result.recognizedWords)
+          .then((KaraResponse response) {
         setState(() {
-          showKaraAnswer=true;
-          MessageConversation saidKara = MessageConversation(type: TypeConversation.kara, text: response.result, urlImage: '');
+          showKaraAnswer = true;
+          MessageConversation saidKara = MessageConversation(
+              type: TypeConversation.kara, text: response.result, urlImage: '');
           widget.karaController.listResponse.insertAll(0, [saidKara]);
           widget.updateParents();
-         
+
           _speak(response.result).then((value) => {
-            Future.delayed(
-              const Duration(seconds: 4),
-              () {
-                if (mounted) {
-                  setState(() {
-                    showKaraAnswer= false;
-                  });
-                }
-              },
-            )
-          });
+                Future.delayed(
+                  const Duration(seconds: 4),
+                  () {
+                    if (mounted) {
+                      setState(() {
+                        showKaraAnswer = false;
+                      });
+                    }
+                  },
+                )
+              });
         });
-       
       });
     }
   }
-  
+
   //_____________________________________//
   //talk Section
   initTts() {
@@ -129,37 +137,36 @@ class _KaraTalkingState extends State<KaraTalking> {
     _setAwaitOptions();
 
     if (isAndroid) {
-      _getDefaultEngine().then((defaultEngine) {
-        flutterTts.setEngine(defaultEngine);
-      },);
+      _getDefaultEngine().then(
+        (defaultEngine) {
+          flutterTts.setEngine(defaultEngine);
+        },
+      );
 
-      _getDefaultVoice().then((defaultLanguage) {
-        flutterTts.setVoice(defaultLanguage);
-      },);
+      _getDefaultVoice().then(
+        (defaultLanguage) {
+          flutterTts.setVoice(defaultLanguage);
+        },
+      );
     }
 
     flutterTts.setStartHandler(() {
       setState(() {
-        if (kDebugMode) {
-         
-        }
+        if (kDebugMode) {}
         ttsState = TtsState.playing;
       });
     });
 
     if (isAndroid) {
       flutterTts.setInitHandler(() {
-        setState(() {
-          
-        });
+        setState(() {});
       });
     }
 
     flutterTts.setCompletionHandler(() {
       setState(() {
-       
         ttsState = TtsState.stopped;
-        if(widget.karaController.verifIsToken()){
+        if (widget.karaController.verifIsToken()) {
           _startListening();
         }
       });
@@ -167,7 +174,6 @@ class _KaraTalkingState extends State<KaraTalking> {
 
     flutterTts.setErrorHandler((msg) {
       setState(() {
-       
         ttsState = TtsState.stopped;
       });
     });
@@ -182,7 +188,7 @@ class _KaraTalkingState extends State<KaraTalking> {
 
   Future<dynamic> _getDefaultVoice() async {
     Map<String, String>? voice = await flutterTts.getDefaultVoice;
-    if (voice != null){
+    if (voice != null) {
       return voice;
     }
   }
@@ -216,39 +222,36 @@ class _KaraTalkingState extends State<KaraTalking> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         showKaraAnswer && widget.currentIndexPage != 2
-        ? MessageBubble(
-            msg: widget.karaController.listResponse[0].text,
-          )
-        : Container(),
+            ? MessageBubble(
+                msg: widget.karaController.listResponse[0].text,
+              )
+            : Container(),
         RippleCustomAnimation(
-          key: animationKey,
-          ripplesCount: 7,
-          size: const Size(100, 100),
-          minRadius: 80,
-          color: Theme.of(context).colorScheme.primary,
-          child: Container(
-            decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, shape: BoxShape.circle),
-            child:InkWell(
-              child: const CircleAvatar(
-                backgroundColor: Colors.white,
-                backgroundImage: AssetImage('image/kara_PP_circle.png'),
-                maxRadius: 55,
-              ),
-              onTapDown: (TapDownDetails details) {
-                if(_speechToText.isListening){
-                  _stopListening();
-                }else {
-                  _startListening();
-                }
-                setState(() {
-                });
-              }
-            ),
-          )
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 16)
-        )
+            key: animationKey,
+            ripplesCount: 7,
+            size: const Size(100, 100),
+            minRadius: 80,
+            color: Theme.of(context).colorScheme.primary,
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  shape: BoxShape.circle),
+              child: InkWell(
+                  child: const CircleAvatar(
+                    backgroundColor: Colors.white,
+                    backgroundImage: AssetImage('image/kara_PP_circle.png'),
+                    maxRadius: 55,
+                  ),
+                  onTapDown: (TapDownDetails details) {
+                    if (_speechToText.isListening) {
+                      _stopListening();
+                    } else {
+                      _startListening();
+                    }
+                    setState(() {});
+                  }),
+            )),
+        const Padding(padding: EdgeInsets.symmetric(vertical: 16))
         // Container(
         //   padding: const EdgeInsets.all(16),
         //   child: Text(
@@ -262,6 +265,4 @@ class _KaraTalkingState extends State<KaraTalking> {
       ],
     );
   }
-
 }
-

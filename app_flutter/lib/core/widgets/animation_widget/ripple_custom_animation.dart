@@ -7,9 +7,9 @@ class RippleCustomAnimation extends StatefulWidget {
     required this.child,
     required this.size,
     required this.minRadius,
-    this.color= Colors.teal,
-    this.duration=const Duration(milliseconds: 5000),
-    this.ripplesCount=60,
+    this.color = Colors.teal,
+    this.duration = const Duration(milliseconds: 5000),
+    this.ripplesCount = 60,
   }) : super(key: key);
 
   final Widget child;
@@ -23,17 +23,18 @@ class RippleCustomAnimation extends StatefulWidget {
   State<RippleCustomAnimation> createState() => RippleCustomAnimationState();
 }
 
-class RippleCustomAnimationState extends State<RippleCustomAnimation> with TickerProviderStateMixin {
-  Widget get child=>widget.child;
-  double get radius=>widget.minRadius;
-  Duration get duration =>widget.duration;
-  Color get color=> widget.color;
-  int get rippleCount=> widget.ripplesCount;
-  AnimationController ? animationController;
+class RippleCustomAnimationState extends State<RippleCustomAnimation>
+    with TickerProviderStateMixin {
+  Widget get child => widget.child;
+  double get radius => widget.minRadius;
+  Duration get duration => widget.duration;
+  Color get color => widget.color;
+  int get rippleCount => widget.ripplesCount;
+  AnimationController? animationController;
 
- @override
+  @override
   void initState() {
-    animationController=AnimationController(vsync: this, duration:duration);
+    animationController = AnimationController(vsync: this, duration: duration);
     super.initState();
   }
 
@@ -43,29 +44,26 @@ class RippleCustomAnimationState extends State<RippleCustomAnimation> with Ticke
     super.dispose();
   }
 
-  void startAnimate(){
+  void startAnimate() {
     animationController!.repeat();
   }
 
-  void stopAnimate(){
+  void stopAnimate() {
     animationController!.reset();
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: widget.size.width,
-      height: widget.size.height,
-      child: CustomPaint(
-        painter: AnimatedCircle(
-            animationController,
-            minRadius: radius,
-            wavesCount: rippleCount +2,
-            color: color,
-            key: UniqueKey()
-        ),
-        child: child,
-      )
-    );
+        width: widget.size.width,
+        height: widget.size.height,
+        child: CustomPaint(
+          painter: AnimatedCircle(animationController,
+              minRadius: radius,
+              wavesCount: rippleCount + 2,
+              color: color,
+              key: UniqueKey()),
+          child: child,
+        ));
   }
 }

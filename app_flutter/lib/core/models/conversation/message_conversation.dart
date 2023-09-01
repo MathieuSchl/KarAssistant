@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'message_conversation.g.dart';
 
-enum TypeConversation{
+enum TypeConversation {
   kara,
   user,
   recording,
@@ -10,18 +10,19 @@ enum TypeConversation{
 
 @JsonSerializable()
 class MessageConversation {
+  MessageConversation(
+      {required this.type, required this.text, required this.urlImage});
 
-  MessageConversation({required this.type, required this.text, required this.urlImage});
-
-  @JsonKey(name:"TYPE")
+  @JsonKey(name: "TYPE")
   TypeConversation type;
 
-  @JsonKey(name:"TEXT")
+  @JsonKey(name: "TEXT")
   String text;
 
-  @JsonKey(name:"IMAGESRC")
+  @JsonKey(name: "IMAGESRC")
   String urlImage;
 
-  factory MessageConversation.fromJson(Map<String, dynamic> json) => _$MessageConversationFromJson(json);
+  factory MessageConversation.fromJson(Map<String, dynamic> json) =>
+      _$MessageConversationFromJson(json);
   Map<String, dynamic> toJson() => _$MessageConversationToJson(this);
 }

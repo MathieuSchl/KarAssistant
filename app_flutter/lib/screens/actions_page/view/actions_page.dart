@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ActionsPage extends StatefulWidget {
- final BottomNavigationBarItem item;
-  const ActionsPage(this.item,{super.key});
+  final BottomNavigationBarItem item;
+  const ActionsPage(this.item, {super.key});
 
   @override
   State<ActionsPage> createState() => _ActionsPageState();

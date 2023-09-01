@@ -1,4 +1,3 @@
-
 abstract class KaraRepository {
-  Future heyKara(Map<String, String> data );
+  Future heyKara(Map<String, String> data);
 }
