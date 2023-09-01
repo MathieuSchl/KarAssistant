@@ -24,40 +24,39 @@ class _HystoryPageState extends State<HystoryPage> {
     final colorScheme = Theme.of(context).colorScheme;
     return Center(
        child: ListView.builder(
-          itemCount: listMessages.length,
-          controller: widget.karaController.scrollControllerHistory,
-          shrinkWrap: true,
-          padding: const EdgeInsets.only(top: 10,bottom: 30),
-          itemBuilder: (context, index){
-            return Container(
-              padding: EdgeInsets.only(left: listMessages[index].type == TypeConversation.kara ? 14:70,right: listMessages[index].type == TypeConversation.kara ? 70:14,top: 10,bottom: 10),
-              child: Align(
-                alignment: (listMessages[index].type == TypeConversation.kara ?Alignment.topLeft:Alignment.topRight),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: (listMessages[index].type == TypeConversation.kara ?colorScheme.primary:Colors.blue[200]),
-                  ),
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Flexible( 
-                        child:Text(listMessages[index].text, style: TextStyle(fontSize: 15, color: listMessages[index].type == TypeConversation.kara ? Colors.white:null),),
-                      ),
-                      listMessages[index].type == TypeConversation.recording 
-                      ? SpinKitWave(
-                        color: Colors.white,
-                        size: 10,)
-                      : Container()
-                    ]
-                  )
+        reverse: true,
+        itemCount: listMessages.length,
+        shrinkWrap: true,
+        padding: const EdgeInsets.only(top: 10,bottom: 30),
+        itemBuilder: (context, index){
+          return Container(
+            padding: EdgeInsets.only(left: listMessages[index].type == TypeConversation.kara ? 14:70,right: listMessages[index].type == TypeConversation.kara ? 70:14,top: 10,bottom: 10),
+            child: Align(
+              alignment: (listMessages[index].type == TypeConversation.kara ?Alignment.topLeft:Alignment.topRight),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: (listMessages[index].type == TypeConversation.kara ?colorScheme.primary:Colors.blue[200]),
                 ),
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible( 
+                      child:Text(listMessages[index].text, style: TextStyle(fontSize: 15, color: listMessages[index].type == TypeConversation.kara ? Colors.white:null),),
+                    ),
+                    listMessages[index].type == TypeConversation.recording 
+                    ? SpinKitWave(
+                      color: Colors.white,
+                      size: 10,)
+                    : Container()
+                  ]
+                )
               ),
-            );
-          },
-        ),
-
+            ),
+          );
+        },
+      ),
     );
   }
 }

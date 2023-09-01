@@ -10,17 +10,7 @@ final KaraRepo karaRepo = KaraRepo();
   KaraResponse? karaLastResponse;
   String lastWords = '';
   List<MessageConversation> listResponse = [];
-  final ScrollController scrollControllerHistory = ScrollController();
-  
-  void scrollDown(ScrollController controller) {
-    // controller.animateTo(
-    //   controller.position.maxScrollExtent,
-    //   duration: const Duration(milliseconds: 500),
-    //   curve: Curves.fastOutSlowIn,
-    // );
-    controller.jumpTo(controller.position.maxScrollExtent);
-  }
-  
+
   Future<KaraResponse> askedKara(String text, ) async {
     Map<String, String> data = {
       'query': text,

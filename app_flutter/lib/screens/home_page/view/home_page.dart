@@ -29,7 +29,6 @@ class _HomePageState extends State<HomePage> with RestorationMixin {
 
   refresh() {
     setState(() {
-      karaController.scrollDown(karaController.scrollControllerHistory);
     });
   }
 

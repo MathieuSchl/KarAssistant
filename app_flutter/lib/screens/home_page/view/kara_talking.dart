@@ -93,14 +93,14 @@ class _KaraTalkingState extends State<KaraTalking> {
     });
     if(result.finalResult==true){
       MessageConversation saidUSer = MessageConversation(type: TypeConversation.user, text: result.recognizedWords, urlImage: '');
-      widget.karaController.listResponse.add(saidUSer);
+      widget.karaController.listResponse.insertAll(0, [saidUSer]);
       animationKey.currentState!.stopAnimate();
       widget.updateParents();
       widget.karaController.askedKara(result.recognizedWords).then((KaraResponse response){
         setState(() {
           showKaraAnswer=true;
           MessageConversation saidKara = MessageConversation(type: TypeConversation.kara, text: response.result, urlImage: '');
-          widget.karaController.listResponse.add(saidKara);
+          widget.karaController.listResponse.insertAll(0, [saidKara]);
           widget.updateParents();
          
           _speak(response.result).then((value) => {
@@ -217,7 +217,7 @@ class _KaraTalkingState extends State<KaraTalking> {
       children: [
         showKaraAnswer && widget.currentIndexPage != 2
         ? MessageBubble(
-            msg: widget.karaController.listResponse[widget.karaController.listResponse.length-1].text,
+            msg: widget.karaController.listResponse[0].text,
           )
         : Container(),
         RippleCustomAnimation(
