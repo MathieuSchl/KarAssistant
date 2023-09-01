@@ -3,10 +3,17 @@ const reIpAddress = new RegExp("(?:[0-9]{1,3}.){3}[0-9]{1,3}");
 
 /**
  * @swagger
+ * tags:
+ *   name: Kara
+ *   description: My name is car
+ */
+
+/**
+ * @swagger
  * /api/heyKara/:
  *   get:
  *     summary: Ask something to Kara
- *     tags: []
+ *     tags: [Kara]
  *     parameters:
  *     - name: "query"
  *       in: "query"

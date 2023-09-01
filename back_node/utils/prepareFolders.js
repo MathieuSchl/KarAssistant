@@ -13,6 +13,8 @@ module.exports.prepareFolders = () => {
     fs.mkdirSync(__dirname + "/../data/users");
   if (!fs.existsSync(__dirname + "/../data/users/users"))
     fs.mkdirSync(__dirname + "/../data/users/users");
+  if (!fs.existsSync(__dirname + "/../data/users/clients"))
+    fs.mkdirSync(__dirname + "/../data/users/clients");
   if (!fs.existsSync(__dirname + "/../data/users/links"))
     fs.mkdirSync(__dirname + "/../data/users/links");
 
