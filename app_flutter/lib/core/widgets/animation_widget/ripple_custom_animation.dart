@@ -8,20 +8,16 @@ class RippleCustomAnimation extends StatefulWidget {
     required this.size,
     required this.minRadius,
     this.color= Colors.teal,
-    this.repeat=false,
-    this.delay=const Duration(milliseconds: 0),
-    this.duration=const Duration(milliseconds: 2300),
+    this.duration=const Duration(milliseconds: 5000),
     this.ripplesCount=60,
   }) : super(key: key);
 
   final Widget child;
   final Size size;
-  final Duration delay;
   final double minRadius;
   final Color color;
   final int ripplesCount;
   final Duration duration;
-  final bool repeat;
 
   @override
   State<RippleCustomAnimation> createState() => RippleCustomAnimationState();
@@ -30,9 +26,7 @@ class RippleCustomAnimation extends StatefulWidget {
 class RippleCustomAnimationState extends State<RippleCustomAnimation> with TickerProviderStateMixin {
   Widget get child=>widget.child;
   double get radius=>widget.minRadius;
-  Duration get delay =>widget.delay;
   Duration get duration =>widget.duration;
-  bool get repeat =>widget.repeat;
   Color get color=> widget.color;
   int get rippleCount=> widget.ripplesCount;
   AnimationController ? animationController;

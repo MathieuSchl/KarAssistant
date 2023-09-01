@@ -18,10 +18,9 @@ class AnimatedCircle  extends CustomPainter{
   @override
   void paint(Canvas canvas, Size size) {
     final Rect rect=Rect.fromLTRB(0.0, 0.0, size.width, size.height);
-    for(int wave = 0; wave <= wavesCount; wave++){
+    for(int wave = 1; wave <= wavesCount; wave++){
       circle(canvas: canvas, rect: rect, wave: wave, value: animation!.value, length: wavesCount, minRadius:minRadius);
     }
-
   }
 
   void circle({

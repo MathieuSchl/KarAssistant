@@ -12,10 +12,10 @@ class KaraResponse {
   late String result;
 
   @JsonKey(name:"lang")
-  late String language;
+  late String? language;
 
   @JsonKey(name:"skill")
-  late String skill;
+  late String? skill;
 
   @JsonKey(name:"similarity")
   late double similarity;
@@ -23,8 +23,11 @@ class KaraResponse {
   @JsonKey(name:"bestPhrase")
   late String bestPhrase;
 
-  @JsonKey(name:"token")
-  late String? token;
+  @JsonKey(name:"convToken")
+  late String? convToken;
+
+  @JsonKey(name:"userToken")
+  late String? userToken;
 
 
   factory KaraResponse.fromJson(Map<String, dynamic> json) => _$KaraResponseFromJson(json);

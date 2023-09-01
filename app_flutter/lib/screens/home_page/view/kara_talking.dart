@@ -1,19 +1,22 @@
 import 'dart:async';
 import 'dart:io' show Platform;
-import 'dart:math';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:kar_assistant/core/models/conversation/message_conversation.dart';
 import 'package:kar_assistant/core/models/kara_response.dart';
 import 'package:kar_assistant/core/widgets/animation_widget/ripple_custom_animation.dart';
+import 'package:kar_assistant/core/widgets/border/message_bubble.dart';
 import 'package:kar_assistant/screens/home_page/controller/kara_controller.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 class KaraTalking extends StatefulWidget {
-  final KaraController karaController ; 
-  const KaraTalking(this.karaController, {super.key});
+  final KaraController karaController;
+  final int currentIndexPage;
+  final Function() updateParents;
+  const KaraTalking(this.karaController,{required this.updateParents,required this.currentIndexPage, super.key});
 
   @override
   _KaraTalkingState createState() => _KaraTalkingState();
@@ -22,11 +25,9 @@ class KaraTalking extends StatefulWidget {
 enum TtsState { playing, stopped }
 
 class _KaraTalkingState extends State<KaraTalking> {
-
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
-  String _lastWords = '';
-  List<String> listResponse = [];
+  bool showKaraAnswer = false;
   GlobalKey<RippleCustomAnimationState> animationKey = GlobalKey<RippleCustomAnimationState>();
   late FlutterTts flutterTts;
   String? language;
@@ -67,11 +68,6 @@ class _KaraTalkingState extends State<KaraTalking> {
     );
     setState(() {});
   }
-  void _logEvent(String eventDescription) {
-  
-    var eventTime = DateTime.now().toIso8601String();
-    debugPrint('TEST$eventTime $eventDescription');
-  }
 
   void _startListening() async {
     animationKey.currentState!.startAnimate();
@@ -84,6 +80,7 @@ class _KaraTalkingState extends State<KaraTalking> {
     setState(() {});
   }
   void _stopListening() async {
+    widget.karaController.listResponse.removeLast();
     animationKey.currentState!.stopAnimate();
     await _speechToText.stop();
   }
@@ -91,15 +88,35 @@ class _KaraTalkingState extends State<KaraTalking> {
   /// the platform returns recognized words.
   void _onSpeechResult(SpeechRecognitionResult result) {
     setState(() {
-      _lastWords = result.recognizedWords;
+      widget.karaController.lastWords = result.recognizedWords;
+      widget.updateParents();
     });
     if(result.finalResult==true){
+      MessageConversation saidUSer = MessageConversation(type: TypeConversation.user, text: result.recognizedWords, urlImage: '');
+      widget.karaController.listResponse.add(saidUSer);
       animationKey.currentState!.stopAnimate();
+      widget.updateParents();
       widget.karaController.askedKara(result.recognizedWords).then((KaraResponse response){
         setState(() {
-          _speak(response.result);
-          listResponse.add(response.result);
+          showKaraAnswer=true;
+          MessageConversation saidKara = MessageConversation(type: TypeConversation.kara, text: response.result, urlImage: '');
+          widget.karaController.listResponse.add(saidKara);
+          widget.updateParents();
+         
+          _speak(response.result).then((value) => {
+            Future.delayed(
+              const Duration(seconds: 4),
+              () {
+                if (mounted) {
+                  setState(() {
+                    showKaraAnswer= false;
+                  });
+                }
+              },
+            )
+          });
         });
+       
       });
     }
   }
@@ -195,56 +212,53 @@ class _KaraTalkingState extends State<KaraTalking> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        showKaraAnswer && widget.currentIndexPage != 2
+        ? MessageBubble(
+            msg: widget.karaController.listResponse[widget.karaController.listResponse.length-1].text,
+          )
+        : Container(),
         RippleCustomAnimation(
           key: animationKey,
-          repeat: false,
           ripplesCount: 7,
           size: const Size(100, 100),
           minRadius: 80,
-          color: Colors.black,
-          child: InkWell(
-            customBorder: const CircleBorder(),
-            child:const CircleAvatar(
-              backgroundImage: AssetImage('image/kara_PP_circle.png'),
-            ),
-            onTap: () {
-              if(_speechToText.isListening){
-                _stopListening();
-              }else {
-                _startListening();
+          color: Theme.of(context).colorScheme.primary,
+          child: Container(
+            decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, shape: BoxShape.circle),
+            child:InkWell(
+              child: const CircleAvatar(
+                backgroundColor: Colors.white,
+                backgroundImage: AssetImage('image/kara_PP_circle.png'),
+                maxRadius: 55,
+              ),
+              onTapDown: (TapDownDetails details) {
+                if(_speechToText.isListening){
+                  _stopListening();
+                }else {
+                  _startListening();
+                }
+                setState(() {
+                });
               }
-              setState(() {
-              });
-            },
+            ),
           )
         ),
-        Container(
-          padding: const EdgeInsets.all(16),
-          child: Text(
-            _speechToText.isListening
-              ? _lastWords
-              : _speechEnabled
-                  ? _lastWords.isEmpty 
-                    ? 'Tap the microphone to start listening...'
-                    : _lastWords
-                  : 'Speech not available',
-          ),
-        ),
-        ListView.builder(
-          reverse: true,
-          shrinkWrap: true,
-          itemCount: min(listResponse.length, 3),
-          itemBuilder: (context, index) {
-            if(listResponse.length >3){
-              return Text(listResponse[listResponse.length-(3-index)]);
-          }else {
-            return Text(listResponse[index]);
-          }
-          },
-        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 16)
+        )
+        // Container(
+        //   padding: const EdgeInsets.all(16),
+        //   child: Text(
+        //     _speechToText.isListening
+        //       ? _lastWords
+        //       : _speechEnabled
+        //           ? ''
+        //           : 'Impossible de discuter avec kara',
+        //   ),
+        // ),
       ],
     );
   }
