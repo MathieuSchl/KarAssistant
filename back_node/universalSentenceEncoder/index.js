@@ -295,7 +295,7 @@ module.exports.query = async ({ query, userToken, convToken, timeZone }) => {
   if (resData.data) {
     if (!resData.lang) resData.lang = result.lang;
     if (!resData.skill) resData.skill = result.skill;
-    resData.date = new Date();
+    resData.creationDate = new Date();
     const convToken = require("../utils/makeToken").generateToken({
       type: "data/sessions",
     });
