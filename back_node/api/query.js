@@ -1,5 +1,5 @@
 const use = require("../universalSentenceEncoder/index");
-const reIpAddress = new RegExp("(?:[0-9]{1,3}.){3}[0-9]{1,3}");
+const ipFunctions = require("../utils/antiSpam");
 
 /**
  * @swagger
@@ -77,7 +77,7 @@ module.exports.start = (app) => {
         userToken: req.query.userToken,
         convToken: req.query.convToken,
         timeZone: req.query.timeZone,
-        ipAddress: req.socket.remoteAddress.match(reIpAddress)[0],
+        ipAddress: ipFunctions.getIpAddress(req.socket.remoteAddress),
       });
       res.json(result);
     } catch (e) {

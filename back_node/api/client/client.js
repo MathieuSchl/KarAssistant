@@ -1,5 +1,6 @@
 const fs = require("fs");
 const NodeRSA = require("node-rsa");
+const ipFunctions = require("../../utils/antiSpam");
 
 /**
  * @swagger
@@ -35,15 +36,14 @@ const NodeRSA = require("node-rsa");
 
 module.exports.antiSpam = antiSpam;
 function antiSpam(ipAddress) {
-  if(!dataIp[ipAddress]){
+  if (!dataIp[ipAddress]) {
     dataIp[ipAddress] = {
-      lastRequest
-    }
+      lastRequest,
+    };
   }
 }
 
-
-  module.exports.newUserToken = newUserToken;
+module.exports.newUserToken = newUserToken;
 function newUserToken() {
   const data = {
     creationDate: new Date(),
@@ -95,6 +95,9 @@ function saveData({ userFile, clientFile }) {
 module.exports.start = (app) => {
   app.get("/api/client/newToken", async function (req, res) {
     try {
+      const ipAddress = ipFunctions.getIpAddress(req.socket.remoteAddress);
+      const ipValid = ipFunctions.antiSpam({ ipAddress, limit: 2 });
+      if (!ipValid) return res.sendStatus(403);
       const defaultUserFile = newUserToken();
       const { userFile, clientFile, publicKey } = newClientToken({
         userFile: defaultUserFile,
