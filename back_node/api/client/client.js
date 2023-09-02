@@ -45,11 +45,12 @@ function antiSpam(ipAddress) {
 
 module.exports.newUserToken = newUserToken;
 function newUserToken() {
-  const creationDate =new Date()
+  const creationDate = new Date();
   const data = {
     creationDate,
     lastRequestDate: creationDate,
     clients: [],
+    data: {},
   };
   const userToken = require("../../utils/makeToken").generateToken({
     type: "data/users/users",
@@ -65,19 +66,25 @@ function newClientToken({ userFile }) {
   });
   userFile.data.clients.push(clientToken);
 
-  const key = new NodeRSA({ b: 512 });
-  key.decrypt(key.encrypt("text", "base64"), "utf8");
-  const publicKey = key["$cache"]["pkcs8-public-pem"];
-  const privateKey = key["$cache"]["pkcs1-private-pem"];
-  const creationDate =new Date()
+  const keys = new NodeRSA({ b: 1024 });
+  const publicKey = keys.exportKey("public");
+  const privateKey = keys.exportKey("private");
+
+  const encrypt = keys.encrypt(
+    `${clientToken};${new Date().toISOString()}`,
+    "base64",
+  );
+  console.log(encrypt);
+
+  const creationDate = new Date();
   const data = {
     creationDate,
     lastRequestDate: creationDate,
     userToken: userFile.userToken,
-    privateKey,
+    privateKey: privateKey,
   };
 
-  return { userFile, clientFile: { clientToken, data }, publicKey };
+  return { userFile, clientFile: { clientToken, data }, publicKey: publicKey };
 }
 
 module.exports.saveData = saveData;

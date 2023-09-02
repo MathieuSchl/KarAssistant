@@ -38,10 +38,10 @@ describe("Garbage session collector", () => {
 
   test("user valid", async () => {
     //Prepare
-    const dateNow=new Date();
+    const dateNow = new Date();
     fs.writeFileSync(
       __dirname + "/../../data/users/users/test.txt",
-      JSON.stringify({ creationDate: dateNow,lastRequestDate: dateNow}),
+      JSON.stringify({ creationDate: dateNow, lastRequestDate: dateNow }),
     );
 
     //Execute
@@ -55,10 +55,10 @@ describe("Garbage session collector", () => {
 
   test("user expired", async () => {
     //Prepare
-    const dateNow=new Date("2000-01-01")
+    const dateNow = new Date("2000-01-01");
     fs.writeFileSync(
       __dirname + "/../../data/users/users/test.txt",
-      JSON.stringify({ creationDate: dateNow,lastRequestDate: dateNow}),
+      JSON.stringify({ creationDate: dateNow, lastRequestDate: dateNow }),
     );
 
     //Execute
@@ -72,11 +72,11 @@ describe("Garbage session collector", () => {
 
   test("active user", async () => {
     //Prepare
-    const creationDate=new Date("2000-01-01")
-    const lastRequestDate=new Date("2001-01-01")
+    const creationDate = new Date("2000-01-01");
+    const lastRequestDate = new Date("2001-01-01");
     fs.writeFileSync(
       __dirname + "/../../data/users/users/test.txt",
-      JSON.stringify({ creationDate,lastRequestDate}),
+      JSON.stringify({ creationDate, lastRequestDate }),
     );
 
     //Execute

@@ -1,8 +1,10 @@
 const fs = require("fs");
+const NodeRSA = require("node-rsa");
 const encodeSentence = require("./universalSentenceEncoder").encodeSentence;
 const createVector = require("./universalSentenceEncoder").createVector;
 const compareSentences = require("./universalSentenceEncoder").compareSentences;
 const start = require("./universalSentenceEncoder").start;
+const verifyPassPhrase = require("../utils/verifyPassPhrase").verifyPassPhrase;
 
 const vectors = [];
 
@@ -170,33 +172,67 @@ module.exports.start = async () => {
   );
 };
 
-module.exports.query = async ({ query, userToken, convToken, timeZone }) => {
+module.exports.query = async ({
+  query,
+  clientToken,
+  passPhrase,
+  convToken,
+  timeZone,
+}) => {
   const embedding = await encodeSentence(query);
-  const userExist =
-    userToken &&
-    fs.existsSync(__dirname + "/../data/users/users/" + userToken + ".json");
+  let clientExist =
+    clientToken &&
+    fs.existsSync(
+      __dirname + "/../data/users/clients/" + clientToken + ".json",
+    );
   const convExist =
     convToken &&
     fs.existsSync(__dirname + "/../data/sessions/" + convToken + ".json");
-  const result = { similarity: 1, bestPhrase: "", userExist };
+  const result = { similarity: 1, bestPhrase: "" };
   const resData = {};
+  let userToken = null;
+  let userContent = null;
 
   //Used saved users
-  if (userExist) {
-    const dataRead = fs.readFileSync(
+  if (clientExist) {
+    const clientDataRead = fs.readFileSync(
+      __dirname + "/../data/users/clients/" + clientToken + ".json",
+      "utf8",
+    );
+    const clientContent = JSON.parse(clientDataRead);
+    clientContent.lastRequestDate = new Date();
+    fs.writeFileSync(
+      __dirname + "/../data/users/clients/" + clientToken + ".json",
+      JSON.stringify(clientContent),
+    );
+
+    userToken = clientContent.userToken;
+    const privateKey = new NodeRSA(clientContent.privateKey);
+
+    try {
+      const decryptedPassPhrase = privateKey.decrypt(passPhrase, "utf8");
+
+      clientExist = verifyPassPhrase({
+        passPhrase: decryptedPassPhrase,
+        clientToken,
+      });
+      if (!clientExist && !process.env.DEV_MODE) throw 403;
+    } catch {
+      throw 403;
+    }
+
+    const userDataRead = fs.readFileSync(
       __dirname + "/../data/users/users/" + userToken + ".json",
       "utf8",
     );
-    const content = JSON.parse(dataRead);
+    userContent = JSON.parse(userDataRead);
 
-    if (!timeZone && content.timeZone) timeZone = content.timeZone;
+    if (!timeZone && userContent.timeZone) timeZone = userContent.timeZone;
 
-    content.lastRequestDate = new Date();
-    fs.writeFileSync(
-      __dirname + "/../data/users/users/" + userToken + ".json",
-      JSON.stringify(content),
-    );
-  }
+    userContent.creationDate = new Date(userContent.creationDate);
+    userContent.lastRequestDate = new Date();
+  } else if (!process.env.DEV_MODE) throw 403;
+  result.clientExist = clientExist;
 
   //Used saved sessions
   if (convExist) {
@@ -211,6 +247,7 @@ module.exports.query = async ({ query, userToken, convToken, timeZone }) => {
         __dirname + "/../skills/" + content.skill + "/session",
       ).execute({
         query,
+        userData: userContent.data,
         timeZone,
         lang: content.lang,
         data: content.data,
@@ -220,6 +257,7 @@ module.exports.query = async ({ query, userToken, convToken, timeZone }) => {
         resData.data = skillResult.data;
         resData.lang = skillResult.lang ? skillResult.lang : content.lang;
         resData.skill = content.skill;
+        if (skillResult.data) userContent.data = skillResult.userData;
       }
     } catch (error) {
       console.log("\x1b[31mERROR: skill " + result.skill + "\x1b[0m");
@@ -247,10 +285,12 @@ module.exports.query = async ({ query, userToken, convToken, timeZone }) => {
             ).execute({
               query,
               lang: result.lang,
+              userData: userContent.data,
               timeZone,
             });
             result.result = skillResult.text;
             resData.data = skillResult.data;
+            if (skillResult.data) userContent.data = skillResult.userData;
             break;
           } catch (error) {
             console.log("\x1b[31mERROR: skill " + result.skill + "\x1b[0m");
@@ -270,10 +310,12 @@ module.exports.query = async ({ query, userToken, convToken, timeZone }) => {
       ).execute({
         query,
         lang: result.lang,
+        userData: userContent.data,
         timeZone,
       });
       result.result = skillResult.text;
       resData.data = skillResult.data;
+      if (skillResult.data) userContent.data = skillResult.userData;
     } catch (error) {
       console.log("\x1b[31mERROR: skill " + result.skill + "\x1b[0m");
       console.log(error);
@@ -303,6 +345,13 @@ module.exports.query = async ({ query, userToken, convToken, timeZone }) => {
     fs.writeFileSync(
       __dirname + "/../data/sessions/" + convToken + ".json",
       JSON.stringify(resData),
+    );
+  }
+
+  if (userToken) {
+    fs.writeFileSync(
+      __dirname + "/../data/users/users/" + userToken + ".json",
+      JSON.stringify(userContent),
     );
   }
 

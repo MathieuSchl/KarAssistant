@@ -17,7 +17,7 @@ function garbageWithType({ type }) {
     const fileDate = new Date(content.creationDate);
     const timeDifference = actualDate - fileDate;
     if (!content.creationDate || timeDifference > oneDayInMilliseconds) {
-      if (modificationDate && fileDate-modificationDate !== 0) break;
+      if (modificationDate && fileDate - modificationDate !== 0) break;
       fs.unlinkSync(__dirname + "/../data/" + type + "/" + element);
     }
   }

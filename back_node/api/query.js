@@ -20,9 +20,13 @@ const ipFunctions = require("../utils/antiSpam");
  *       description: "The question"
  *       required: true
  *       type: string
- *     - name: "userToken"
+ *     - name: "clientToken"
  *       in: "query"
- *       description: "User token"
+ *       description: "Client token"
+ *       type: string
+ *     - name: "passPhrase"
+ *       in: "query"
+ *       description: "Pass phrase to verify client"
  *       type: string
  *     - name: "convToken"
  *       in: "query"
@@ -65,6 +69,8 @@ const ipFunctions = require("../utils/antiSpam");
  *                 skill: kara/greetings
  *                 similarity: 0.212
  *                 bestPhrase: Bonjour
+ *       403:
+ *         description: "User is not authenticated"
  *       500:
  *         description: "Error in back"
  */
@@ -74,13 +80,15 @@ module.exports.start = (app) => {
     try {
       const result = await use.query({
         query: req.query.query.toLowerCase(),
-        userToken: req.query.userToken,
+        clientToken: req.query.clientToken,
+        passPhrase: req.query.passPhrase,
         convToken: req.query.convToken,
         timeZone: req.query.timeZone,
         ipAddress: ipFunctions.getIpAddress(req.socket.remoteAddress),
       });
       res.json(result);
     } catch (e) {
+      if (typeof e === "number") return res.sendStatus(e);
       if (e) console.log(e);
       console.log();
       res.sendStatus(500);
