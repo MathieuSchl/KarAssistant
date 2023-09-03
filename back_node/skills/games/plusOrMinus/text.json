@@ -2,5 +2,20 @@
   "phrases": {
     "en": ["i want to play plus or minus", "plus or minus"],
     "fr": ["je veux jouer au plus ou moins", "plus ou moins"]
-  }
+  },
+  "response": {
+    "en": {
+      "startGame": "I have a number in my mind between 0 and 100 try to find it.",
+      "correctValue": "Congratulations, you found the right value : <@gameTarget@>",
+      "greaterValue": "My number is greater than <@userValue@>",
+      "smallerValue": "My number is smaller than <@userValue@>"
+    },
+    "fr": {
+      "startGame": "J'ai un nombre en tête entre 0 et 100 essaye de le trouver",
+      "correctValue": "Bravo, vous avez trouvé la bonne valeur : <@gameTarget@>",
+      "greaterValue": "Mon nombre est plus grand que <@userValue@>",
+      "smallerValue": "Mon nombre est plus petit que <@userValue@>"
+    }
+  },
+  "error": "Undefined language for games/plusOrMinus"
 }

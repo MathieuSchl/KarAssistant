@@ -15,5 +15,14 @@
       "est-ce que tu pourrais te présenter brièvement",
       "t'es qui toi"
     ]
-  }
+  },
+  "response": {
+    "en": {
+      "whoareyou": "Hi my name is Kara. I'm a personal assistant developed by Cody and Caz. Ask me a question and I'll answer it."
+    },
+    "fr": {
+      "whoareyou": "Mon nom est Kara. Je suis un assistant personnel développé par Cody et Caz. Posez-moi une question et j'y répondrais."
+    }
+  },
+  "error": "Undefined language for kara/whoareyou"
 }

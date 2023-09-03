@@ -17,7 +17,7 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Check if version already exist
@@ -26,21 +26,36 @@ jobs:
           json_content=$(cat back_node/package.json)
           version=$(echo "$json_content" | jq -r '.version')
           echo "Target version : $version"
-          if [[ $(docker manifest inspect ${{ secrets.DOCKERHUB_USERNAME }}/karassistant-back:$version 2> /dev/null) != "" ]]; then
+          if [[ $(docker manifest inspect ${{ vars.DOCKERHUB_USERNAME }}/karassistant-back:$version 2> /dev/null) != "" ]]; then
             echo -e "\e[31mVersion $version already exist"
             echo "Version $version already exist" >> $GITHUB_STEP_SUMMARY
           else
+            echo "Build image version $version" >> $GITHUB_STEP_SUMMARY
             echo -e "\e[32mBuild image version $version"
             echo "run_build=yes" >> "$GITHUB_OUTPUT"
             echo "version=$version" >> "$GITHUB_OUTPUT"
           fi
+
+  Tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          cd back_node/ && npm install
+      - name: Create summary
+        run: |
+          cd back_node/ && export NODE_OPTIONS=--no-experimental-fetch && npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
+          awk 'NR>5' /tmp/coverage0.txt > /tmp/coverage1.txt && sed '$ d' /tmp/coverage1.txt > $GITHUB_STEP_SUMMARY && echo -e "" >> $GITHUB_STEP_SUMMARY && cat /tmp/results.txt >> $GITHUB_STEP_SUMMARY
 
   Build_Push:
     runs-on: ubuntu-latest
     permissions: write-all
     needs:
       - Check
-    if: ${{ needs.Check.outputs.RUN_BUILD == 'yes' }}
+      - Tests
+    if: ${{ needs.Check.outputs.RUN_BUILD == 'yes' && needs.Tests.result == 'success' }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -48,7 +63,7 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Set up Docker Buildx
@@ -57,7 +72,7 @@ jobs:
       - name: Echo version
         env:
           version: ${{ needs.Check.outputs.version }}
-        run: echo "Build image ${{ secrets.DOCKERHUB_USERNAME }}/karassistant-back:$version"
+        run: echo "Build image ${{ vars.DOCKERHUB_USERNAME }}/karassistant-back:$version"
 
       - name: Build and push (tagged version)
         uses: docker/build-push-action@v4
@@ -65,7 +80,7 @@ jobs:
           context: .
           file: ./back_node/Dockerfile
           push: true
-          tags: "${{ secrets.DOCKERHUB_USERNAME }}/karassistant-back:${{ needs.Check.outputs.version }}"
+          tags: "${{ vars.DOCKERHUB_USERNAME }}/karassistant-back:${{ needs.Check.outputs.version }}"
           build-args: project_path=back_node
 
       - name: Build and push (latest version)
@@ -74,10 +89,14 @@ jobs:
           context: .
           file: ./back_node/Dockerfile
           push: true
-          tags: "${{ secrets.DOCKERHUB_USERNAME }}/karassistant-back:latest"
+          tags: "${{ vars.DOCKERHUB_USERNAME }}/karassistant-back:latest"
           build-args: project_path=back_node
 
       - name: Create tag
         uses: rickstaa/action-create-tag@v1
         with:
           tag: "back-${{ needs.Check.outputs.version }}"
+
+      - name: Create summury
+        run: |
+          echo "image build 'karassistant-back:${{ needs.Check.outputs.version }}' succeed" >> $GITHUB_STEP_SUMMARY

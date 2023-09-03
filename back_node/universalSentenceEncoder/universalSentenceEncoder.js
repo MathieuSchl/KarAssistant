@@ -5,11 +5,16 @@ try {
 const use = require("@tensorflow-models/universal-sentence-encoder");
 let model = use.load();
 
-module.exports.encodeSentence = async (sentence) => {
-  // Encodage de la phrase en vecteur
-  const embeddings = await model.embed(sentence);
+//tf.tensor([1,1], [1, 512], 'float32')
 
-  return embeddings;
+module.exports.encodeSentence = async (sentence) => {
+  // Encodage de la phrase en array
+  const embeddings = await model.embed(sentence);
+  return embeddings.arraySync();
+};
+
+module.exports.createVector = (values) => {
+  return tf.tensor(values, [1, 512], "float32");
 };
 
 module.exports.compareSentences = async (embedding1, embedding2) => {
