@@ -1,5 +1,4 @@
-const replaceVariables =
-  require("../../../utils/replaceVariables").replaceVariables;
+const replaceVariables = require("../../../utils/replaceVariables").replaceVariables;
 const text = require("./text.json");
 module.exports.data = text;
 
@@ -20,6 +19,7 @@ module.exports.execute = ({ query, lang, data }) => {
     return {
       text: replaceVariables(textResult, { userValue, gameTarget }),
       data: userValue !== gameTarget ? data : null,
+      shortAnswerExpected: userValue !== gameTarget ? true : false,
     };
   }
 };

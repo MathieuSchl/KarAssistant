@@ -44,31 +44,39 @@ const ipFunctions = require("../utils/antiSpam");
  *             schema:
  *               type: object
  *               properties:
- *                 result:
- *                   type: string
- *                   description: Phrase from Kara
- *                 convToken:
- *                   type: string
- *                   description: Token given to aswer a question from Kara
- *                 lang:
- *                   type: string
- *                   description: Language of the question
- *                 skill:
- *                   type: string
- *                   description: Skill aked for the question
  *                 similarity:
  *                   type: number
  *                   description: Value of similarity between the answer and the query or bestPhrase
  *                 bestPhrase:
  *                   type: string
  *                   description: The sentence that comes closest
+ *                 shortAnswerExpected:
+ *                   type: boolean
+ *                   description: If the next answer from the client must be short
+ *                 clientExist:
+ *                   type: boolean
+ *                   description: Show if the user is valid with RSA keys
+ *                 lang:
+ *                   type: string
+ *                   description: Language of the question
+ *                 skill:
+ *                   type: string
+ *                   description: Skill aked for the question
+ *                 result:
+ *                   type: string
+ *                   description: Phrase from Kara
+ *                 convToken:
+ *                   type: string
+ *                   description: Token given to aswer a question from Kara
  *               example:
- *                 result: Bonjour je suis Kara
- *                 convToken: 899b048af6c033e29682c4cdf30c0050d3590959
- *                 lang: fr
- *                 skill: kara/greetings
  *                 similarity: 0.212
  *                 bestPhrase: Bonjour
+ *                 shortAnswerExpected: false
+ *                 clientExist: false
+ *                 lang: fr
+ *                 skill: kara/greetings
+ *                 result: Bonjour je suis Kara
+ *                 convToken: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
  *       403:
  *         description: "User is not authenticated"
  *       500:

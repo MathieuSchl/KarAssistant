@@ -19,9 +19,7 @@ function antiSpam({ ipAddress, limit = 10 }) {
         // Refersh ban duration
         dataIp[ipAddress].force++;
         const nowDate = new Date();
-        dataIp[ipAddress].banUntil = new Date(
-          nowDate.setTime(nowDate.getTime() + banDuration),
-        );
+        dataIp[ipAddress].banUntil = new Date(nowDate.setTime(nowDate.getTime() + banDuration));
         return false;
       }
     }
@@ -30,9 +28,7 @@ function antiSpam({ ipAddress, limit = 10 }) {
       if (dataIp[ipAddress].force > 5) {
         //Ban ip
         const nowDate = new Date();
-        dataIp[ipAddress].banUntil = new Date(
-          nowDate.setTime(nowDate.getTime() + banDuration),
-        );
+        dataIp[ipAddress].banUntil = new Date(nowDate.setTime(nowDate.getTime() + banDuration));
         return false;
       }
       return false;
@@ -61,5 +57,7 @@ function cronDeban() {
 
 module.exports.getIpAddress = getIpAddress;
 function getIpAddress(remoteAddress) {
-  return remoteAddress.match(reIpAddress)[0];
+  const result = remoteAddress.match(reIpAddress);
+  if (result) return result[0];
+  return "127.0.0.1";
 }

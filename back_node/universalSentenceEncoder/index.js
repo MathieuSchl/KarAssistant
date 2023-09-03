@@ -86,21 +86,15 @@ function loadSkill({ skill }) {
 function getAllSkills(path) {
   let result = [];
   if (fs.lstatSync(__dirname + "/../skills/" + path).isDirectory()) {
-    const elementExist = fs.existsSync(
-      __dirname + "/../skills/" + path + "/index.js",
-    );
-    const elementIsFile = elementExist
-      ? fs.lstatSync(__dirname + "/../skills/" + path + "/index.js").isFile()
-      : false;
+    const elementExist = fs.existsSync(__dirname + "/../skills/" + path + "/index.js");
+    const elementIsFile = elementExist ? fs.lstatSync(__dirname + "/../skills/" + path + "/index.js").isFile() : false;
 
     if (elementExist && elementIsFile) {
       result.push(path);
     } else {
       const elements = fs.readdirSync(__dirname + "/../skills/" + path);
       for (const element of elements) {
-        const resultFolder = getAllSkills(
-          `${path}${path != "" ? "/" : ""}${element}`,
-        );
+        const resultFolder = getAllSkills(`${path}${path != "" ? "/" : ""}${element}`);
         result = result.concat(resultFolder);
       }
     }
@@ -117,9 +111,7 @@ module.exports.start = async () => {
     ? false
     : fs.existsSync(__dirname + "/../skills/" + process.argv[2] + "/index.js");
   if (!limitSkills && process.argv[2])
-    console.log(
-      `\x1b[31mThe skill '${process.argv[2]}' doesn't exist.\nSkipping limit, loading all skills\x1b[0m`,
-    );
+    console.log(`\x1b[31mThe skill '${process.argv[2]}' doesn't exist.\nSkipping limit, loading all skills\x1b[0m`);
   if (limitSkills) {
     loadSkill({ skill: process.argv[2] });
   } else {
@@ -133,9 +125,7 @@ module.exports.start = async () => {
   }
 
   const vectorToFile = {};
-  const vectorSaved = JSON.parse(
-    fs.readFileSync(__dirname + "/../data/vectors.json", "utf8"),
-  );
+  const vectorSaved = JSON.parse(fs.readFileSync(__dirname + "/../data/vectors.json", "utf8"));
   console.log("\n\x1b[33mStart encode sentences\x1b[34m");
   const length = vectors.length;
   progressLog(`0/${length} 00.00%`);
@@ -149,9 +139,7 @@ module.exports.start = async () => {
     const vector = createVector(values);
     vectors[index].embedding = vector;
     vectorToFile[vectors[index].phrase] = values;
-    progressLog(
-      `${index + 1}/${length} ${(((index + 1) / length) * 100).toFixed(2)}%`,
-    );
+    progressLog(`${index + 1}/${length} ${(((index + 1) / length) * 100).toFixed(2)}%`);
   }
 
   if (process.stdout.cursorTo) {
@@ -159,52 +147,29 @@ module.exports.start = async () => {
     process.stdout.cursorTo(0);
   } else process.stdout.write("\n");
 
-  fs.writeFileSync(
-    __dirname + "/../data/vectors.json",
-    JSON.stringify(vectorToFile),
-  );
+  fs.writeFileSync(__dirname + "/../data/vectors.json", JSON.stringify(vectorToFile));
 
   process.stdout.write(`\x1b[32m${length}/${length} 100.00%`);
   const dateEnd = new Date();
   const elapsedTimeText = dateDiff(dateStart, dateEnd);
-  console.log(
-    `\n\x1b[33mEncode sentences finished in \x1b[35m${elapsedTimeText}\x1b[0m\n`,
-  );
+  console.log(`\n\x1b[33mEncode sentences finished in \x1b[35m${elapsedTimeText}\x1b[0m\n`);
 };
 
-module.exports.query = async ({
-  query,
-  clientToken,
-  passPhrase,
-  convToken,
-  timeZone,
-}) => {
+module.exports.query = async ({ query, clientToken = false, passPhrase, convToken = false, timeZone }) => {
   const embedding = await encodeSentence(query);
-  let clientExist =
-    clientToken &&
-    fs.existsSync(
-      __dirname + "/../data/users/clients/" + clientToken + ".json",
-    );
-  const convExist =
-    convToken &&
-    fs.existsSync(__dirname + "/../data/sessions/" + convToken + ".json");
-  const result = { similarity: 1, bestPhrase: "" };
+  let clientExist = clientToken && fs.existsSync(__dirname + "/../data/users/clients/" + clientToken + ".json");
+  const convExist = convToken && fs.existsSync(__dirname + "/../data/sessions/" + convToken + ".json");
+  const result = { similarity: 1, bestPhrase: "", shortAnswerExpected: false };
   const resData = {};
   let userToken = null;
   let userContent = null;
 
   //Used saved users
   if (clientExist) {
-    const clientDataRead = fs.readFileSync(
-      __dirname + "/../data/users/clients/" + clientToken + ".json",
-      "utf8",
-    );
+    const clientDataRead = fs.readFileSync(__dirname + "/../data/users/clients/" + clientToken + ".json", "utf8");
     const clientContent = JSON.parse(clientDataRead);
     clientContent.lastRequestDate = new Date();
-    fs.writeFileSync(
-      __dirname + "/../data/users/clients/" + clientToken + ".json",
-      JSON.stringify(clientContent),
-    );
+    fs.writeFileSync(__dirname + "/../data/users/clients/" + clientToken + ".json", JSON.stringify(clientContent));
 
     userToken = clientContent.userToken;
     const privateKey = new NodeRSA(clientContent.privateKey);
@@ -221,10 +186,7 @@ module.exports.query = async ({
       throw 403;
     }
 
-    const userDataRead = fs.readFileSync(
-      __dirname + "/../data/users/users/" + userToken + ".json",
-      "utf8",
-    );
+    const userDataRead = fs.readFileSync(__dirname + "/../data/users/users/" + userToken + ".json", "utf8");
     userContent = JSON.parse(userDataRead);
 
     if (!timeZone && userContent.timeZone) timeZone = userContent.timeZone;
@@ -232,32 +194,28 @@ module.exports.query = async ({
     userContent.creationDate = new Date(userContent.creationDate);
     userContent.lastRequestDate = new Date();
   } else if (!process.env.DEV_MODE) throw 403;
-  result.clientExist = clientExist;
+  result.clientExist = clientExist; // RSA good ? Remove this
 
   //Used saved sessions
   if (convExist) {
-    const dataRead = fs.readFileSync(
-      __dirname + "/../data/sessions/" + convToken + ".json",
-      "utf8",
-    );
+    const dataRead = fs.readFileSync(__dirname + "/../data/sessions/" + convToken + ".json", "utf8");
     const content = JSON.parse(dataRead);
 
     try {
-      const skillResult = await require(
-        __dirname + "/../skills/" + content.skill + "/session",
-      ).execute({
+      const skillResult = await require(__dirname + "/../skills/" + content.skill + "/session").execute({
         query,
-        userData: userContent.data,
+        userData: userContent ? userContent.data : null,
         timeZone,
         lang: content.lang,
         data: content.data,
       });
       if (skillResult != null) {
         result.result = skillResult.text;
+        result.shortAnswerExpected = !!skillResult.shortAnswerExpected;
         resData.data = skillResult.data;
         resData.lang = skillResult.lang ? skillResult.lang : content.lang;
         resData.skill = content.skill;
-        if (skillResult.data) userContent.data = skillResult.userData;
+        if (skillResult.userData) userContent.data = skillResult.userData;
       }
     } catch (error) {
       console.log("\x1b[31mERROR: skill " + result.skill + "\x1b[0m");
@@ -280,17 +238,16 @@ module.exports.query = async ({
         //Execute skill if very close
         if (result.similarity < 0.1) {
           try {
-            const skillResult = await require(
-              __dirname + "/../skills/" + result.skill,
-            ).execute({
+            const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({
               query,
               lang: result.lang,
-              userData: userContent.data,
+              userData: userContent ? userContent.data : null,
               timeZone,
             });
             result.result = skillResult.text;
+            result.shortAnswerExpected = !!skillResult.shortAnswerExpected;
             resData.data = skillResult.data;
-            if (skillResult.data) userContent.data = skillResult.userData;
+            if (skillResult.userData) userContent.data = skillResult.userData;
             break;
           } catch (error) {
             console.log("\x1b[31mERROR: skill " + result.skill + "\x1b[0m");
@@ -305,17 +262,16 @@ module.exports.query = async ({
   //Exeption of the closest competence
   if (!result.result && result.similarity < 0.2) {
     try {
-      const skillResult = await require(
-        __dirname + "/../skills/" + result.skill,
-      ).execute({
+      const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({
         query,
         lang: result.lang,
-        userData: userContent.data,
+        userData: userContent ? userContent.data : null,
         timeZone,
       });
       result.result = skillResult.text;
+      result.shortAnswerExpected = !!skillResult.shortAnswerExpected;
       resData.data = skillResult.data;
-      if (skillResult.data) userContent.data = skillResult.userData;
+      if (skillResult.userData) userContent.data = skillResult.userData;
     } catch (error) {
       console.log("\x1b[31mERROR: skill " + result.skill + "\x1b[0m");
       console.log(error);
@@ -342,27 +298,18 @@ module.exports.query = async ({
       type: "data/sessions",
     });
     result.convToken = convToken;
-    fs.writeFileSync(
-      __dirname + "/../data/sessions/" + convToken + ".json",
-      JSON.stringify(resData),
-    );
+    fs.writeFileSync(__dirname + "/../data/sessions/" + convToken + ".json", JSON.stringify(resData));
   }
 
   if (userToken) {
-    fs.writeFileSync(
-      __dirname + "/../data/users/users/" + userToken + ".json",
-      JSON.stringify(userContent),
-    );
+    fs.writeFileSync(__dirname + "/../data/users/users/" + userToken + ".json", JSON.stringify(userContent));
   }
 
   return result;
 };
 
 async function saveQueryClose(result, query) {
-  const dataRead = fs.readFileSync(
-    __dirname + "/../data/querriesClose.json",
-    "utf8",
-  );
+  const dataRead = fs.readFileSync(__dirname + "/../data/querriesClose.json", "utf8");
   const content = JSON.parse(dataRead);
   content.push({
     query,
@@ -372,9 +319,5 @@ async function saveQueryClose(result, query) {
     bestPhrase: result.bestPhrase,
   });
   const dataWrite = JSON.stringify(content);
-  fs.writeFileSync(
-    __dirname + "/../data/querriesClose.json",
-    dataWrite,
-    "utf8",
-  );
+  fs.writeFileSync(__dirname + "/../data/querriesClose.json", dataWrite, "utf8");
 }

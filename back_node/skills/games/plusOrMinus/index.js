@@ -9,6 +9,7 @@ module.exports.execute = ({ lang }) => {
   const resData = { randomNumber };
   return {
     text: text.response[lang].startGame,
+    shortAnswerExpected: true,
     data: resData,
   };
 };

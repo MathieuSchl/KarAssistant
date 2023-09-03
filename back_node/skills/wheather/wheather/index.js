@@ -1,8 +1,7 @@
 const text = require("./text.json");
 const cities = require("cities-list");
 const getWheather = require("../../../utils/wheather/index").getWheather;
-const replaceVariables =
-  require("../../../utils/replaceVariables").replaceVariables;
+const replaceVariables = require("../../../utils/replaceVariables").replaceVariables;
 const unit = { C: "Celsius", F: "Fahrenheit" };
 
 /* Some cities are banned because the name is to close from a word in some language */
@@ -30,7 +29,7 @@ module.exports.execute = async ({ query, lang, forceNoData, forceData }) => {
   if (!text.response[lang]) return { text: text.error };
 
   const city = getCity(query);
-  if (!city) return { text: text.response[lang].noCity, data: {} };
+  if (!city) return { text: text.response[lang].noCity, data: {}, shortAnswerExpected: true };
   return getCityWeather({ city, lang, forceNoData, forceData });
 };
 
@@ -43,8 +42,7 @@ async function getCityWeather({ city, lang, forceNoData, forceData }) {
       text: replaceVariables(textResult, { location: city }),
     };
   }
-  const { location, temperature, humidity, windSpeed, imageUrl } =
-    wheatherResult;
+  const { location, temperature, humidity, windSpeed, imageUrl } = wheatherResult;
 
   const textResult = text.response[lang].wheatherIs;
   return {

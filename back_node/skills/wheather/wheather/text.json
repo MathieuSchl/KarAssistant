@@ -1,9 +1,6 @@
 {
   "phrases": {
-    "en": [
-      "what's the weather like in paris",
-      "what is the weather like in paris"
-    ],
+    "en": ["what's the weather like in paris", "what is the weather like in paris"],
     "fr": ["quel temps fait il à paris", "quel météo fait il à paris"]
   },
   "response": {
@@ -13,7 +10,7 @@
       "noDataForCity": "I don't have weather data for <@location@>"
     },
     "fr": {
-      "noCity": "Quelle ville souhaitez vous la météo ?",
+      "noCity": "Quelle est la ville, dont vous souhaitez connaître la météo ?",
       "wheatherIs": "A <@location@> il fait actuellement <@temperature@> degré <@unit@>, il y a <@humidity@>% d'humidité et le vent est de <@windSpeed@>",
       "noDataForCity": "Je n'ai pas de données météo pour <@location@>"
     }
