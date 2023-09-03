@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  karassistant-back:
+  karassistant-client-discord:
     #build: .
     image: codyisthesenate/karassistant-client-discord:1.0.0
     restart: always
@@ -10,8 +10,6 @@ services:
       - .env:/home/node/Karassistant/.env
       - ./data:/home/node/Karassistant/data
       - ./logs:/home/node/Karassistant/logs
-    ports:
-      - ${PORT_BACK}:3000
     networks:
       - karassistant
 
