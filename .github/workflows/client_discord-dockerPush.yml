@@ -1,9 +1,9 @@
-name: "[BACK] Docker push"
-run-name: "[BACK] DockerPush : ${{ github.actor }} push '${{ github.event.head_commit.message }}' 🚀"
+name: "[CLIENT_DISCORD] Docker push"
+run-name: "[CLIENT_DISCORD] DockerPush : ${{ github.actor }} push '${{ github.event.head_commit.message }}' 🚀"
 on:
   push:
     paths:
-      - back_node/**
+      - clientDiscord/**
 jobs:
   Check:
     runs-on: ubuntu-latest
@@ -23,10 +23,10 @@ jobs:
       - name: Check if version already exist
         id: define_docker_data
         run: |
-          json_content=$(cat back_node/package.json)
+          json_content=$(cat clientDiscord/package.json)
           version=$(echo "$json_content" | jq -r '.version')
           echo "Target version : $version"
-          if [[ $(docker manifest inspect ${{ vars.DOCKERHUB_USERNAME }}/karassistant-back:$version 2> /dev/null) != "" ]]; then
+          if [[ $(docker manifest inspect ${{ vars.DOCKERHUB_USERNAME }}/karassistant-client-discord:$version 2> /dev/null) != "" ]]; then
             echo -e "\e[31mVersion $version already exist"
             echo "Version $version already exist" >> $GITHUB_STEP_SUMMARY
           else
@@ -43,10 +43,10 @@ jobs:
         uses: actions/checkout@v3
       - name: Install dependencies
         run: |
-          cd back_node/ && npm install
+          cd clientDiscord/ && npm install
       - name: Create summary
         run: |
-          cd back_node/ && export NODE_OPTIONS=--no-experimental-fetch && npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
+          cd clientDiscord/ && export NODE_OPTIONS=--no-experimental-fetch && npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
           awk 'NR>5' /tmp/coverage0.txt > /tmp/coverage1.txt && sed '$ d' /tmp/coverage1.txt > $GITHUB_STEP_SUMMARY && echo -e "" >> $GITHUB_STEP_SUMMARY && cat /tmp/results.txt >> $GITHUB_STEP_SUMMARY
 
   Build_Push:
@@ -72,31 +72,31 @@ jobs:
       - name: Echo version
         env:
           version: ${{ needs.Check.outputs.version }}
-        run: echo "Build image ${{ vars.DOCKERHUB_USERNAME }}/karassistant-back:$version"
+        run: echo "Build image ${{ vars.DOCKERHUB_USERNAME }}/karassistant-client-discord:$version"
 
       - name: Build and push (tagged version)
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./back_node/Dockerfile
+          file: ./clientDiscord/Dockerfile
           push: true
-          tags: "${{ vars.DOCKERHUB_USERNAME }}/karassistant-back:${{ needs.Check.outputs.version }}"
+          tags: "${{ vars.DOCKERHUB_USERNAME }}/karassistant-client-discord:${{ needs.Check.outputs.version }}"
           build-args: project_path=back_node
 
       - name: Build and push (latest version)
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./back_node/Dockerfile
+          file: ./clientDiscord/Dockerfile
           push: true
-          tags: "${{ vars.DOCKERHUB_USERNAME }}/karassistant-back:latest"
+          tags: "${{ vars.DOCKERHUB_USERNAME }}/karassistant-client-discord:latest"
           build-args: project_path=back_node
 
       - name: Create tag
         uses: rickstaa/action-create-tag@v1
         with:
-          tag: "back-${{ needs.Check.outputs.version }}"
+          tag: "client_discord-${{ needs.Check.outputs.version }}"
 
       - name: Create summury
         run: |
-          echo "image build 'karassistant-back:${{ needs.Check.outputs.version }}' succeed" >> $GITHUB_STEP_SUMMARY
+          echo "image build 'karassistant-client-discord:${{ needs.Check.outputs.version }}' succeed" >> $GITHUB_STEP_SUMMARY

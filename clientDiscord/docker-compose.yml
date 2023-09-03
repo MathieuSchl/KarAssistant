@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  karassistant-back:
+    #build: .
+    image: codyisthesenate/karassistant-client-discord:1.0.0
+    restart: always
+    container_name: karassistant-client-discord
+    volumes:
+      - .env:/home/node/Karassistant/.env
+      - ./data:/home/node/Karassistant/data
+      - ./logs:/home/node/Karassistant/logs
+    ports:
+      - ${PORT_BACK}:3000
+    networks:
+      - karassistant
+
+networks:
+  karassistant:
