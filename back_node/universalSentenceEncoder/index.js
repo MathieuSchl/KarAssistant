@@ -1,7 +1,10 @@
 const fs = require("fs");
+const NodeRSA = require("node-rsa");
 const encodeSentence = require("./universalSentenceEncoder").encodeSentence;
+const createVector = require("./universalSentenceEncoder").createVector;
 const compareSentences = require("./universalSentenceEncoder").compareSentences;
 const start = require("./universalSentenceEncoder").start;
+const verifyPassPhrase = require("../utils/verifyPassPhrase").verifyPassPhrase;
 
 const vectors = [];
 
@@ -61,6 +64,10 @@ function dateDiff(dateStart, dateEnd) {
     result += `${seconds} second${seconds > 1 ? "s" : ""} `;
   }
 
+  if (result == "") {
+    result += `${timeDifference} millisecond${timeDifference > 1 ? "s" : ""} `;
+  }
+
   return result.trim();
 }
 
@@ -117,11 +124,21 @@ module.exports.start = async () => {
     }
   }
 
+  const vectorToFile = {};
+  const vectorSaved = JSON.parse(fs.readFileSync(__dirname + "/../data/vectors.json", "utf8"));
   console.log("\n\x1b[33mStart encode sentences\x1b[34m");
   const length = vectors.length;
   progressLog(`0/${length} 00.00%`);
   for (let index = 0; index < vectors.length; index++) {
-    vectors[index].embedding = await encodeSentence(vectors[index].phrase);
+    const values =
+      vectorSaved[vectors[index].phrase] != null
+        ? vectorSaved[vectors[index].phrase]
+        : vectorToFile[vectors[index].phrase]
+        ? vectorToFile[vectors[index].phrase]
+        : await encodeSentence(vectors[index].phrase);
+    const vector = createVector(values);
+    vectors[index].embedding = vector;
+    vectorToFile[vectors[index].phrase] = values;
     progressLog(`${index + 1}/${length} ${(((index + 1) / length) * 100).toFixed(2)}%`);
   }
 
@@ -129,38 +146,85 @@ module.exports.start = async () => {
     process.stdout.clearLine(0);
     process.stdout.cursorTo(0);
   } else process.stdout.write("\n");
+
+  fs.writeFileSync(__dirname + "/../data/vectors.json", JSON.stringify(vectorToFile));
+
   process.stdout.write(`\x1b[32m${length}/${length} 100.00%`);
   const dateEnd = new Date();
   const elapsedTimeText = dateDiff(dateStart, dateEnd);
   console.log(`\n\x1b[33mEncode sentences finished in \x1b[35m${elapsedTimeText}\x1b[0m\n`);
 };
 
-module.exports.query = async ({ query, token, timeZone }) => {
+module.exports.query = async ({ query, clientToken = false, passPhrase, convToken = false, timeZone }) => {
   const embedding = await encodeSentence(query);
-  const result = { similarity: 1, bestPhrase: "" };
+  let clientExist = clientToken && fs.existsSync(__dirname + "/../data/users/clients/" + clientToken + ".json");
+  const convExist = convToken && fs.existsSync(__dirname + "/../data/sessions/" + convToken + ".json");
+  const result = { similarity: 1, bestPhrase: "", shortAnswerExpected: false };
   const resData = {};
+  let userToken = null;
+  let userContent = null;
+
+  //Used saved users
+  if (clientExist) {
+    const clientDataRead = fs.readFileSync(__dirname + "/../data/users/clients/" + clientToken + ".json", "utf8");
+    const clientContent = JSON.parse(clientDataRead);
+    clientContent.lastRequestDate = new Date();
+    fs.writeFileSync(__dirname + "/../data/users/clients/" + clientToken + ".json", JSON.stringify(clientContent));
+
+    userToken = clientContent.userToken;
+    const privateKey = new NodeRSA(clientContent.privateKey);
+
+    try {
+      const decryptedPassPhrase = privateKey.decrypt(passPhrase, "utf8");
+
+      clientExist = verifyPassPhrase({
+        passPhrase: decryptedPassPhrase,
+        clientToken,
+      });
+      if (!clientExist && !process.env.DEV_MODE) throw 403;
+    } catch {
+      throw 403;
+    }
+
+    const userDataRead = fs.readFileSync(__dirname + "/../data/users/users/" + userToken + ".json", "utf8");
+    userContent = JSON.parse(userDataRead);
+
+    if (!timeZone && userContent.timeZone) timeZone = userContent.timeZone;
+
+    userContent.creationDate = new Date(userContent.creationDate);
+    userContent.lastRequestDate = new Date();
+  } else if (!process.env.DEV_MODE) throw 403;
+  result.clientExist = clientExist; // RSA good ? Remove this
 
   //Used saved sessions
-  if (token && fs.existsSync(__dirname + "/../data/sessions/" + token + ".json")) {
-    const dataRead = fs.readFileSync(__dirname + "/../data/sessions/" + token + ".json", "utf8");
-    fs.unlinkSync(__dirname + "/../data/sessions/" + token + ".json");
+  if (convExist) {
+    const dataRead = fs.readFileSync(__dirname + "/../data/sessions/" + convToken + ".json", "utf8");
     const content = JSON.parse(dataRead);
 
-    const skillResult = await require(__dirname + "/../skills/" + content.skill + "/session").execute({
-      query,
-      timeZone,
-      lang: content.lang,
-      data: content.data,
-    });
-    if(skillResult != null){
-      result.result = skillResult.text;
-      resData.data = skillResult.data;
-      resData.lang = skillResult.lang ? skillResult.lang : content.lang;
-      resData.skill = content.skill;
+    try {
+      const skillResult = await require(__dirname + "/../skills/" + content.skill + "/session").execute({
+        query,
+        userData: userContent ? userContent.data : null,
+        timeZone,
+        lang: content.lang,
+        data: content.data,
+      });
+      if (skillResult != null) {
+        result.result = skillResult.text;
+        result.shortAnswerExpected = !!skillResult.shortAnswerExpected;
+        resData.data = skillResult.data;
+        resData.lang = skillResult.lang ? skillResult.lang : content.lang;
+        resData.skill = content.skill;
+        if (skillResult.userData) userContent.data = skillResult.userData;
+      }
+    } catch (error) {
+      console.log("\x1b[31mERROR: skill " + result.skill + "\x1b[0m");
+      console.log(error);
+      throw null;
     }
   }
 
-  if(result.result == null){
+  if (result.result == null) {
     //Loop on all skills
     for (const vector of vectors) {
       if (result.result) break;
@@ -173,10 +237,23 @@ module.exports.query = async ({ query, token, timeZone }) => {
         result.skill = vector.skill;
         //Execute skill if very close
         if (result.similarity < 0.1) {
-          const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang, timeZone });
-          result.result = skillResult.text;
-          resData.data = skillResult.data;
-          break;
+          try {
+            const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({
+              query,
+              lang: result.lang,
+              userData: userContent ? userContent.data : null,
+              timeZone,
+            });
+            result.result = skillResult.text;
+            result.shortAnswerExpected = !!skillResult.shortAnswerExpected;
+            resData.data = skillResult.data;
+            if (skillResult.userData) userContent.data = skillResult.userData;
+            break;
+          } catch (error) {
+            console.log("\x1b[31mERROR: skill " + result.skill + "\x1b[0m");
+            console.log(error);
+            throw null;
+          }
         }
       }
     }
@@ -184,26 +261,48 @@ module.exports.query = async ({ query, token, timeZone }) => {
 
   //Exeption of the closest competence
   if (!result.result && result.similarity < 0.2) {
-    const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({ lang: result.lang, timeZone });
-    result.result = skillResult.text;
-    resData.data = skillResult.data;
-  } else if (!result.result) {
+    try {
+      const skillResult = await require(__dirname + "/../skills/" + result.skill).execute({
+        query,
+        lang: result.lang,
+        userData: userContent ? userContent.data : null,
+        timeZone,
+      });
+      result.result = skillResult.text;
+      result.shortAnswerExpected = !!skillResult.shortAnswerExpected;
+      resData.data = skillResult.data;
+      if (skillResult.userData) userContent.data = skillResult.userData;
+    } catch (error) {
+      console.log("\x1b[31mERROR: skill " + result.skill + "\x1b[0m");
+      console.log(error);
+      throw null;
+    }
+  }
+  if (!result.result) {
     //Save if it's close, but not too close
     //This is used for logs
     if (result.similarity < 0.3) {
       saveQueryClose(result, query);
     }
     result.result = "Je n'ai pas compris ce que vous voulez dire";
+  } else if (convExist) {
+    fs.unlinkSync(__dirname + "/../data/sessions/" + convToken + ".json");
   }
 
   //Save data if Kara ask something to user
   if (resData.data) {
     if (!resData.lang) resData.lang = result.lang;
     if (!resData.skill) resData.skill = result.skill;
-    resData.date = new Date();
-    const token = require("../utils/makeToken").generateToken();
-    result.token = token;
-    fs.writeFileSync(__dirname + "/../data/sessions/" + token + ".json", JSON.stringify(resData));
+    resData.creationDate = new Date();
+    const convToken = require("../utils/makeToken").generateToken({
+      type: "data/sessions",
+    });
+    result.convToken = convToken;
+    fs.writeFileSync(__dirname + "/../data/sessions/" + convToken + ".json", JSON.stringify(resData));
+  }
+
+  if (userToken) {
+    fs.writeFileSync(__dirname + "/../data/users/users/" + userToken + ".json", JSON.stringify(userContent));
   }
 
   return result;

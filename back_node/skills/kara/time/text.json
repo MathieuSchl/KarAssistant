@@ -15,5 +15,14 @@
       "est-ce que vous pouvez me dire l'heure qu'il est",
       "tu sais quelle heure il est"
     ]
-  }
+  },
+  "response": {
+    "en": {
+      "time": "[It is] hh:mm a"
+    },
+    "fr": {
+      "time": "[Il est] HH [heures] mm"
+    }
+  },
+  "error": "Undefined language for kara/time"
 }

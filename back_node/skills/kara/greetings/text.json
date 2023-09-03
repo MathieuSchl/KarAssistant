@@ -1,0 +1,22 @@
+{
+  "phrases": {
+    "en": ["hi", "hello", "hello cara", "hello kara", "hello clara", "cuckoo"],
+    "fr": [
+      "salut",
+      "bonjour",
+      "bonjour cara",
+      "bonjour kara",
+      "bonjour clara",
+      "coucou"
+    ]
+  },
+  "response": {
+    "en": {
+      "results": ["Hi", "Hello", "Have a nice day"]
+    },
+    "fr": {
+      "results": ["Salut", "Coucou", "Bonjour", "Bonne journée"]
+    }
+  },
+  "error": "Undefined language for kara/greetings"
+}

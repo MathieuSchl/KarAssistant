@@ -1,40 +1,25 @@
+const replaceVariables = require("../../../utils/replaceVariables").replaceVariables;
+const text = require("./text.json");
+module.exports.data = text;
+
 module.exports.execute = ({ query, lang, data }) => {
   if (/^\d+?$/.test(query)) {
+    //Lang unknown
+    if (!text.response[lang]) return { text: text.error + "/session" };
+
     const userValue = parseInt(query);
     const gameTarget = data.randomNumber;
-    if (userValue === gameTarget) {
-      switch (lang) {
-        case "en":
-          return { text: `Congratulations, you found the right value : ` + gameTarget };
+    const textResult =
+      userValue === gameTarget
+        ? text.response[lang].correctValue
+        : userValue < gameTarget
+        ? text.response[lang].greaterValue
+        : text.response[lang].smallerValue;
 
-        case "fr":
-          return { text: `Bravo, vous avez trouvé la bonne valeur : ` + gameTarget };
-
-        default:
-          return { text: `Undefined language for gessTheNumber/session` };
-      }
-    } else if (userValue < gameTarget) {
-      switch (lang) {
-        case "en":
-          return { text: `My number is greater than ` + userValue, data };
-
-        case "fr":
-          return { text: `Mon nombre est plus grand que ` + userValue, data };
-
-        default:
-          return { text: `Undefined language for gessTheNumber/session` };
-      }
-    } else if (userValue > gameTarget) {
-      switch (lang) {
-        case "en":
-          return { text: `My number is smaller  than ` + userValue, data };
-
-        case "fr":
-          return { text: `Mon nombre est plus petit que ` + userValue, data };
-
-        default:
-          return { text: `Undefined language for gessTheNumber/session` };
-      }
-    }
+    return {
+      text: replaceVariables(textResult, { userValue, gameTarget }),
+      data: userValue !== gameTarget ? data : null,
+      shortAnswerExpected: userValue !== gameTarget ? true : false,
+    };
   }
 };
