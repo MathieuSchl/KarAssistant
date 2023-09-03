@@ -7,9 +7,9 @@ services:
     restart: always
     container_name: karassistant-client-discord
     volumes:
-      - .env:/home/node/Karassistant/.env
-      - ./data:/home/node/Karassistant/data
-      - ./logs:/home/node/Karassistant/logs
+      - .env:/home/node/karAssistant-discordClient/.env
+      - ./data:/home/node/karAssistant-discordClient/data
+      - ./logs:/home/node/karAssistant-discordClient/logs
     networks:
       - karassistant
 
