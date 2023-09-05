@@ -1,6 +1,7 @@
 const fs = require("fs");
 const NodeRSA = require("node-rsa");
 const ipFunctions = require("../../utils/antiSpam");
+const logger = require("../../utils/logger").logger;
 
 /**
  * @swagger
@@ -70,12 +71,6 @@ function newClientToken({ userFile }) {
   const publicKey = keys.exportKey("public");
   const privateKey = keys.exportKey("private");
 
-  const encrypt = keys.encrypt(
-    `${clientToken};${new Date().toISOString()}`,
-    "base64",
-  );
-  console.log(encrypt);
-
   const creationDate = new Date();
   const data = {
     creationDate,
@@ -91,12 +86,12 @@ module.exports.saveData = saveData;
 function saveData({ userFile, clientFile }) {
   fs.writeFileSync(
     __dirname + "/../../data/users/users/" + userFile.userToken + ".json",
-    JSON.stringify(userFile.data),
+    JSON.stringify(userFile.data)
   );
 
   fs.writeFileSync(
     __dirname + "/../../data/users/clients/" + clientFile.clientToken + ".json",
-    JSON.stringify(clientFile.data),
+    JSON.stringify(clientFile.data)
   );
   return true;
 }
@@ -106,6 +101,7 @@ module.exports.start = (app) => {
     try {
       const ipAddress = ipFunctions.getIpAddress(req.socket.remoteAddress);
       const ipValid = ipFunctions.antiSpam({ ipAddress, limit: 2 });
+      logger({ route: "/api/client/newToken", ipAddress, ipValid });
       if (!ipValid) return res.sendStatus(403);
       const defaultUserFile = newUserToken();
       const { userFile, clientFile, publicKey } = newClientToken({

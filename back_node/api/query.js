@@ -1,5 +1,6 @@
 const use = require("../universalSentenceEncoder/index");
 const ipFunctions = require("../utils/antiSpam");
+const logger = require("../utils/logger").logger;
 
 /**
  * @swagger
@@ -86,13 +87,15 @@ const ipFunctions = require("../utils/antiSpam");
 module.exports.start = (app) => {
   app.get("/api/heyKara", async function (req, res) {
     try {
+      const ipAddress = ipFunctions.getIpAddress(req.socket.remoteAddress);
+      logger({ route: "/api/heyKara", ipAddress, ipValid: true });
       const result = await use.query({
         query: req.query.query.toLowerCase(),
         clientToken: req.query.clientToken,
         passPhrase: req.query.passPhrase,
         convToken: req.query.convToken,
         timeZone: req.query.timeZone,
-        ipAddress: ipFunctions.getIpAddress(req.socket.remoteAddress),
+        ipAddress,
       });
       res.json(result);
     } catch (e) {
