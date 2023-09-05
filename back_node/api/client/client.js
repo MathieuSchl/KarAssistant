@@ -16,6 +16,16 @@ const logger = require("../../utils/logger").logger;
  *   get:
  *     summary: Get new client token
  *     tags: [User]
+ *     parameters:
+ *     - name: "appType"
+ *       in: "query"
+ *       description: "The type of the client (mobile app, discord)"
+ *       required: true
+ *       type: string
+ *     - name: "authautifierTag"
+ *       in: "query"
+ *       description: "String to authentify"
+ *       type: string
  *     responses:
  *       200:
  *         description: "Token for new client"
@@ -61,7 +71,7 @@ function newUserToken() {
 }
 
 module.exports.newClientToken = newClientToken;
-function newClientToken({ userFile }) {
+function newClientToken({ userFile, appType, authautifierTag }) {
   const clientToken = require("../../utils/makeToken").generateToken({
     type: "data/users/clients",
   });
@@ -76,6 +86,8 @@ function newClientToken({ userFile }) {
     creationDate,
     lastRequestDate: creationDate,
     userToken: userFile.userToken,
+    appType,
+    authautifierTag,
     privateKey: privateKey,
   };
 
@@ -99,6 +111,7 @@ function saveData({ userFile, clientFile }) {
 module.exports.start = (app) => {
   app.get("/api/client/newToken", async function (req, res) {
     try {
+      if (!req.query.appType) return res.sendStatus(400);
       const ipAddress = ipFunctions.getIpAddress(req.socket.remoteAddress);
       const ipValid = ipFunctions.antiSpam({ ipAddress, limit: 2 });
       logger({ route: "/api/client/newToken", ipAddress, ipValid });
@@ -106,6 +119,8 @@ module.exports.start = (app) => {
       const defaultUserFile = newUserToken();
       const { userFile, clientFile, publicKey } = newClientToken({
         userFile: defaultUserFile,
+        appType: req.query.appType,
+        authautifierTag: req.queryauthautifierTag,
       });
       saveData({ userFile, clientFile });
 
