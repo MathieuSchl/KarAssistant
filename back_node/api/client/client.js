@@ -1,6 +1,7 @@
 const fs = require("fs");
 const NodeRSA = require("node-rsa");
 const ipFunctions = require("../../utils/antiSpam");
+const logger = require("../../utils/logger").logger;
 
 /**
  * @swagger
@@ -15,6 +16,16 @@ const ipFunctions = require("../../utils/antiSpam");
  *   get:
  *     summary: Get new client token
  *     tags: [User]
+ *     parameters:
+ *     - name: "appType"
+ *       in: "query"
+ *       description: "The type of the client (mobile app, discord)"
+ *       required: true
+ *       type: string
+ *     - name: "authautifierTag"
+ *       in: "query"
+ *       description: "String to authentify"
+ *       type: string
  *     responses:
  *       200:
  *         description: "Token for new client"
@@ -60,7 +71,7 @@ function newUserToken() {
 }
 
 module.exports.newClientToken = newClientToken;
-function newClientToken({ userFile }) {
+function newClientToken({ userFile, appType, authautifierTag }) {
   const clientToken = require("../../utils/makeToken").generateToken({
     type: "data/users/clients",
   });
@@ -70,17 +81,13 @@ function newClientToken({ userFile }) {
   const publicKey = keys.exportKey("public");
   const privateKey = keys.exportKey("private");
 
-  const encrypt = keys.encrypt(
-    `${clientToken};${new Date().toISOString()}`,
-    "base64",
-  );
-  console.log(encrypt);
-
   const creationDate = new Date();
   const data = {
     creationDate,
     lastRequestDate: creationDate,
     userToken: userFile.userToken,
+    appType,
+    authautifierTag,
     privateKey: privateKey,
   };
 
@@ -91,12 +98,12 @@ module.exports.saveData = saveData;
 function saveData({ userFile, clientFile }) {
   fs.writeFileSync(
     __dirname + "/../../data/users/users/" + userFile.userToken + ".json",
-    JSON.stringify(userFile.data),
+    JSON.stringify(userFile.data)
   );
 
   fs.writeFileSync(
     __dirname + "/../../data/users/clients/" + clientFile.clientToken + ".json",
-    JSON.stringify(clientFile.data),
+    JSON.stringify(clientFile.data)
   );
   return true;
 }
@@ -104,12 +111,16 @@ function saveData({ userFile, clientFile }) {
 module.exports.start = (app) => {
   app.get("/api/client/newToken", async function (req, res) {
     try {
+      if (!req.query.appType) return res.sendStatus(400);
       const ipAddress = ipFunctions.getIpAddress(req.socket.remoteAddress);
       const ipValid = ipFunctions.antiSpam({ ipAddress, limit: 2 });
+      logger({ route: "/api/client/newToken", ipAddress, ipValid });
       if (!ipValid) return res.sendStatus(403);
       const defaultUserFile = newUserToken();
       const { userFile, clientFile, publicKey } = newClientToken({
         userFile: defaultUserFile,
+        appType: req.query.appType,
+        authautifierTag: req.query.authautifierTag,
       });
       saveData({ userFile, clientFile });
 

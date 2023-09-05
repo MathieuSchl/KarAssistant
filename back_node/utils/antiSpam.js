@@ -1,3 +1,5 @@
+require("dotenv").config();
+const allowedIp = process.env.ALLOWED_IP ? JSON.parse(process.env.ALLOWED_IP) : [];
 const reIpAddress = new RegExp("(?:[0-9]{1,3}.){3}[0-9]{1,3}");
 const dataIp = {};
 const banDuration = 60 * 1000;
@@ -5,6 +7,9 @@ const banDuration = 60 * 1000;
 module.exports.antiSpam = antiSpam;
 function antiSpam({ ipAddress, limit = 10 }) {
   if (!ipAddress) return false;
+  if (ipAddress === "127.0.0.1") return true; //No ban for localHost
+  if (ipAddress.split(".")[0] === "172") return true; //No ban for ip in private newtwork
+  if (allowedIp.includes(ipAddress)) return true; //No ban for localHost
   if (!dataIp[ipAddress]) {
     dataIp[ipAddress] = {
       lastRequest: new Date(),

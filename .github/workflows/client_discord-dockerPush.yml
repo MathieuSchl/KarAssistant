@@ -81,7 +81,7 @@ jobs:
           file: ./clientDiscord/Dockerfile
           push: true
           tags: "${{ vars.DOCKERHUB_USERNAME }}/karassistant-client-discord:${{ needs.Check.outputs.version }}"
-          build-args: project_path=back_node
+          build-args: project_path=clientDiscord
 
       - name: Build and push (latest version)
         uses: docker/build-push-action@v4
@@ -90,7 +90,7 @@ jobs:
           file: ./clientDiscord/Dockerfile
           push: true
           tags: "${{ vars.DOCKERHUB_USERNAME }}/karassistant-client-discord:latest"
-          build-args: project_path=back_node
+          build-args: project_path=clientDiscord
 
       - name: Create tag
         uses: rickstaa/action-create-tag@v1
