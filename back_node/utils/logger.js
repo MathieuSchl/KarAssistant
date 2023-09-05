@@ -18,7 +18,7 @@ module.exports.logger = ({ route, ipAddress, ipValid }) => {
   const nowDate = new Date();
   const filePath =
     __dirname +
-    "/../logs/api/`logs_api_" +
+    "/../logs/api/logs_api_" +
     nowDate.getFullYear() +
     "-" +
     ("0" + (nowDate.getMonth() + 1)).slice(-2) +
