@@ -120,7 +120,7 @@ module.exports.start = (app) => {
       const { userFile, clientFile, publicKey } = newClientToken({
         userFile: defaultUserFile,
         appType: req.query.appType,
-        authautifierTag: req.queryauthautifierTag,
+        authautifierTag: req.query.authautifierTag,
       });
       saveData({ userFile, clientFile });
 
