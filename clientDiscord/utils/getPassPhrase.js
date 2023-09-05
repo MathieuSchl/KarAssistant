@@ -1,17 +1,25 @@
 const fs = require("fs");
+const { stringify } = require("qs");
 const axios = require("axios");
+const api = axios.create({
+  paramsSerializer: {
+    serialize: stringify, // or (params) => Qs.stringify(params, {arrayFormat: 'brackets'})
+  },
+});
 const NodeRSA = require("node-rsa");
 require("dotenv").config();
 /* c8 ignore start */
-async function createNewClient() {
+async function createNewClient({ authautifierTag }) {
   return await new Promise(function (resolve, reject) {
     if (process.env.IS_TEST)
       return resolve({
         clientToken: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         publicKey: "PUBLIC KEY",
       });
-    axios({
+    api({
       method: "GET",
+      headers: { "Content-Type": "application/json" },
+      params: { appType: "discord", authautifierTag },
       url: process.env.BACK_URL + "/api/client/newToken",
     })
       .then(function (response) {
@@ -49,7 +57,7 @@ module.exports.getPassPhrase = async ({ userId, userName, avatarUrl }) => {
       const userData = JSON.parse(fs.readFileSync(__dirname + "/../data/clients/" + userId + ".json", "utf8"));
       resolve({ clientToken: userData.clientToken, publicKey: userData.publicKey });
     } else {
-      const newClient = await createNewClient();
+      const newClient = await createNewClient({ authautifierTag: userId });
       if (newClient.err) return resolve({ err: newClient.err });
       const userData = {
         userName,
