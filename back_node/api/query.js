@@ -88,7 +88,7 @@ module.exports.start = (app) => {
   app.get("/api/heyKara", async function (req, res) {
     try {
       const ipAddress = ipFunctions.getIpAddress(req.socket.remoteAddress);
-      logger({ route: "/api/heyKara", ipAddress, ipValid: true });
+      logger({ route: "GET /api/heyKara", ipAddress, ipValid: true });
       const result = await use.query({
         query: req.query.query.toLowerCase(),
         clientToken: req.query.clientToken,

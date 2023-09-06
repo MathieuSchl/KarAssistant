@@ -43,16 +43,13 @@ const logger = require("../../utils/logger").logger;
  *               example:
  *                 clientToken: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
  *                 rsaPublicKey: example
+ *       400:
+ *         description: "Some parameters are wrong"
+ *       403:
+ *         description: "User is not authenticated"
+ *       500:
+ *         description: "Error in back"
  */
-
-module.exports.antiSpam = antiSpam;
-function antiSpam(ipAddress) {
-  if (!dataIp[ipAddress]) {
-    dataIp[ipAddress] = {
-      lastRequest,
-    };
-  }
-}
 
 module.exports.newUserToken = newUserToken;
 function newUserToken() {
@@ -114,7 +111,7 @@ module.exports.start = (app) => {
       if (!req.query.appType) return res.sendStatus(400);
       const ipAddress = ipFunctions.getIpAddress(req.socket.remoteAddress);
       const ipValid = ipFunctions.antiSpam({ ipAddress, limit: 2 });
-      logger({ route: "/api/client/newToken", ipAddress, ipValid });
+      logger({ route: "GET /api/client/newToken", ipAddress, ipValid });
       if (!ipValid) return res.sendStatus(403);
       const defaultUserFile = newUserToken();
       const { userFile, clientFile, publicKey } = newClientToken({
