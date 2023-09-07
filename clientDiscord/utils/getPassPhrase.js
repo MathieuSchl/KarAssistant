@@ -37,6 +37,35 @@ async function createNewClient({ authautifierTag }) {
   });
 }
 
+module.exports.updateUser = updateUser;
+async function updateUser({ data, clientToken, passPhrase }) {
+  return await new Promise((resolve, reject) => {
+    api({
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      params: {
+        clientToken,
+        passPhrase,
+      },
+      data,
+      url: process.env.BACK_URL + "/api/user",
+    })
+      .then(function (response) {
+        if (response.status !== 200) throw "Create new client status : " + response.status;
+
+        return resolve(true);
+      })
+      .catch(function (error) {
+        if (error.code === "ECONNREFUSED") resolve({ err: "Access to the Kara server cannot be established" });
+        if (error.response && error.response.status === 403) resolve({ err: "Access to the Kara server is forbidden" });
+        else {
+          console.log(error);
+          resolve({ err: error.code });
+        }
+      });
+  });
+}
+
 async function encryptPassPhrase({ clientToken, publicKey }) {
   try {
     const keyPublic = new NodeRSA(publicKey);
@@ -66,12 +95,19 @@ module.exports.getPassPhrase = async ({ userId, userName, avatarUrl }) => {
         publicKey: newClient.publicKey,
       };
       fs.writeFileSync(__dirname + "/../data/clients/" + userId + ".json", JSON.stringify(userData));
+
       resolve(newClient);
     }
   });
   if (err) return { err };
 
   const passPhraseEncrypted = await encryptPassPhrase({ clientToken, publicKey });
+  if (!userExist)
+    updateUser({
+      data: { discordAvatarUrl: avatarUrl },
+      clientToken: clientToken,
+      passPhrase: passPhraseEncrypted,
+    });
 
   return { clientToken, passPhrase: passPhraseEncrypted };
 };

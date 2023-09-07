@@ -3,7 +3,7 @@ version: "3"
 services:
   karassistant-client-discord:
     #build: .
-    image: codyisthesenate/karassistant-client-discord:1.0.1
+    image: codyisthesenate/karassistant-client-discord:1.0.2
     restart: always
     container_name: karassistant-client-discord
     volumes:
