@@ -22,5 +22,6 @@ void main() {
       controller.mockAskedKara();
       expect(controller.verifIsToken(), isTrue);
     });
+    //console.log('test1Actions')
   });
 }
