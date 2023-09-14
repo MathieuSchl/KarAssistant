@@ -1,5 +1,5 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:kar_assistant/core/models/conversation/message_conversation.dart';
 import 'package:kar_assistant/core/models/kara_response.dart';
 import 'package:kar_assistant/core/repository/kara_repo.dart';
@@ -27,6 +27,20 @@ class KaraController {
     }
     karaLastResponse = result;
     return result;
+  }
+
+  mockAskedKara(){
+    KaraResponse result = KaraResponse.fromJson(json.decode("""{
+      "similarity": 0.212,
+      "bestPhrase": "Bonjour",
+      "shortAnswerExpected": false,
+      "clientExist": false,
+      "lang": "fr",
+      "skill": "kara/greetings",
+      "result": "Bonjour je suis Kara",
+      "convToken": "Token"
+    }"""));
+    karaLastResponse = result;
   }
 
   bool verifIsToken() {
