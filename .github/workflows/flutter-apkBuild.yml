@@ -3,6 +3,23 @@ run-name: "[FLUTTER] APK Create : ${{ github.actor }} push '${{ github.event.hea
 on:
   push:
     branches: 
-      - develop
+      - developFlutter
     paths:
       - app_flutter/*
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '3.13.2'
+          channel: stable
+      - name: Build apk
+        run: |
+          flutter pub get
+          flutter test
+          flutter build apk --debug
