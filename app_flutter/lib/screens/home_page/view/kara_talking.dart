@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:kar_assistant/core/models/conversation/message_conversation.dart';
@@ -103,7 +102,7 @@ class _KaraTalkingState extends State<KaraTalking> {
       animationKey.currentState!.stopAnimate();
       widget.updateParents();
       widget.karaController
-          .askedKara(result.recognizedWords)
+          .askedKara(result.recognizedWords )
           .then((KaraResponse response) {
         setState(() {
           showKaraAnswer = true;

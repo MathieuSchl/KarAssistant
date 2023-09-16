@@ -6,5 +6,6 @@ class UtilsController {
     await dotenv.load(fileName: ".env");
     globals.envBaseUrl = dotenv.env['BASEURL'].toString();
     globals.envMode = dotenv.env['MODE'].toString();
+    globals.unitTest = dotenv.env['TEST'].toString();
   }
 }

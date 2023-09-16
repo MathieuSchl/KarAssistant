@@ -62,7 +62,7 @@ class _HystoryPageState extends State<HystoryPage> {
                       ),
                     ),
                     listMessages[index].type == TypeConversation.recording
-                        ? SpinKitWave(
+                        ? const SpinKitWave(
                             color: Colors.white,
                             size: 10,
                           )

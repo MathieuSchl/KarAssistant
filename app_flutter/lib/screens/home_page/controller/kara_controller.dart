@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:kar_assistant/core/models/conversation/message_conversation.dart';
 import 'package:kar_assistant/core/models/kara_response.dart';
 import 'package:kar_assistant/core/repository/kara_repo.dart';
@@ -11,7 +12,7 @@ class KaraController {
   List<MessageConversation> listResponse = [];
 
   Future<KaraResponse> askedKara(
-    String text,
+    String text
   ) async {
     Map<String, String> data = {
       'query': text,
@@ -21,7 +22,7 @@ class KaraController {
       'timeZone': 'Europe/Paris'
     };
     KaraResponse result;
-    result = await karaRepo.heyKara(data);
+    result = await karaRepo.heyKara(data, http.Client());
     if (kDebugMode) {
       print(result.toJson());
     }

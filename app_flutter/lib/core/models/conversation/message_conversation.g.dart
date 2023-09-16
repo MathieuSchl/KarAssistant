@@ -24,4 +24,5 @@ Map<String, dynamic> _$MessageConversationToJson(
 const _$TypeConversationEnumMap = {
   TypeConversation.kara: 'kara',
   TypeConversation.user: 'user',
+  TypeConversation.recording: 'recording',
 };

@@ -57,13 +57,13 @@ class HttpRepo implements HttpRepository {
     http.Response response;
     try {
       response = await http
-          .get(getUri(url), headers: header)
-          .timeout(
-            Duration(seconds: timeOutSeconds),
-            onTimeout: () => http.Response(responseTimeOut, 408),
-          )
-          .onError(
-              (error, stackTrace) => http.Response(responseOtherError, 503));
+        .get(getUri(url), headers: header)
+        .timeout(
+          Duration(seconds: timeOutSeconds),
+          onTimeout: () => http.Response(responseTimeOut, 408),
+        )
+        .onError(
+            (error, stackTrace) => http.Response(responseOtherError, 503));
 
       if (response.statusCode < 200 || response.statusCode > 299) {
         final error = json.decode(response.body);
@@ -77,10 +77,10 @@ class HttpRepo implements HttpRepository {
 
   @override
   Future<http.Response> getRequestParams(
-      String url, Map<String, dynamic> parameters) async {
+      String url, Map<String, dynamic> parameters, http.Client client) async {
     http.Response response;
     try {
-      response = await http
+      response = await client
           .get(getUri(url, parameters: parameters), headers: header)
           .timeout(
             Duration(seconds: timeOutSeconds),
