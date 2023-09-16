@@ -16,26 +16,15 @@ const logger = require("../utils/logger").logger;
  *     summary: Ask something to Kara
  *     tags: [Kara]
  *     parameters:
- *     - name: "query"
- *       in: "query"
- *       description: "The question"
+ *     - name: karaeatcookies
+ *       in: "header"
+ *       description: Cookie of the user making the request
  *       required: true
  *       type: string
- *     - name: "clientToken"
+ *     - name: "data"
  *       in: "query"
- *       description: "Client token"
- *       type: string
- *     - name: "passPhrase"
- *       in: "query"
- *       description: "Pass phrase to verify client"
- *       type: string
- *     - name: "convToken"
- *       in: "query"
- *       description: "Conversation token for response"
- *       type: string
- *     - name: "timeZone"
- *       in: "query"
- *       description: "TimeZone from the user"
+ *       description: "The question encrypted"
+ *       required: true
  *       type: string
  *     responses:
  *       200:
@@ -87,17 +76,15 @@ const logger = require("../utils/logger").logger;
 module.exports.start = (app) => {
   app.get("/api/heyKara", async function (req, res) {
     try {
+      if (!req.headers.karaeatcookies || !req.query.data) return res.sendStatus(400);
       const ipAddress = ipFunctions.getIpAddress(req.socket.remoteAddress);
-      logger({ route: "/api/heyKara", ipAddress, ipValid: true });
+      logger({ route: "GET /api/heyKara", ipAddress, ipValid: true });
       const result = await use.query({
-        query: req.query.query.toLowerCase(),
-        clientToken: req.query.clientToken,
-        passPhrase: req.query.passPhrase,
-        convToken: req.query.convToken,
-        timeZone: req.query.timeZone,
+        clientToken: req.headers.karaeatcookies,
+        data: req.query.data,
         ipAddress,
       });
-      res.json(result);
+      res.send(result);
     } catch (e) {
       if (typeof e === "number") return res.sendStatus(e);
       if (e) console.log(e);
