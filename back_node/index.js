@@ -1,4 +1,5 @@
 const express = require("express");
+const expressHeader = require("express-header");
 const bodyParser = require("body-parser");
 const app = express();
 app.use(
@@ -15,6 +16,23 @@ require("./utils/prepareFolders").prepareFolders();
 require("./utils/logPurge").logPurge();
 require("./api/index").startApi(app);
 require("./cron/index").startCron(app);
+
+app.use(
+  expressHeader([
+    {
+      key: "Access-Control-Allow-Origin",
+      value: "*",
+    },
+    {
+      key: "Access-Control-Allow-Methods",
+      value: "GET, PUT",
+    },
+    {
+      key: "Access-Control-Allow-Headers",
+      value: "Origin, Content-Type, X-Auth-Token, karaeatcookies",
+    },
+  ])
+);
 
 if (process.env.SHOWSWAGGER === "true") {
   const swaggerUI = require("swagger-ui-express");

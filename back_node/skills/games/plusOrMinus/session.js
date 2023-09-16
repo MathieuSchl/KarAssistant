@@ -18,7 +18,7 @@ module.exports.execute = ({ query, lang, data }) => {
 
     return {
       text: replaceVariables(textResult, { userValue, gameTarget }),
-      data: userValue !== gameTarget ? data : null,
+      session: userValue !== gameTarget ? data : null,
       shortAnswerExpected: userValue !== gameTarget ? true : false,
     };
   }

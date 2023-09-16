@@ -1,6 +1,6 @@
 {
   "name": "karassistantback",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "description": "Back end for karassistant",
   "main": "index.js",
   "scripts": {
@@ -24,6 +24,7 @@
     "crypto-js": "^4.1.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "express-header": "^1.1.1",
     "moment-timezone": "^0.5.43",
     "node-cron": "^3.0.2",
     "node-rsa": "^1.1.1",
