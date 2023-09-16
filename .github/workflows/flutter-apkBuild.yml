@@ -18,8 +18,12 @@ jobs:
         with:
           flutter-version: '3.13.2'
           channel: stable
-      - name: Build apk
+      - name: get package
         run: |
           flutter pub get
+      - name: launch Test
+        run : |
           flutter test
+      - name: build apk
+        run : |
           flutter build apk --debug
