@@ -2,10 +2,10 @@ name: "[FLUTTER] APK Create"
 run-name: "[FLUTTER] APK Create : ${{ github.actor }} push '${{ github.event.head_commit.message }}' 🚀"
 on:
   push:
-    branches: 
-      - developFlutter
-    paths:
-      - app_flutter/*
+    # branches: 
+    #   - developFlutter
+    # paths:
+    #   - app_flutter/**
 jobs:
   build-apk:
     runs-on: ubuntu-latest
