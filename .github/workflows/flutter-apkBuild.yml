@@ -10,20 +10,32 @@ jobs:
   build-apk:
     runs-on: ubuntu-latest
     steps: 
-      - uses: actions/checkout@v2
-      - uses: actions/setup-java@v1
+      - uses: actions/checkout@v3.4.0
+      - uses: actions/setup-java@v3.10.0
         with:
-          java-version: '12.x'
-      - uses: subosito/flutter-action@v1
+          distribution: 'zulu' # See 'Supported distributions' for available options
+          java-version: '11'
+      - uses: subosito/flutter-action@v2.8.0
         with:
           flutter-version: '3.13.2'
           channel: stable
+      - name: Create env file
+        working-directory: ./app_flutter
+        run: |
+          touch .env
+          echo BASEURL=${{ secrets.API_BASEURL }} >> .env
+          echo MODE=DEV >> .env
+          cat .env
+          ls -a
       - name: get package
+        working-directory: ./app_flutter
         run: |
           flutter pub get
       - name: launch Test
+        working-directory: ./app_flutter
         run : |
           flutter test
       - name: build apk
+        working-directory: ./app_flutter
         run : |
           flutter build apk --debug
