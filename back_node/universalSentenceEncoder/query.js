@@ -4,6 +4,7 @@ const compareSentences = require("./universalSentenceEncoder").compareSentences;
 const loadPrivateKey = require("../utils/RSA").loadPrivateKey;
 const encryptPrivate = require("../utils/RSA").encryptPrivate;
 const decryptPrivate = require("../utils/RSA").decryptPrivate;
+const timeIntervalAllowed = 5 * 1000;
 
 const vectors = require("./loadSkills").vectors;
 
@@ -23,8 +24,11 @@ module.exports.query = async ({ clientToken, data, ipAddress }) => {
   if (!decryptedData.query || !decryptedData.date) throw 400;
   const query = decryptedData.query;
   const date = new Date(decryptedData.date);
+  const nowDate = new Date();
 
   //Add date validation
+  if (date > nowDate) return false; // Date from the PassPhrase cant be in the future
+  if (nowDate - date > timeIntervalAllowed) throw 403; // Request expired
 
   // Load user data
   const initialUserData = fs.readFileSync(__dirname + "/../data/users/users/" + userToken + ".json", "utf8");
