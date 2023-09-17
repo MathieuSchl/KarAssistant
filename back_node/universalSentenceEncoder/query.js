@@ -9,7 +9,7 @@ const timeIntervalAllowed = 5 * 1000;
 const vectors = require("./loadSkills").vectors;
 
 module.exports.query = async ({ clientToken, data, ipAddress }) => {
-  if (!fs.existsSync(__dirname + "/../data/users/clients/" + clientToken + ".json")) throw 403;
+  if (!fs.existsSync(__dirname + "/../data/users/clients/" + clientToken + ".json")) throw 404;
   const initialClientData = fs.readFileSync(__dirname + "/../data/users/clients/" + clientToken + ".json", "utf8");
   const clientContent = JSON.parse(initialClientData);
   clientContent.lastRequestDate = new Date();
@@ -30,6 +30,7 @@ module.exports.query = async ({ clientToken, data, ipAddress }) => {
   if (nowDate - date > timeIntervalAllowed) throw 403; // Request expired
 
   // Load user data
+  if (!fs.existsSync(__dirname + "/../data/users/users/" + userToken + ".json")) throw 404;
   const initialUserData = fs.readFileSync(__dirname + "/../data/users/users/" + userToken + ".json", "utf8");
   const userContent = JSON.parse(initialUserData);
 

@@ -1,8 +1,10 @@
 const fs = require("fs");
-const NodeRSA = require("node-rsa");
 const ipFunctions = require("../../utils/antiSpam");
 const logger = require("../../utils/logger").logger;
-const verifyPassPhrase = require("../../utils/verifyPassPhrase").verifyPassPhrase;
+const loadPrivateKey = require("../../utils/RSA").loadPrivateKey;
+const decryptPrivate = require("../../utils/RSA").decryptPrivate;
+const timeIntervalAllowed = 5 * 1000;
+const checkValues = ["discordAvatarUrl", "timeZone"];
 
 /**
  * @swagger
@@ -57,44 +59,46 @@ const verifyPassPhrase = require("../../utils/verifyPassPhrase").verifyPassPhras
 module.exports.start = (app) => {
   app.put("/api/user", async function (req, res) {
     try {
+      const clientToken = req.headers.karaeatcookies;
+      const data = req.query.data;
+      const nowDate = new Date(new Date().toUTCString());
+      if (!clientToken || !data) return res.sendStatus(400);
+
       const ipAddress = ipFunctions.getIpAddress(req.socket.remoteAddress);
       const ipValid = ipFunctions.antiSpam({ ipAddress, limit: 5 });
       logger({ route: "PUT /api/user", ipAddress, ipValid });
       if (!ipValid) return res.sendStatus(403);
 
-      const clientToken = req.query.clientToken;
       let clientExist = clientToken && fs.existsSync(__dirname + "/../../data/users/clients/" + clientToken + ".json");
       if (!clientExist) return res.sendStatus(403);
       const clientDataRead = fs.readFileSync(__dirname + "/../../data/users/clients/" + clientToken + ".json", "utf8");
       const clientContent = JSON.parse(clientDataRead);
-      clientContent.lastRequestDate = new Date();
+      clientContent.lastRequestDate = nowDate;
       fs.writeFileSync(__dirname + "/../../data/users/clients/" + clientToken + ".json", JSON.stringify(clientContent));
 
       userToken = clientContent.userToken;
-      const privateKey = new NodeRSA(clientContent.privateKey);
 
-      try {
-        const passPhrase = req.query.passPhrase;
-        const decryptedPassPhrase = privateKey.decrypt(passPhrase, "utf8");
+      const privateKey = loadPrivateKey({ privateKey: clientContent.privateKey });
+      const { decryptError, decryptedData } = await decryptPrivate({ privateKey, data });
+      if (decryptError) throw decryptError;
 
-        clientExist = verifyPassPhrase({
-          passPhrase: decryptedPassPhrase,
-          clientToken,
-        });
-        if (!clientExist && !process.env.DEV_MODE) throw 403;
-      } catch (e) {
-        console.log(e);
-        throw 403;
-      }
+      const date = new Date(new Date(decryptedData.date).toUTCString());
+
+      // Add date validation
+      if (date > nowDate) return false; // Date from the PassPhrase cant be in the future
+      if (nowDate - date > timeIntervalAllowed) throw 403; // Request expired
 
       const userDataRead = fs.readFileSync(__dirname + "/../../data/users/users/" + userToken + ".json", "utf8");
       userContent = JSON.parse(userDataRead);
 
-      //Add data to user
-      const discordAvatarUrl = req.body?.discordAvatarUrl;
-      if (discordAvatarUrl) userContent.data.discordAvatarUrl = discordAvatarUrl;
-      const timeZone = req.body?.timeZone;
-      if (timeZone) userContent.data.timeZone = timeZone;
+      // Add data to user
+      // All authorized variables are at the top of the file
+      userContent.lastRequestDate = nowDate;
+      for (const element of checkValues) {
+        if (decryptedData[element]) {
+          userContent.data[element] = decryptedData[element];
+        }
+      }
 
       fs.writeFileSync(__dirname + "/../../data/users/users/" + userToken + ".json", JSON.stringify(userContent));
 

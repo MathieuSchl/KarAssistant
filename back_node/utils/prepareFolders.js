@@ -6,7 +6,6 @@ module.exports.prepareFolders = () => {
   if (!fs.existsSync(__dirname + "/../logs/api")) fs.mkdirSync(__dirname + "/../logs/api");
 
   if (!fs.existsSync(__dirname + "/../data")) fs.mkdirSync(__dirname + "/../data");
-  if (!fs.existsSync(__dirname + "/../data/sessions")) fs.mkdirSync(__dirname + "/../data/sessions");
   if (!fs.existsSync(__dirname + "/../data/users")) fs.mkdirSync(__dirname + "/../data/users");
   if (!fs.existsSync(__dirname + "/../data/users/users")) fs.mkdirSync(__dirname + "/../data/users/users");
   if (!fs.existsSync(__dirname + "/../data/users/clients")) fs.mkdirSync(__dirname + "/../data/users/clients");
