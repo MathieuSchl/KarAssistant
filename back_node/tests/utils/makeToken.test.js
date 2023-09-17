@@ -4,7 +4,7 @@ describe("Make token", () => {
   test("Generate token", async () => {
     //Execute
     const result = require("../../utils/makeToken").generateToken({
-      type: "data/sessions",
+      type: "data/users/users",
     });
 
     //Test
@@ -14,14 +14,11 @@ describe("Make token", () => {
   test("Generate existing token", async () => {
     //Prepare
     const token = "test";
-    fs.writeFileSync(
-      __dirname + "/../../data/sessions/" + token + ".json",
-      "test",
-    );
+    fs.writeFileSync(__dirname + "/../../data/users/users/" + token + ".json", "test");
 
     //Execute
     const result = require("../../utils/makeToken").generateToken({
-      type: "data/sessions",
+      type: "data/users/users",
       token,
     });
 
@@ -29,6 +26,6 @@ describe("Make token", () => {
     expect(result != null).toBe(true);
 
     //Purge
-    fs.unlinkSync(__dirname + "/../../data/sessions/" + token + ".json");
+    fs.unlinkSync(__dirname + "/../../data/users/users/" + token + ".json");
   });
 });
