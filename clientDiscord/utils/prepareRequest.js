@@ -1,4 +1,6 @@
 const fs = require("fs");
+const encryptData = require("./RSA").encryptData;
+const updateUser = require("./updateUser").updateUser;
 const { stringify } = require("qs");
 const axios = require("axios");
 const api = axios.create({
@@ -27,50 +29,26 @@ async function createNewClient({ authautifierTag }) {
         resolve(response.data);
       })
       .catch(function (error) {
-        if (error.code === "ECONNREFUSED") resolve({ err: "Access to the Kara server cannot be established" });
-        if (error.response && error.response.status === 403) resolve({ err: "Access to the Kara server is forbidden" });
+        if (error.code === "ECONNREFUSED")
+          return resolve({ err: "Access to the Kara server cannot be established", status: 420 });
+        else if (error.response && error.response.status === 403)
+          return resolve({ err: "Access to the Kara server is forbidden", status: error.response.status });
+        else if (error.response && error.response.status === 500)
+          return resolve({ err: "Kara as an internal error", status: error.response.status });
         else {
           console.log(error);
-          resolve({ err: error.code });
+          return resolve({ err: error.code, status: error.response ? error.response.status : 420 });
         }
       });
   });
 }
 
-module.exports.updateUser = updateUser;
-async function updateUser({ data, clientToken }) {
-  return await new Promise((resolve, reject) => {
-    api({
-      method: "PUT",
-      headers: { "Content-Type": "application/json", karaeatcookies: clientToken },
-      params: {
-        data,
-      },
-      data,
-      url: process.env.BACK_URL + "/api/user",
-    })
-      .then(function (response) {
-        if (response.status !== 200) throw "Create new client status : " + response.status;
-
-        return resolve(true);
-      })
-      .catch(function (error) {
-        if (error.code === "ECONNREFUSED") resolve({ err: "Access to the Kara server cannot be established" });
-        if (error.response && error.response.status === 403) resolve({ err: "Access to the Kara server is forbidden" });
-        else {
-          console.log(error);
-          resolve({ err: error.code });
-        }
-      });
-  });
-}
-
-async function encryptData({ clientToken, publicKey }) {
+module.exports.decryptResult = decryptResult;
+async function decryptResult({ data, publicKey }) {
   try {
     const keyPublic = new NodeRSA(publicKey);
-    const passPhrase = clientToken + ";" + new Date().toISOString();
-    const passPhraseEncrypted = keyPublic.encrypt(passPhrase, "base64");
-    return passPhraseEncrypted;
+    const resultDecrypted = keyPublic.decryptPublic(data, "utf8");
+    return JSON.parse(resultDecrypted);
   } catch {
     return null;
   }
@@ -78,7 +56,7 @@ async function encryptData({ clientToken, publicKey }) {
 
 /* c8 ignore stop */
 
-module.exports.getPassPhrase = async ({ userId, userName, avatarUrl }) => {
+module.exports.prepareRequest = async ({ userId, userName, avatarUrl, messageContent }) => {
   const userExist = fs.existsSync(__dirname + "/../data/clients/" + userId + ".json");
   const { err, clientToken, publicKey } = await new Promise(async (resolve, reject) => {
     if (userExist) {
@@ -94,19 +72,20 @@ module.exports.getPassPhrase = async ({ userId, userName, avatarUrl }) => {
         publicKey: newClient.publicKey,
       };
       fs.writeFileSync(__dirname + "/../data/clients/" + userId + ".json", JSON.stringify(userData));
-
+      const res = await updateUser({
+        userName,
+        userId,
+        data: { discordAvatarUrl: avatarUrl },
+      });
       resolve(newClient);
     }
   });
   if (err) return { err };
 
-  const passPhraseEncrypted = await encryptData({ clientToken, publicKey });
-  if (!userExist)
-    updateUser({
-      data: { discordAvatarUrl: avatarUrl },
-      clientToken: clientToken,
-      passPhrase: passPhraseEncrypted,
-    });
+  const data = await encryptData({
+    data: { query: messageContent },
+    publicKey,
+  });
 
-  return { clientToken, passPhrase: passPhraseEncrypted };
+  return { clientToken, data, publicKey };
 };
