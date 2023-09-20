@@ -52,6 +52,7 @@ jobs:
         run: |
           export NODE_OPTIONS=--no-experimental-fetch && npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
       - name: Prepare data
+        id: data
         run: |
           awk 'NR>5' /tmp/coverage0.txt > /tmp/coverage1.txt
           echo "test=$test" >> "$GITHUB_OUTPUT"
@@ -63,7 +64,7 @@ jobs:
           DISCORD_USERNAME: GitHub
           DISCORD_AVATAR: https://cdn.discordapp.com/avatars/1138225091528904714/df91181b3f1cf0ef1592fbe18e0962d7.webp?size=100
           DISCORD_EMBEDS: |
-            [{"title":"❌ Errors with the test","description":"Coverage:\n${{$test}}","color":"FF0000"}]
+            [{"title":"❌ Errors with the test","description":"Coverage:\n${{steps.data.outputs.test}}","color":"FF0000"}]
         uses: Ilshidur/action-discord@master
       - name: SUCCESS Send coverage to discord
         if: steps.tests.outcome == 'success'
