@@ -2,8 +2,8 @@ name: "[BACK] Docker push"
 run-name: "[BACK] DockerPush : ${{ github.actor }} push '${{ github.event.head_commit.message }}' 🚀"
 on:
   push:
-    paths:
-      - back_node/**
+    # paths:
+    #   - back_node/**
 jobs:
   Check:
     runs-on: ubuntu-latest
@@ -53,12 +53,12 @@ jobs:
       - name: test
         run: echo test
       - name: Check error
-        if: steps.integrationTests.outcome == 'failure'
+        if: steps.tests.outcome == 'failure'
         run: |
           echo "❌ Errors with the test" > $GITHUB_STEP_SUMMARY
           exit 1
       - name: Echo success
-        if: steps.integrationTests.outcome == 'success'
+        if: steps.tests.outcome == 'success'
         run: |
           echo "✅ All test are checked" > $GITHUB_STEP_SUMMARY
 
