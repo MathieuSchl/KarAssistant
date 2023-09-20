@@ -59,9 +59,10 @@ jobs:
         if: steps.tests.outcome == 'failure'
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USERNAME: GitHub
+          DISCORD_AVATAR: https://cdn.discordapp.com/avatars/1138225091528904714/df91181b3f1cf0ef1592fbe18e0962d7.webp?size=100
+          DISCORD_EMBEDS: ${{ toJson([{"title":"❌ Errors with the test","desciption":"test","color":"14177041"}]) }}
         uses: Ilshidur/action-discord@master
-        with:
-          args: "❌ Errors with the test"
       - name: SUCCESS Send coverage to discord
         if: steps.tests.outcome == 'success'
         env:
