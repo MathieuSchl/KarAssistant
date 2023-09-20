@@ -54,7 +54,7 @@ jobs:
       - name: Prepare data
         run: |
           awk 'NR>5' /tmp/coverage0.txt > /tmp/coverage1.txt
-          test=test
+          echo "test=$test" >> "$GITHUB_OUTPUT"
 
       - name: ERROR Send coverage to discord
         if: steps.tests.outcome == 'failure'
