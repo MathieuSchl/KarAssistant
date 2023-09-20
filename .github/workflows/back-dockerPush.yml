@@ -57,8 +57,8 @@ jobs:
       - name: Echo errors
         if: steps.tests.outcome == 'failure'
         run: |
-          echo -e "\n" >> $GITHUB_STEP_SUMMARY
           sed '$ d' /tmp/coverage1.txt > $GITHUB_STEP_SUMMARY
+          echo -e "\n" >> $GITHUB_STEP_SUMMARY
           cat /tmp/results.txt >> $GITHUB_STEP_SUMMARY
           echo -e "\n" >> $GITHUB_STEP_SUMMARY
           echo "❌ Errors with the test" >> $GITHUB_STEP_SUMMARY
