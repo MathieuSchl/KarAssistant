@@ -55,7 +55,7 @@ jobs:
         id: data
         run: |
           awk 'NR>5' /tmp/coverage0.txt > /tmp/coverage1.txt
-          echo "embeds=[{"title":"❌ Errors with the test","description":"Coverage:\n$(echo "test")","color":"FF0000"}]" >> "$GITHUB_OUTPUT"
+          echo "embeds=[{"title":"❌ Errors with the test","description":"Coverage:\n$(echo "test")","color":"FF0000"}] >> "$GITHUB_OUTPUT"
 
       - name: ERROR Send coverage to discord
         if: steps.tests.outcome == 'failure'
