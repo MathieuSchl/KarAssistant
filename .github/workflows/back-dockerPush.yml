@@ -54,6 +54,22 @@ jobs:
       - name: Prepare data
         run: |
           awk 'NR>5' /tmp/coverage0.txt > /tmp/coverage1.txt
+
+      - name: ERROR Send coverage to discord
+        if: steps.tests.outcome == 'failure'
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: "❌ Errors with the test"
+      - name: SUCCESS Send coverage to discord
+        if: steps.tests.outcome == 'success'
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: "✅ All test are checked"
+
       - name: Echo errors
         if: steps.tests.outcome == 'failure'
         run: |
