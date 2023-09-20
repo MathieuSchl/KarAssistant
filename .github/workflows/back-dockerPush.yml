@@ -55,7 +55,7 @@ jobs:
         id: data
         run: |
           awk 'NR>5' /tmp/coverage0.txt > /tmp/coverage1.txt
-          echo 'embeds=[{"type":"rich","title":"❌ Errors with the test","description":"Coverage:","color":15548997}]' >> "$GITHUB_OUTPUT"
+          echo 'embeds=[{"type":"rich","title":"❌ Errors with the test","description":"Test back result:$(tail -n 5 /tmp/results.txt)","color":15548997}]' >> "$GITHUB_OUTPUT"
 
       - name: test
         run: |
