@@ -44,10 +44,21 @@ jobs:
       - name: Install dependencies
         run: |
           cd back_node/ && npm install
-      - name: Create summary
+      - name: Run tests and create summary
+        id: tests
+        continue-on-error: true
         run: |
           cd back_node/ && export NODE_OPTIONS=--no-experimental-fetch && npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
           awk 'NR>5' /tmp/coverage0.txt > /tmp/coverage1.txt && sed '$ d' /tmp/coverage1.txt > $GITHUB_STEP_SUMMARY && echo -e "" >> $GITHUB_STEP_SUMMARY && cat /tmp/results.txt >> $GITHUB_STEP_SUMMARY
+      - name: Check error
+        if: steps.integrationTests.outcome == 'failure'
+        run: |
+          echo "❌ Errors with the test" > $GITHUB_STEP_SUMMARY
+          exit 1
+      - name: Echo success
+        if: steps.integrationTests.outcome == 'success'
+        run: |
+          echo "✅ All test are checked" > $GITHUB_STEP_SUMMARY
 
   Build_Push:
     runs-on: ubuntu-latest
