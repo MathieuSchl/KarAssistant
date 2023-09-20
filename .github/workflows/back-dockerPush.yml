@@ -50,6 +50,8 @@ jobs:
         run: |
           cd back_node/ && export NODE_OPTIONS=--no-experimental-fetch && npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
           awk 'NR>5' /tmp/coverage0.txt > /tmp/coverage1.txt && sed '$ d' /tmp/coverage1.txt > $GITHUB_STEP_SUMMARY && echo -e "" >> $GITHUB_STEP_SUMMARY && cat /tmp/results.txt >> $GITHUB_STEP_SUMMARY
+      - name: test
+        run: echo test
       - name: Check error
         if: steps.integrationTests.outcome == 'failure'
         run: |
