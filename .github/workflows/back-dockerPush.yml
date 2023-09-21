@@ -55,11 +55,8 @@ jobs:
         id: data
         run: |
           awk 'NR>5' /tmp/coverage0.txt > /tmp/coverage1.txt
-          echo "embeds=[{\"type\":\"rich\",\"title\":\"❌ Errors with the test\",\"description\":\"Test back result:\n$(tail -n 5 /tmp/results.txt  | tr '\n' "&" | sed 's/&/\\n/g')\",\"color\":16711680}]" >> "$GITHUB_OUTPUT"
-
-      - name: test
-        run: |
-          echo ${{ steps.data.outputs.embeds }}
+          echo "embeds=[{\"type\":\"rich\",\"title\":\"❌ Errors with the test\",\"description\":\"Test back result:\n$(tail -n 5 /tmp/results.txt  | tr '\n' "&" | sed 's/&/\\n/g')\",\"color\":16711680,\"fields\":[{\"name\":\"Stmts\",\"value\":\"$(grep 'All files' /tmp/coverage0.txt | cut -d '|' -f 2 | tr -d ' ')%\"}]}]" >> "$GITHUB_OUTPUT"
+        # Green color 38912
 
       - name: ERROR Send coverage to discord
         uses: Ilshidur/action-discord@master
