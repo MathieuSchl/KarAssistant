@@ -5,7 +5,12 @@ async function start() {
 
   const TOKEN = process.env.DISCORD_TOKEN;
   const client = new Client({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.DirectMessages],
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMembers,
+      GatewayIntentBits.GuildPresences,
+      GatewayIntentBits.DirectMessages,
+    ],
     partials: [
       Partials.Channel, // Required to receive DMs
     ],
