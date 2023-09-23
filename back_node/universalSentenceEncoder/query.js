@@ -1,4 +1,5 @@
 const fs = require("fs");
+const text = require("./text.json");
 const encodeSentence = require("./universalSentenceEncoder").encodeSentence;
 const compareSentences = require("./universalSentenceEncoder").compareSentences;
 const loadPrivateKey = require("../utils/RSA").loadPrivateKey;
@@ -138,7 +139,8 @@ module.exports.query = async ({ clientToken, data, ipAddress }) => {
     if (result.similarity < 0.3) {
       saveQueryClose(result, query);
     }
-    result.result = "Je n'ai pas compris ce que vous voulez dire";
+    if (!result.lang) result.lang = "en";
+    result.result = text[result.lang].dontUnderstand;
   }
 
   // Save history
