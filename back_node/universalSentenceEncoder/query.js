@@ -141,6 +141,14 @@ module.exports.query = async ({ clientToken, data, ipAddress }) => {
     result.result = "Je n'ai pas compris ce que vous voulez dire";
   }
 
+  // Save history
+  if (userContent.history == null) userContent.history = [];
+  userContent.history.push({ message: query, isKara: false });
+  userContent.history.push({ message: result.result, isKara: true });
+  for (let index = 20; index < userContent.history.length; index++) {
+    userContent.history.shift();
+  }
+
   // Save client data
   const newClientContent = JSON.stringify(clientContent);
   if (initialClientData !== newClientContent)
