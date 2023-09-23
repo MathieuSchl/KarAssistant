@@ -54,7 +54,7 @@ if (process.env.SHOWSWAGGER === "true") {
         version: require("./package.json").version,
         description:
           "Hello and welcome to the API documentation of the KarAssistant.\n" +
-          "This project is an personnal assistant. You can ask a question and Kara will answer you\n",
+          "This project is an personnal assistant. You can ask a question and Kara will answer you.\n",
       },
       servers,
     },

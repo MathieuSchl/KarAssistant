@@ -10,8 +10,14 @@ const testValidTime = require("../../utils/user/testValidTime").test;
  * /api/user/history:
  *   get:
  *     summary: Get the histroy from the user
- *     description: "In the element `data` you need to encrypt :\n
- *                      - The `date` with ISO 8601 example : `2023-09-23T14:30:00`"
+ *     description: |
+ *        In the element **data** you need to encrypt :
+ *        - The **date** with ISO 8601 example : `2023-09-23T14:30:00`
+ *
+ *        In the response you will have a list of data encrypted:
+ *        - **message** : a string with the message
+ *        - **date** : Date of the message
+ *        - **isKara** : A boolean to identify author of the message (Kara or the user)
  *     tags: [User]
  *     parameters:
  *     - name: karaeatcookies

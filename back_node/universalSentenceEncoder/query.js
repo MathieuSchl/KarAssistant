@@ -143,8 +143,8 @@ module.exports.query = async ({ clientToken, data, ipAddress }) => {
 
   // Save history
   if (userContent.history == null) userContent.history = [];
-  userContent.history.push({ message: query, isKara: false });
-  userContent.history.push({ message: result.result, isKara: true });
+  userContent.history.push({ message: query, date: new Date(), isKara: false });
+  userContent.history.push({ message: result.result, date: new Date(), isKara: true });
   for (let index = 20; index < userContent.history.length; index++) {
     userContent.history.shift();
   }
