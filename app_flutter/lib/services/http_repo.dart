@@ -9,12 +9,12 @@ class HttpRepo implements HttpRepository {
   String responseTimeOut = jsonEncode({
     'type': 'error',
     'status': 408,
-    'message': 'Le serveur a mis trop de temps à répondre'
+    'message': 'Le serveur a mis trop de temps à répondre',
   });
   String responseOtherError = jsonEncode({
     'type': 'error',
     'status': 404,
-    'message': 'Le serveur semble ne pas être accessible'
+    'message': 'Le serveur semble ne pas être accessible',
   });
   Map<String, String>? header;
   String baseUrl = globals.envBaseUrl!;
@@ -23,7 +23,7 @@ class HttpRepo implements HttpRepository {
       header = {
         'Content-Type': 'application/json; charset=UTF-8',
         'Accept': 'application/json',
-        'Authorization': 'Bearer ${globals.tokenApi}'
+        'Authorization': 'Bearer ${globals.tokenApi}',
       };
     } else {
       header = {
@@ -57,13 +57,13 @@ class HttpRepo implements HttpRepository {
     http.Response response;
     try {
       response = await http
-        .get(getUri(url), headers: header)
-        .timeout(
-          Duration(seconds: timeOutSeconds),
-          onTimeout: () => http.Response(responseTimeOut, 408),
-        )
-        .onError(
-            (error, stackTrace) => http.Response(responseOtherError, 503));
+          .get(getUri(url), headers: header)
+          .timeout(
+            Duration(seconds: timeOutSeconds),
+            onTimeout: () => http.Response(responseTimeOut, 408),
+          )
+          .onError(
+              (error, stackTrace) => http.Response(responseOtherError, 503),);
 
       if (response.statusCode < 200 || response.statusCode > 299) {
         final error = json.decode(response.body);
@@ -77,7 +77,7 @@ class HttpRepo implements HttpRepository {
 
   @override
   Future<http.Response> getRequestParams(
-      String url, Map<String, dynamic> parameters, http.Client client) async {
+      String url, Map<String, dynamic> parameters, http.Client client,) async {
     http.Response response;
     try {
       response = await client
@@ -87,7 +87,7 @@ class HttpRepo implements HttpRepository {
             onTimeout: () => http.Response(responseTimeOut, 408),
           )
           .onError(
-              (error, stackTrace) => http.Response(responseOtherError, 503));
+              (error, stackTrace) => http.Response(responseOtherError, 503),);
 
       if (response.statusCode < 200 || response.statusCode > 299) {
         final error = json.decode(response.body);
@@ -101,19 +101,19 @@ class HttpRepo implements HttpRepository {
 
   @override
   Future<http.Response> postRequest(
-      String url, Map<String, dynamic> data) async {
+      String url, Map<String, dynamic> data,) async {
     http.Response response;
 
     try {
       response = await http
           .post(getUri(url),
-              headers: header, body: Uri.encodeFull(jsonEncode(data)))
+              headers: header, body: Uri.encodeFull(jsonEncode(data)),)
           .timeout(
             Duration(seconds: timeOutSeconds),
             onTimeout: () => http.Response(responseTimeOut, 408),
           )
           .onError(
-              (error, stackTrace) => http.Response(responseOtherError, 503));
+              (error, stackTrace) => http.Response(responseOtherError, 503),);
 
       if (response.statusCode < 200 || response.statusCode > 299) {
         final error = json.decode(response.body);

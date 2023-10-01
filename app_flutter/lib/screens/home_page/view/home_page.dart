@@ -54,21 +54,21 @@ class _HomePageState extends State<HomePage> with RestorationMixin {
       ),
       BottomNavigationBarItem(
           icon: Icon(Icons.pending_actions,
-              color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.38)),
+              color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.38),),
           activeIcon: Icon(Icons.pending_actions,
-              color: Theme.of(context).colorScheme.onPrimary),
-          label: 'Actions'),
+              color: Theme.of(context).colorScheme.onPrimary,),
+          label: 'Actions',),
       BottomNavigationBarItem(
           icon: Icon(Icons.list_sharp,
-              color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.38)),
+              color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.38),),
           activeIcon: Icon(Icons.list_sharp,
-              color: Theme.of(context).colorScheme.onPrimary),
-          label: 'Historique'),
+              color: Theme.of(context).colorScheme.onPrimary,),
+          label: 'Historique',),
       BottomNavigationBarItem(
         icon: Icon(Icons.settings,
-            color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.38)),
+            color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.38),),
         activeIcon: Icon(Icons.settings,
-            color: Theme.of(context).colorScheme.onPrimary),
+            color: Theme.of(context).colorScheme.onPrimary,),
         label: 'Paramètres',
       ),
     ];
@@ -105,7 +105,7 @@ class _HomePageState extends State<HomePage> with RestorationMixin {
                   karaController: karaController,
                 ),
                 ParametersPage(
-                    bottomNavigationBarItems[_currentIndexPage.value])
+                    bottomNavigationBarItems[_currentIndexPage.value],),
               ],
             ),
           ),
@@ -134,8 +134,8 @@ class _HomePageState extends State<HomePage> with RestorationMixin {
                           duration: (Duration(
                               milliseconds:
                                   ((_currentIndexPage.value - usedIndex).abs() *
-                                      200))),
-                          curve: Curves.linear);
+                                      200),)),
+                          curve: Curves.linear,);
                     },
                     enableFeedback: true,
                     child: Padding(
@@ -156,10 +156,10 @@ class _HomePageState extends State<HomePage> with RestorationMixin {
                                       style: TextStyle(
                                           fontSize:
                                               textTheme.bodySmall!.fontSize!,
-                                          color: colorScheme.onPrimary))
+                                          color: colorScheme.onPrimary,),)
                                   : Container(),
-                            ])));
-              })),
-        ));
+                            ],),),);
+              }),),
+        ),);
   }
 }

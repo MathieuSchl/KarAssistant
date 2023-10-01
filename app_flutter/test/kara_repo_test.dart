@@ -23,7 +23,7 @@ void main() {
         'query': 'Bonjour',
         'convToken':'',
         'clientToken': '',
-        'timeZone': 'Europe/Paris'
+        'timeZone': 'Europe/Paris',
       };
       when(client.get(httpRepo.getUri("api/heyKara", parameters: data), headers: httpRepo.header))
       .thenAnswer((_) async =>
@@ -36,7 +36,7 @@ void main() {
           "skill": "kara/greetings",
           "result": "Bonjour je suis Kara",
           "convToken": "Token"
-        }''', 200));
+        }''', 200,),);
 
       expect(await repo.heyKara(data,client), isA<KaraResponse>());
     });
@@ -51,7 +51,7 @@ void main() {
         'query': 'Bonjour',
         'convToken':'',
         'clientToken': '',
-        'timeZone': 'Europe/Paris'
+        'timeZone': 'Europe/Paris',
       };
 
       // Use Mockito to return an unsuccessful response when it calls the

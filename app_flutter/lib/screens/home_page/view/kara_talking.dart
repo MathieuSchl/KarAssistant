@@ -16,7 +16,7 @@ class KaraTalking extends StatefulWidget {
   final int currentIndexPage;
   final Function() updateParents;
   const KaraTalking(this.karaController,
-      {required this.updateParents, required this.currentIndexPage, super.key});
+      {required this.updateParents, required this.currentIndexPage, super.key,});
 
   @override
   _KaraTalkingState createState() => _KaraTalkingState();
@@ -66,7 +66,7 @@ class _KaraTalkingState extends State<KaraTalking> {
           if (status == 'notListening') {
             animationKey.currentState!.stopAnimate();
           }
-        });
+        },);
     setState(() {});
   }
 
@@ -76,7 +76,7 @@ class _KaraTalkingState extends State<KaraTalking> {
         onResult: _onSpeechResult,
         localeId: 'FR',
         listenMode: ListenMode.dictation,
-        cancelOnError: true);
+        cancelOnError: true,);
     setState(() {});
   }
 
@@ -97,7 +97,7 @@ class _KaraTalkingState extends State<KaraTalking> {
       MessageConversation saidUSer = MessageConversation(
           type: TypeConversation.user,
           text: result.recognizedWords,
-          urlImage: '');
+          urlImage: '',);
       widget.karaController.listResponse.insertAll(0, [saidUSer]);
       animationKey.currentState!.stopAnimate();
       widget.updateParents();
@@ -107,7 +107,7 @@ class _KaraTalkingState extends State<KaraTalking> {
         setState(() {
           showKaraAnswer = true;
           MessageConversation saidKara = MessageConversation(
-              type: TypeConversation.kara, text: response.result, urlImage: '');
+              type: TypeConversation.kara, text: response.result, urlImage: '',);
           widget.karaController.listResponse.insertAll(0, [saidKara]);
           widget.updateParents();
 
@@ -121,8 +121,8 @@ class _KaraTalkingState extends State<KaraTalking> {
                       });
                     }
                   },
-                )
-              });
+                ),
+              },);
         });
       });
     }
@@ -234,7 +234,7 @@ class _KaraTalkingState extends State<KaraTalking> {
             child: Container(
               decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primary,
-                  shape: BoxShape.circle),
+                  shape: BoxShape.circle,),
               child: InkWell(
                   child: const CircleAvatar(
                     backgroundColor: Colors.white,
@@ -248,9 +248,9 @@ class _KaraTalkingState extends State<KaraTalking> {
                       _startListening();
                     }
                     setState(() {});
-                  }),
-            )),
-        const Padding(padding: EdgeInsets.symmetric(vertical: 16))
+                  },),
+            ),),
+        const Padding(padding: EdgeInsets.symmetric(vertical: 16)),
         // Container(
         //   padding: const EdgeInsets.all(16),
         //   child: Text(

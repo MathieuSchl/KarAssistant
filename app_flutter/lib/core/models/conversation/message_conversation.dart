@@ -11,7 +11,7 @@ enum TypeConversation {
 @JsonSerializable()
 class MessageConversation {
   MessageConversation(
-      {required this.type, required this.text, required this.urlImage});
+      {required this.type, required this.text, required this.urlImage,});
 
   @JsonKey(name: "TYPE")
   TypeConversation type;

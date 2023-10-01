@@ -9,13 +9,11 @@ class MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.center,
-        child: Container(
-          constraints: const BoxConstraints(
-            minWidth: 50
-          ),
+      child: Container(
+        constraints: const BoxConstraints(minWidth: 50),
         decoration: ShapeDecoration(
           color: Theme.of(context).colorScheme.primary,
-          shape: MessageBorder(),
+          shape: const MessageBorder(),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),

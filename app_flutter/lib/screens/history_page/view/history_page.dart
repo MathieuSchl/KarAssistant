@@ -36,7 +36,7 @@ class _HystoryPageState extends State<HystoryPage> {
                 right:
                     listMessages[index].type == TypeConversation.kara ? 70 : 14,
                 top: 10,
-                bottom: 10),
+                bottom: 10,),
             child: Align(
               alignment: (listMessages[index].type == TypeConversation.kara
                   ? Alignment.topLeft
@@ -58,7 +58,7 @@ class _HystoryPageState extends State<HystoryPage> {
                             color: listMessages[index].type ==
                                     TypeConversation.kara
                                 ? Colors.white
-                                : null),
+                                : null,),
                       ),
                     ),
                     listMessages[index].type == TypeConversation.recording
@@ -66,8 +66,8 @@ class _HystoryPageState extends State<HystoryPage> {
                             color: Colors.white,
                             size: 10,
                           )
-                        : Container()
-                  ])),
+                        : Container(),
+                  ],),),
             ),
           );
         },

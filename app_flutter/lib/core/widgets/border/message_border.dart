@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class MessageBorder extends ShapeBorder {
   final bool usePadding;
 
-  MessageBorder({this.usePadding = true});
+  const MessageBorder({this.usePadding = true});
 
   @override
   EdgeInsetsGeometry get dimensions =>
@@ -14,10 +14,10 @@ class MessageBorder extends ShapeBorder {
 
   @override
   Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
-    rect = Rect.fromPoints(rect.topLeft, rect.bottomRight - Offset(0, 20));
+    rect = Rect.fromPoints(rect.topLeft, rect.bottomRight - const Offset(0, 20));
     return Path()
       ..addRRect(
-          RRect.fromRectAndRadius(rect, Radius.circular(rect.height / 2)))
+          RRect.fromRectAndRadius(rect, Radius.circular(rect.height / 2)),)
       ..moveTo(rect.bottomCenter.dx - 10, rect.bottomCenter.dy)
       ..relativeLineTo(10, 20)
       ..relativeLineTo(10, -20)

@@ -1,13 +1,10 @@
-import 'dart:convert';
 
 import 'package:kar_assistant/core/models/kara_response.dart';
 import 'package:kar_assistant/services/utils_controller.dart';
 import 'package:test/test.dart';
 import 'package:kar_assistant/screens/home_page/controller/kara_controller.dart';
 import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
 
-import 'kara_controller_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<KaraController>(),MockSpec<KaraResponse>()])
 void main() {

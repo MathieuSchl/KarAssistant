@@ -7,9 +7,11 @@ import 'package:kar_assistant/services/http_repo.dart';
 
 class KaraRepo implements KaraRepository {
   @override
-  Future<KaraResponse> heyKara(Map<String, String?> data, http.Client client) async {
+  Future<KaraResponse> heyKara(
+      Map<String, String?> data, http.Client client,) async {
     try {
-      final response = await HttpRepo().getRequestParams("api/heyKara", data, client);
+      final response =
+          await HttpRepo().getRequestParams("api/heyKara", data, client);
       final parsedResponse = KaraResponse.fromJson(json.decode(response.body));
       return parsedResponse;
     } catch (err) {

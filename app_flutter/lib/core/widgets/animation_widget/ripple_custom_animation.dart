@@ -62,8 +62,8 @@ class RippleCustomAnimationState extends State<RippleCustomAnimation>
               minRadius: radius,
               wavesCount: rippleCount + 2,
               color: color,
-              key: UniqueKey()),
+              key: UniqueKey(),),
           child: child,
-        ));
+        ),);
   }
 }

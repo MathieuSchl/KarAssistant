@@ -11,15 +11,13 @@ class KaraController {
   String lastWords = '';
   List<MessageConversation> listResponse = [];
 
-  Future<KaraResponse> askedKara(
-    String text
-  ) async {
+  Future<KaraResponse> askedKara(String text) async {
     Map<String, String> data = {
       'query': text,
       'convToken':
           karaLastResponse != null ? karaLastResponse!.convToken ?? '' : '',
       'clientToken': '',
-      'timeZone': 'Europe/Paris'
+      'timeZone': 'Europe/Paris',
     };
     KaraResponse result;
     result = await karaRepo.heyKara(data, http.Client());
@@ -30,7 +28,7 @@ class KaraController {
     return result;
   }
 
-  mockAskedKara(){
+  mockAskedKara() {
     KaraResponse result = KaraResponse.fromJson(json.decode("""{
       "similarity": 0.212,
       "bestPhrase": "Bonjour",
@@ -40,7 +38,7 @@ class KaraController {
       "skill": "kara/greetings",
       "result": "Bonjour je suis Kara",
       "convToken": "Token"
-    }"""));
+    }"""),);
     karaLastResponse = result;
   }
 

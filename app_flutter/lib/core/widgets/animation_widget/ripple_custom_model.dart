@@ -5,7 +5,7 @@ class AnimatedCircle extends CustomPainter {
       {Key? key,
       this.color = Colors.teal,
       this.minRadius = 150,
-      this.wavesCount = 2})
+      this.wavesCount = 2,})
       : super(repaint: animation);
 
   final Color color;
@@ -23,7 +23,7 @@ class AnimatedCircle extends CustomPainter {
           wave: wave,
           value: animation!.value,
           length: wavesCount,
-          minRadius: minRadius);
+          minRadius: minRadius,);
     }
   }
 
@@ -33,7 +33,7 @@ class AnimatedCircle extends CustomPainter {
       double? minRadius,
       required int wave,
       required double value,
-      int? length}) {
+      int? length,}) {
     Color myColor;
     double r;
 
