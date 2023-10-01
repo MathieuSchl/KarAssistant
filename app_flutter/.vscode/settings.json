@@ -1,0 +1,11 @@
+{
+    "dart.lineLength": 80,
+    "files.eol": "\n",
+    "[dart]": {
+      "editor.formatOnSave": true,
+      "editor.tabSize": 2,
+      "editor.rulers": [80],
+      "editor.insertSpaces": false,
+      "editor.detectIndentation": false
+    }
+  }

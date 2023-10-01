@@ -102,7 +102,7 @@ class _KaraTalkingState extends State<KaraTalking> {
       animationKey.currentState!.stopAnimate();
       widget.updateParents();
       widget.karaController
-          .askedKara(result.recognizedWords )
+          .askedKara(result.recognizedWords)
           .then((KaraResponse response) {
         setState(() {
           showKaraAnswer = true;
