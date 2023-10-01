@@ -1,6 +1,7 @@
 const fs = require("fs");
 const start = require("./universalSentenceEncoder").start;
 const createVector = require("./universalSentenceEncoder").createVector;
+const encodeSentence = require("./universalSentenceEncoder").encodeSentence;
 const getAllSkills = require("./loadSkills").getAllSkills;
 const loadSkill = require("./loadSkills").loadSkill;
 const progressLog = require("../utils/logSameLine").logSameLine;
