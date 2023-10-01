@@ -1,3 +1,4 @@
+const isValidTimeZone = require("../../../utils/isValidTimeZone").isValidTimeZone;
 const moment = require("moment-timezone");
 const text = require("./text.json");
 module.exports.data = text;
@@ -10,7 +11,7 @@ module.exports.execute = ({ lang, userData }) => {
   if (!text.response[lang]) return { text: text.error };
 
   const resultTimeZone = userData.timeZone ? userData.timeZone : null;
-  const momentNow = resultTimeZone ? moment().tz(resultTimeZone) : moment().utc(0);
+  const momentNow = resultTimeZone && isValidTimeZone(resultTimeZone) ? moment().tz(resultTimeZone) : moment().utc(0);
   momentNow.locale(lang);
   return {
     text: momentNow.format(text.response[lang].time),
