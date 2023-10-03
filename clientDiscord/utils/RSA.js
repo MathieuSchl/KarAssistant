@@ -1,9 +1,9 @@
 const NodeRSA = require("node-rsa");
 
 module.exports.encryptData = encryptData;
-async function encryptData({ data, publicKey }) {
+async function encryptData({ data, key }) {
   try {
-    const keyPublic = new NodeRSA(publicKey);
+    const keyPublic = new NodeRSA(key);
     data.date = new Date().toUTCString();
     const passPhraseEncrypted = keyPublic.encrypt(JSON.stringify(data), "base64");
     return passPhraseEncrypted;

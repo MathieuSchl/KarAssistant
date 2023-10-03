@@ -44,10 +44,10 @@ async function createNewClient({ authautifierTag }) {
 }
 
 module.exports.decryptResult = decryptResult;
-async function decryptResult({ data, publicKey }) {
+async function decryptResult({ data, key }) {
   try {
-    const keyPublic = new NodeRSA(publicKey);
-    const resultDecrypted = keyPublic.decryptPublic(data, "utf8");
+    const keyPublic = new NodeRSA(key);
+    const resultDecrypted = keyPublic.decrypt(data, "utf8");
     return JSON.parse(resultDecrypted);
   } catch {
     return null;
@@ -58,10 +58,14 @@ async function decryptResult({ data, publicKey }) {
 
 module.exports.prepareRequest = async ({ userId, userName, avatarUrl, messageContent }) => {
   const userExist = fs.existsSync(__dirname + "/../data/clients/" + userId + ".json");
-  const { err, clientToken, publicKey } = await new Promise(async (resolve, reject) => {
+  const { err, clientToken, backPublicKey, clientPrivateKey } = await new Promise(async (resolve, reject) => {
     if (userExist) {
       const userData = JSON.parse(fs.readFileSync(__dirname + "/../data/clients/" + userId + ".json", "utf8"));
-      resolve({ clientToken: userData.clientToken, publicKey: userData.publicKey });
+      resolve({
+        clientToken: userData.clientToken,
+        backPublicKey: userData.backPublicKey,
+        clientPrivateKey: userData.clientPrivateKey,
+      });
     } else {
       const newClient = await createNewClient({ authautifierTag: userId });
       if (newClient.err) return resolve({ err: newClient.err });
@@ -69,7 +73,8 @@ module.exports.prepareRequest = async ({ userId, userName, avatarUrl, messageCon
         userName,
         avatarUrl,
         clientToken: newClient.clientToken,
-        publicKey: newClient.publicKey,
+        backPublicKey: newClient.backPublicKey,
+        clientPrivateKey: newClient.clientPrivateKey,
       };
       fs.writeFileSync(__dirname + "/../data/clients/" + userId + ".json", JSON.stringify(userData));
       const res = await updateUser({
@@ -84,8 +89,8 @@ module.exports.prepareRequest = async ({ userId, userName, avatarUrl, messageCon
 
   const data = await encryptData({
     data: { query: messageContent },
-    publicKey,
+    key: backPublicKey,
   });
 
-  return { clientToken, data, publicKey };
+  return { clientToken, data, backPublicKey, clientPrivateKey };
 };
