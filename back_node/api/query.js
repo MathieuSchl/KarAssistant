@@ -14,6 +14,18 @@ const logger = require("../utils/logger").logger;
  * /api/heyKara/:
  *   get:
  *     summary: Ask something to Kara
+ *     description: |
+ *        In the element **data** you need to encrypt :
+ *        - [Required] The **date** with ISO 8601 example : `2023-09-23T14:30:00`
+ *        - [Required] The **query** is the question put to kara. The correct skill will be selected.
+ *
+ *        In the response you will have an object encrypted:
+ *        - **result** : The answer of the question in a phrase
+ *        - **bestPhrase** : Best match with a strored phrase
+ *        - **similarity** : Similarity with the best phrase. Value near 0, the phrase is very similar. Value near 1, the phrase is very different.
+ *        - **skill** : Skill used for the response
+ *        - **lang** : Language detected
+ *        - **shortAnswerExpected** : Kara ask a question and expect a short answer. Example: were do you live ? Answer: London (The answer is one word)
  *     tags: [Kara]
  *     parameters:
  *     - name: karaeatcookies
@@ -28,45 +40,12 @@ const logger = require("../utils/logger").logger;
  *       type: string
  *     responses:
  *       200:
- *         description: "Get all ticlets data from a user"
+ *         description: "Result of the query (encrypted). More information in description"
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 similarity:
- *                   type: number
- *                   description: Value of similarity between the answer and the query or bestPhrase
- *                 bestPhrase:
- *                   type: string
- *                   description: The sentence that comes closest
- *                 shortAnswerExpected:
- *                   type: boolean
- *                   description: If the next answer from the client must be short
- *                 clientExist:
- *                   type: boolean
- *                   description: Show if the user is valid with RSA keys
- *                 lang:
- *                   type: string
- *                   description: Language of the question
- *                 skill:
- *                   type: string
- *                   description: Skill aked for the question
- *                 result:
- *                   type: string
- *                   description: Phrase from Kara
- *                 convToken:
- *                   type: string
- *                   description: Token given to aswer a question from Kara
- *               example:
- *                 similarity: 0.212
- *                 bestPhrase: Bonjour
- *                 shortAnswerExpected: false
- *                 clientExist: false
- *                 lang: fr
- *                 skill: kara/greetings
- *                 result: Bonjour je suis Kara
- *                 convToken: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ *               type: string
+ *             example: "ExampleOfEncodedResponse"
  *       403:
  *         description: "User is not authenticated"
  *       500:
