@@ -39,12 +39,16 @@ const logger = require("../../utils/logger").logger;
  *                 clientToken:
  *                   type: string
  *                   description: Token for the client
- *                 rsaPublicKey:
+ *                 backPublicKey:
  *                   type: string
- *                   description: Key to encrypt data
+ *                   description: Back public key used to encrypt data
+ *                 clientPrivateKey:
+ *                   type: string
+ *                   description: Client private key used to decrypt data
  *               example:
  *                 clientToken: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
- *                 rsaPublicKey: example
+ *                 backPublicKey: exampleBackpublicKey"
+ *                 clientPrivateKey: exampleClientPrivateKey
  *       400:
  *         description: "Some parameters are wrong"
  *       403:
