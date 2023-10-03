@@ -1,8 +1,8 @@
 const fs = require("fs");
 const ipFunctions = require("../../utils/antiSpam");
 const logger = require("../../utils/logger").logger;
-const loadPrivateKey = require("../../utils/RSA").loadPrivateKey;
-const decryptPrivate = require("../../utils/RSA").decryptPrivate;
+const loadKey = require("../../utils/RSA").loadKey;
+const decrypt = require("../../utils/RSA").decrypt;
 const timeIntervalAllowed = 5 * 1000;
 const checkValues = ["discordAvatarUrl", "timeZone"];
 
@@ -11,45 +11,26 @@ const checkValues = ["discordAvatarUrl", "timeZone"];
  * /api/user:
  *   put:
  *     summary: Update a client
+ *     description: |
+ *        In the element **data** you need to encrypt :
+ *        - [Required] The **date** with ISO 8601 example : `2023-09-23T14:30:00`
+ *        - [Optional] The **timeZone** used later for skill with date
+ *        - [Optional] The **discordAvatarUrl** the personnal picture of discord user
  *     tags: [User]
  *     parameters:
- *     - name: "clientToken"
- *       in: "query"
- *       description: "Client token"
- *       type: string
- *     - name: "passPhrase"
- *       in: "query"
- *       description: "Pass phrase to verify client"
- *       type: string
- *     requestBody:
- *       description: "Data for the user"
+ *     - name: karaeatcookies
+ *       in: "header"
+ *       description: Cookie of the user making the request
  *       required: true
- *       content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              timeZone:
- *                type: string
- *              newPassword:
- *                type: string
+ *       type: string
+ *     - name: "data"
+ *       in: "query"
+ *       description: "The question encrypted"
+ *       required: true
+ *       type: string
  *     responses:
  *       200:
- *         description: "Token for new client"
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 clientToken:
- *                   type: string
- *                   description: Token for the client
- *                 rsaPublicKey:
- *                   type: string
- *                   description: Key to encrypt data
- *               example:
- *                 clientToken: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
- *                 rsaPublicKey: example
+ *         description: "User is updated"
  *       403:
  *         description: "User is not authenticated"
  *       500:
@@ -78,8 +59,8 @@ module.exports.start = (app) => {
 
       userToken = clientContent.userToken;
 
-      const privateKey = loadPrivateKey({ privateKey: clientContent.privateKey });
-      const { decryptError, decryptedData } = await decryptPrivate({ privateKey, data });
+      const backPrivateKey = loadKey({ key: clientContent.backPrivateKey });
+      const { decryptError, decryptedData } = await decrypt({ key: backPrivateKey, data });
       if (decryptError) throw decryptError;
 
       const date = new Date(new Date(decryptedData.date).toUTCString());

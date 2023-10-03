@@ -15,6 +15,8 @@ const logger = require("../../utils/logger").logger;
  * /api/client/newToken:
  *   get:
  *     summary: Get new client token
+ *     description: |
+ *        If you want to use Kara you will need to create an user and use the **backPublicKey**, **clientPrivateKey** to encrypt data with **backPublicKey** to make request and decrypt response with **clientPrivateKey**
  *     tags: [User]
  *     parameters:
  *     - name: "appType"
@@ -74,9 +76,12 @@ function newClientToken({ userFile, appType, authautifierTag }) {
   });
   userFile.data.clients.push(clientToken);
 
-  const keys = new NodeRSA({ b: 1024 });
-  const publicKey = keys.exportKey("public");
-  const privateKey = keys.exportKey("private");
+  const backKeys = new NodeRSA({ b: 1024 });
+  const backPublicKey = backKeys.exportKey("public");
+  const backPrivateKey = backKeys.exportKey("private");
+  const clientKeys = new NodeRSA({ b: 1024 });
+  const clientPublicKey = clientKeys.exportKey("public");
+  const clientPrivateKey = clientKeys.exportKey("private");
 
   const creationDate = new Date();
   const data = {
@@ -85,10 +90,11 @@ function newClientToken({ userFile, appType, authautifierTag }) {
     userToken: userFile.userToken,
     appType,
     authautifierTag,
-    privateKey: privateKey,
+    backPrivateKey: backPrivateKey,
+    clientPublicKey: clientPublicKey,
   };
 
-  return { userFile, clientFile: { clientToken, data }, publicKey: publicKey };
+  return { userFile, clientFile: { clientToken, data }, backPublicKey, clientPrivateKey };
 }
 
 module.exports.saveData = saveData;
@@ -114,14 +120,14 @@ module.exports.start = (app) => {
       logger({ route: "GET /api/client/newToken", ipAddress, ipValid });
       if (!ipValid) return res.sendStatus(403);
       const defaultUserFile = newUserToken();
-      const { userFile, clientFile, publicKey } = newClientToken({
+      const { userFile, clientFile, backPublicKey, clientPrivateKey } = newClientToken({
         userFile: defaultUserFile,
         appType: req.query.appType,
         authautifierTag: req.query.authautifierTag,
       });
       saveData({ userFile, clientFile });
 
-      return res.json({ clientToken: clientFile.clientToken, publicKey });
+      return res.json({ clientToken: clientFile.clientToken, backPublicKey, clientPrivateKey });
     } catch (e) {
       if (e) console.log(e);
       console.log();

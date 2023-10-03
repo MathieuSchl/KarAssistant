@@ -2,9 +2,9 @@ const fs = require("fs");
 const text = require("./text.json");
 const encodeSentence = require("./universalSentenceEncoder").encodeSentence;
 const compareSentences = require("./universalSentenceEncoder").compareSentences;
-const loadPrivateKey = require("../utils/RSA").loadPrivateKey;
-const encryptPrivate = require("../utils/RSA").encryptPrivate;
-const decryptPrivate = require("../utils/RSA").decryptPrivate;
+const loadKey = require("../utils/RSA").loadKey;
+const encrypt = require("../utils/RSA").encrypt;
+const decrypt = require("../utils/RSA").decrypt;
 const timeIntervalAllowed = 5 * 1000;
 
 const vectors = require("./loadSkills").vectors;
@@ -16,9 +16,9 @@ module.exports.query = async ({ clientToken, data, ipAddress }) => {
   clientContent.lastRequestDate = new Date();
 
   const userToken = clientContent.userToken;
-  const privateKey = loadPrivateKey({ privateKey: clientContent.privateKey });
+  const backPrivateKey = loadKey({ key: clientContent.backPrivateKey });
 
-  const { decryptError, decryptedData } = await decryptPrivate({ privateKey, data });
+  const { decryptError, decryptedData } = await decrypt({ key: backPrivateKey, data });
   if (decryptError) throw decryptError;
 
   if (!decryptedData.query || !decryptedData.date) throw 400;
@@ -161,7 +161,8 @@ module.exports.query = async ({ clientToken, data, ipAddress }) => {
   if (initialUserData !== newUserData)
     fs.writeFileSync(__dirname + "/../data/users/users/" + userToken + ".json", newUserData);
 
-  const { encryptError, encryptedData } = await encryptPrivate({ privateKey, data: result });
+  const clientPublicKey = loadKey({ key: clientContent.clientPublicKey });
+  const { encryptError, encryptedData } = await encrypt({ key: clientPublicKey, data: result });
   if (encryptError) throw encryptError;
 
   return encryptedData;

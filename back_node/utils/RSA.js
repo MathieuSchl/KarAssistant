@@ -1,14 +1,14 @@
 const NodeRSA = require("node-rsa");
 
-module.exports.loadPrivateKey = ({ privateKey }) => {
-  const privateKeyObject = new NodeRSA(privateKey);
+module.exports.loadKey = ({ key }) => {
+  const privateKeyObject = new NodeRSA(key);
   return privateKeyObject;
 };
 
-module.exports.encryptPrivate = async ({ privateKey, data }) => {
+module.exports.encrypt = async ({ key, data }) => {
   return await new Promise((resolve, reject) => {
     try {
-      const encryptedData = privateKey.encryptPrivate(JSON.stringify(data), "base64");
+      const encryptedData = key.encrypt(JSON.stringify(data), "base64");
       resolve({ encryptedData });
     } catch {
       resolve({ encryptError: 403 });
@@ -16,10 +16,10 @@ module.exports.encryptPrivate = async ({ privateKey, data }) => {
   });
 };
 
-module.exports.decryptPrivate = async ({ privateKey, data }) => {
+module.exports.decrypt = async ({ key, data }) => {
   return await new Promise((resolve, reject) => {
     try {
-      const decryptedData = privateKey.decrypt(data, "utf8");
+      const decryptedData = key.decrypt(data, "utf8");
       resolve({ decryptedData: JSON.parse(decryptedData) });
     } catch {
       resolve({ decryptError: 403 });

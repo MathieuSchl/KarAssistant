@@ -1,7 +1,6 @@
 const ipFunctions = require("../../utils/antiSpam");
 const logger = require("../../utils/logger").logger;
 const useSavedData = require("../../utils/user/useSavedData");
-const loadPrivateKey = require("../../utils/RSA").loadPrivateKey;
 const RSA = require("../../utils/RSA");
 const testValidTime = require("../../utils/user/testValidTime").test;
 
@@ -12,10 +11,10 @@ const testValidTime = require("../../utils/user/testValidTime").test;
  *     summary: Get the histroy from the user
  *     description: |
  *        In the element **data** you need to encrypt :
- *        - The **date** with ISO 8601 example : `2023-09-23T14:30:00`
+ *        - [Required] The **date** with ISO 8601 example : `2023-09-23T14:30:00`
  *
  *        In the response you will have a list of data encrypted:
- *        - **message** : a string with the message
+ *        - **message** : A string with the message
  *        - **date** : Date of the message
  *        - **isKara** : A boolean to identify author of the message (Kara or the user)
  *     tags: [User]
@@ -32,7 +31,7 @@ const testValidTime = require("../../utils/user/testValidTime").test;
  *       type: string
  *     responses:
  *       200:
- *         description: "Token for new client"
+ *         description: "History of conversation (encrypted). More information in description"
  *         content:
  *           application/json:
  *             schema:
@@ -58,8 +57,8 @@ module.exports.start = (app) => {
       const data = req.query.data;
 
       const { clientData } = useSavedData.loadClient({ clientToken });
-      const privateKey = loadPrivateKey({ privateKey: clientData.privateKey });
-      const { decryptError, decryptedData } = await RSA.decryptPrivate({ privateKey, data });
+      const backPrivateKey = RSA.loadKey({ key: clientData.backPrivateKey });
+      const { decryptError, decryptedData } = await RSA.decrypt({ key: backPrivateKey, data });
       if (decryptError) throw decryptError;
 
       if (!decryptedData.date) return res.sendStatus(400);
@@ -68,7 +67,9 @@ module.exports.start = (app) => {
 
       const { userData } = useSavedData.loadUser({ userToken: clientData.userToken });
 
-      const { encryptedData } = await RSA.encryptPrivate({ privateKey, data: userData.history });
+      const clientPublicKey = RSA.loadKey({ key: clientData.clientPublicKey });
+      const { encryptError, encryptedData } = await RSA.encrypt({ key: clientPublicKey, data: userData.history });
+      if (encryptError) throw encryptError;
 
       return res.send(encryptedData);
     } catch (e) {
