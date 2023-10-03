@@ -20,7 +20,7 @@ jobs:
           flutter-version: '3.13.2'
           channel: stable
       - name: Create env file
-        working-directory: ./app_flutter
+        working-directory: ./client_flutter
         run: |
           touch .env
           echo BASEURL=${{ secrets.API_BASEURL }} >> .env
@@ -28,15 +28,15 @@ jobs:
           cat .env
           ls -a
       - name: get package
-        working-directory: ./app_flutter
+        working-directory: ./client_flutter
         run: |
           flutter pub get
       - name: launch Test
-        working-directory: ./app_flutter
+        working-directory: ./client_flutter
         run : |
           flutter test
       - name: build apk
-        working-directory: ./app_flutter
+        working-directory: ./client_flutter
         run : |
           flutter build apk --debug
       - uses: actions/upload-artifact@v1
