@@ -16,36 +16,38 @@ class KaraRepo implements KaraRepository {
     http.Client client,
   ) async {
     try {
-      final stringPublicKey = await UtilsController().readStorage('publicKey');
-      RSAKeyParser parser = RSAKeyParser();
-      RSAPublicKey publicKey = parser.parse(stringPublicKey) as RSAPublicKey;
-      final encrypter = Encrypter(
-        RSA(
-          publicKey: publicKey,
-          encoding: RSAEncoding.OAEP,
-        ),
-      );
-
       //encrypted
       jsonData['date'] = DateTime.now().toUtc().toIso8601String();
-      var dataString = jsonEncode(jsonData);
 
-      final Encrypted encrypted = encrypter.encrypt(dataString);
-      Map<String, dynamic> data = {'data': encrypted.base64};
-      //request
-      final response = await HttpRepo().getRequestParams("api/heyKara", data);
-      RSAPrivateKey privateKey = parser.parse(stringPublicKey) as RSAPrivateKey;
-      final decrypter = Encrypter(
-        RSA(
-          privateKey: privateKey,
-          encoding: RSAEncoding.OAEP,
-        ),
+      String dataString = jsonEncode(jsonData);
+
+      final key = Key.fromSecureRandom(16);
+      final iv = IV.fromSecureRandom(16);
+      Encrypted dataEncrypted =
+          UtilsController().encryptAES(dataString, key, iv);
+      String dataAes = '{"key":"${key.base64}","iv":"${iv.base64}"}';
+      Encrypted dataAesEncrypted = await UtilsController().encryptRSA(dataAes);
+      Map<String, dynamic> data = {
+        'data': dataEncrypted.base64,
+        'aes': dataAesEncrypted.base64,
+      };
+      String dataAesDecrypted =
+          await UtilsController().decryptRSA(Encrypted.from64(data['aes']));
+      print(dataAesDecrypted);
+      var jsonDataAes = jsonDecode(dataAesDecrypted);
+      print(jsonDataAes['iv']);
+      String message = UtilsController().decryptAES(
+        Encrypted.from64(data['data']),
+        Key.fromBase64(jsonDataAes['key']),
+        IV.fromBase64(jsonDataAes['iv']),
       );
-      //decrypted
+      print('secondData: $message');
+      Map<String, String> value = jsonDecode(message);
+      print(value.toString());
 
-      String value = decrypter.decrypt64(response.body);
-
-      final parsedResponse = KaraResponse.fromJson(json.decode(value));
+      print(value);
+      final response = await HttpRepo().getRequestParams("api/heyKara", data);
+      final parsedResponse = KaraResponse.fromJson(jsonDecode(response.body));
       return parsedResponse;
     } catch (err) {
       rethrow;
