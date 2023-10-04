@@ -80,10 +80,10 @@ function newClientToken({ userFile, appType, authautifierTag }) {
   });
   userFile.data.clients.push(clientToken);
 
-  const backKeys = new NodeRSA({ b: 1024 });
+  const backKeys = new NodeRSA({ b: 512 });
   const backPublicKey = backKeys.exportKey("public");
   const backPrivateKey = backKeys.exportKey("private");
-  const clientKeys = new NodeRSA({ b: 1024 });
+  const clientKeys = new NodeRSA({ b: 512 });
   const clientPublicKey = clientKeys.exportKey("public");
   const clientPrivateKey = clientKeys.exportKey("private");
 
