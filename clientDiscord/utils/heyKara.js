@@ -15,9 +15,7 @@ async function makeRequest({ clientToken, data }) {
     api({
       method: "GET",
       headers: { "Content-Type": "application/json", karaeatcookies: clientToken },
-      params: {
-        data,
-      },
+      params: data,
       url: process.env.BACK_URL + "/api/heyKara",
     })
       .then(function (response) {
@@ -50,6 +48,7 @@ async function heyKara({ userName, userId, messageContent, avatarUrl, retry = 0 
     messageContent,
   });
   if (err) return err;
+
   const dataRequest = data ? await makeRequest({ clientToken, data }) : { clientExist: false };
   if (dataRequest.err && retry != 0) return dataRequest.err;
 
@@ -59,11 +58,20 @@ async function heyKara({ userName, userId, messageContent, avatarUrl, retry = 0 
     return heyKara({ userName, userId, messageContent, avatarUrl, retry });
   }
 
-  const resultDecrypted = data
-    ? await decryptResult({ data: dataRequest, key: clientPrivateKey })
-    : { result: "Error with the request" };
+  const clientPrivateKeyLoaded = require("../utils/encryption").rsa.loadKey({ key: clientPrivateKey });
+  const { decryptClientAesError, decryptedData: dataAes } = await require("../utils/encryption").rsa.decrypt({
+    key: clientPrivateKeyLoaded,
+    data: dataRequest.aes,
+  });
+  if (decryptClientAesError) throw decryptClientAesError;
 
-  console.log(resultDecrypted);
+  const resultDecryptedString = require("../utils/encryption").aes.decrypt({
+    messageHex: dataRequest.data,
+    keyBase64: dataAes.key,
+    ivBase64: dataAes.iv,
+  });
+
+  const resultDecrypted = JSON.parse(resultDecryptedString);
   const phraseResult = resultDecrypted.result;
   return phraseResult;
 }

@@ -87,10 +87,15 @@ module.exports.prepareRequest = async ({ userId, userName, avatarUrl, messageCon
   });
   if (err) return { err };
 
-  const data = await encryptData({
-    data: { query: messageContent },
+  const { messageHex, keyBase64, ivBase64 } = require("../utils/encryption").aes.encrypt({
+    message: JSON.stringify({ query: messageContent, date: new Date() }),
+  });
+
+  const aes = await encryptData({
+    data: { key: keyBase64, iv: ivBase64 },
     key: backPublicKey,
   });
+  const data = { aes, data: messageHex };
 
   return { clientToken, data, backPublicKey, clientPrivateKey };
 };
