@@ -44,7 +44,7 @@ describe("Test rsa loadKey", () => {
     expect(!!result.keyPair).toBe(true);
   });
 
-  test("Load failed", async () => {
+  test("Load error", async () => {
     //Prepare
     const key = "Not a key";
 
