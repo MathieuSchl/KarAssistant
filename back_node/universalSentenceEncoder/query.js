@@ -1,4 +1,5 @@
 const fs = require("fs");
+const forge = require('node-forge');
 const text = require("./text.json");
 const encodeSentence = require("./universalSentenceEncoder").encodeSentence;
 const compareSentences = require("./universalSentenceEncoder").compareSentences;
@@ -9,7 +10,7 @@ const timeIntervalAllowed = 5 * 1000;
 
 const vectors = require("./loadSkills").vectors;
 
-module.exports.query = async ({ clientToken, data, ipAddress }) => {
+module.exports.query = async ({ clientToken, data, aes, ipAddress }) => {
   if (!fs.existsSync(__dirname + "/../data/users/clients/" + clientToken + ".json")) throw 404;
   const initialClientData = fs.readFileSync(__dirname + "/../data/users/clients/" + clientToken + ".json", "utf8");
   const clientContent = JSON.parse(initialClientData);
@@ -18,8 +19,11 @@ module.exports.query = async ({ clientToken, data, ipAddress }) => {
   const userToken = clientContent.userToken;
   const backPrivateKey = loadKey({ key: clientContent.backPrivateKey });
 
-  const { decryptError, decryptedData } = await decrypt({ key: backPrivateKey, data });
-  if (decryptError) throw decryptError;
+  const { decryptClientAesError, decryptedData: dataAes } = await decrypt({ key: backPrivateKey, data: aes });
+  if (decryptClientAesError) throw decryptClientAesError;
+  
+  const decryptedDataString = require("../utils/encryption").aes.decrypt({messageHex: data, keyBase64: dataAes.key, ivBase64: dataAes.iv});
+  const decryptedData = JSON.parse(decryptedDataString)
 
   if (!decryptedData.query || !decryptedData.date) throw 400;
   const query = decryptedData.query;
@@ -161,11 +165,19 @@ module.exports.query = async ({ clientToken, data, ipAddress }) => {
   if (initialUserData !== newUserData)
     fs.writeFileSync(__dirname + "/../data/users/users/" + userToken + ".json", newUserData);
 
-  const clientPublicKey = loadKey({ key: clientContent.clientPublicKey });
-  const { encryptError, encryptedData } = await encrypt({ key: clientPublicKey, data: result });
-  if (encryptError) throw encryptError;
+  const { messageHex, keyBase64, ivBase64 } = require("../utils/encryption").aes.encrypt({
+    message: JSON.stringify(result),
+  });
 
-  return encryptedData;
+  const clientPublicKey = loadKey({ key: clientContent.clientPublicKey });
+  const { encryptError, encryptedData } = await encrypt({
+    data: { key: keyBase64, iv: ivBase64 },
+    key: clientPublicKey,
+  });
+  if (encryptError) throw encryptError;
+  const resultData = { aes: encryptedData, data: messageHex };
+
+  return resultData;
 };
 
 async function saveQueryClose(result, query) {

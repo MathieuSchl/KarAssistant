@@ -61,9 +61,10 @@ module.exports.start = (app) => {
       const result = await use.query({
         clientToken: req.headers.karaeatcookies,
         data: req.query.data,
+        aes: req.query.aes,
         ipAddress,
       });
-      res.send(result);
+      res.json(result);
     } catch (e) {
       if (typeof e === "number") return res.sendStatus(e);
       if (e) console.log(e);
