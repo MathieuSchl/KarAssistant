@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:typed_data';
+import 'package:convert/convert.dart';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:kar_assistant/core/models/kara_response.dart';
@@ -20,7 +22,6 @@ class KaraRepo implements KaraRepository {
       jsonData['date'] = DateTime.now().toUtc().toIso8601String();
 
       String dataString = jsonEncode(jsonData);
-
       final key = Key.fromSecureRandom(16);
       final iv = IV.fromSecureRandom(16);
       Encrypted dataEncrypted =
@@ -28,27 +29,24 @@ class KaraRepo implements KaraRepository {
       String dataAes = '{"key":"${key.base64}","iv":"${iv.base64}"}';
       Encrypted dataAesEncrypted = await UtilsController().encryptRSA(dataAes);
       Map<String, dynamic> data = {
-        'data': dataEncrypted.base64,
+        'data': hex.encode(dataEncrypted.bytes),
         'aes': dataAesEncrypted.base64,
       };
-      String dataAesDecrypted =
-          await UtilsController().decryptRSA(Encrypted.from64(data['aes']));
-      print(dataAesDecrypted);
+
+      final response = await HttpRepo().getRequestParams("api/heyKara", data);
+      var parsedResponse = jsonDecode(response.body);
+
+      String dataAesDecrypted = await UtilsController()
+          .decryptRSA(Encrypted.fromBase64(parsedResponse['aes']));
       var jsonDataAes = jsonDecode(dataAesDecrypted);
-      print(jsonDataAes['iv']);
       String message = UtilsController().decryptAES(
-        Encrypted.from64(data['data']),
+        Encrypted(hex.decode(parsedResponse['data']) as Uint8List),
         Key.fromBase64(jsonDataAes['key']),
         IV.fromBase64(jsonDataAes['iv']),
       );
-      print('secondData: $message');
-      Map<String, String> value = jsonDecode(message);
-      print(value.toString());
-
-      print(value);
-      final response = await HttpRepo().getRequestParams("api/heyKara", data);
-      final parsedResponse = KaraResponse.fromJson(jsonDecode(response.body));
-      return parsedResponse;
+      Map<String, dynamic> value = jsonDecode(message);
+      KaraResponse karaResponse = KaraResponse.fromJson(value);
+      return karaResponse;
     } catch (err) {
       rethrow;
     }
