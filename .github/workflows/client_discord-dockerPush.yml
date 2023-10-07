@@ -2,8 +2,8 @@ name: "[CLIENT_DISCORD] Docker push"
 run-name: "[CLIENT_DISCORD] DockerPush : ${{ github.actor }} push '${{ github.event.head_commit.message }}' 🚀"
 on:
   push:
-    paths:
-      - clientDiscord/**
+    # paths:
+    #   - clientDiscord/**
 jobs:
   Check:
     runs-on: ubuntu-latest
