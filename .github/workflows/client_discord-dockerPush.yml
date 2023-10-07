@@ -54,15 +54,15 @@ jobs:
         working-directory: ./clientDiscord
         run: |
           export NODE_OPTIONS=--no-experimental-fetch && npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
-      - name: Aaaaaaa
+      - name: aaaa
         run: |
-          ls -l clientDiscord
+          ls -l clientDiscord/reports/report.xml
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: |
-            clientDiscord/junit.xml
+            clientDiscord/reports/report.xml
       - name: Prepare data
         id: data
         run: |
