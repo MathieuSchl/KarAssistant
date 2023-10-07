@@ -54,14 +54,13 @@ jobs:
         working-directory: ./clientDiscord
         run: |
           mkdir /tmp/test/
-          npm test -i -- --json --outputFile=/tmp/test/jest-output.json 2>> /tmp/results.txt >> /tmp/coverage0.txt
-          cat /tmp/test/jest-output.json
+          export NODE_OPTIONS=--no-experimental-fetch && export JEST_JUNIT_OUTPUT_DIR="/tmp/report/" && npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: |
-            /tmp/test/jest-output.json
+            /tmp/tmp/report/*.xml
       - name: Prepare data
         id: data
         run: |
