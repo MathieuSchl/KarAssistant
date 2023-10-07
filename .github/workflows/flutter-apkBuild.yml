@@ -38,15 +38,15 @@ jobs:
           flutter test
       # Create key.properties file
       - name: Create key.properties file
-        working-directory: ./client_flutter
+        working-directory: ./client_flutter/android
         run: |
           touch key.properties
           echo storePassword=${{ secrets.FLUTTER_KEY_PASSWORD }} >> key.properties
           echo keyPassword=${{ secrets.FLUTTER_KEY_PASSWORD }} >> key.properties
           echo keyAlias=${{ secrets.FLUTTER_KEY_ALIAS }} >> key.properties
           echo "${{secrets.FLUTTER_KEY_STORE}}" > upload-keystore.encoded
-          base64 -d -i upload-keystore.encoded > ./app/upload-keystore.jks
-          echo storeFile=upload-keystore.jks >> key.properties
+          base64 -d -i upload-keystore.encoded > ~/upload-keystore.jks
+          echo storeFile=~/upload-keystore.jks >> key.properties
           cat key.properties
           ls -a
       - name: build apk
