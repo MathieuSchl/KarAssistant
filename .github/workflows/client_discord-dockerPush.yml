@@ -54,9 +54,6 @@ jobs:
         working-directory: ./clientDiscord
         run: |
           export NODE_OPTIONS=--no-experimental-fetch && npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
-      - name: aaaa
-        run: |
-          ls -l clientDiscord/reports/report.xml
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
@@ -80,20 +77,20 @@ jobs:
       - name: Echo errors
         if: steps.tests.outcome == 'failure'
         run: |
-          sed '$ d' /tmp/coverage1.txt > $GITHUB_STEP_SUMMARY
-          echo -e "\n" >> $GITHUB_STEP_SUMMARY
-          cat /tmp/results.txt >> $GITHUB_STEP_SUMMARY
-          echo -e "\n" >> $GITHUB_STEP_SUMMARY
-          echo "❌ Errors with the test" >> $GITHUB_STEP_SUMMARY
+          # sed '$ d' /tmp/coverage1.txt > $GITHUB_STEP_SUMMARY
+          # echo -e "\n" >> $GITHUB_STEP_SUMMARY
+          # cat /tmp/results.txt >> $GITHUB_STEP_SUMMARY
+          # echo -e "\n" >> $GITHUB_STEP_SUMMARY
+          # echo "❌ Errors with the test" >> $GITHUB_STEP_SUMMARY
           exit 1
-      - name: Echo success
-        if: steps.tests.outcome == 'success'
-        run: |
-          echo -e "\n" >> $GITHUB_STEP_SUMMARY
-          sed '$ d' /tmp/coverage1.txt > $GITHUB_STEP_SUMMARY
-          cat /tmp/results.txt >> $GITHUB_STEP_SUMMARY
-          echo -e "\n" >> $GITHUB_STEP_SUMMARY
-          echo "✅ All test are checked" >> $GITHUB_STEP_SUMMARY
+      # - name: Echo success
+      #   if: steps.tests.outcome == 'success'
+      #   run: |
+      #     echo -e "\n" >> $GITHUB_STEP_SUMMARY
+      #     sed '$ d' /tmp/coverage1.txt > $GITHUB_STEP_SUMMARY
+      #     cat /tmp/results.txt >> $GITHUB_STEP_SUMMARY
+      #     echo -e "\n" >> $GITHUB_STEP_SUMMARY
+      #     echo "✅ All test are checked" >> $GITHUB_STEP_SUMMARY
 
   Build_Push:
     runs-on: ubuntu-latest
