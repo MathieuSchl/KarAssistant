@@ -34,7 +34,7 @@ class UtilsController {
   }
 
   Future<void> setupLoginToken() async {
-    if (await readStorage('clientToken') != '') {
+    if (await readStorage('clientToken') == '') {
       Map<String, String> data = {
         "appType": 'mobile_app',
       };
