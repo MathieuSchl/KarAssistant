@@ -4,6 +4,9 @@ on:
   push:
     # paths:
     #   - clientDiscord/**
+permissions:
+  checks: write
+  pull-requests: write
 jobs:
   Check:
     runs-on: ubuntu-latest
