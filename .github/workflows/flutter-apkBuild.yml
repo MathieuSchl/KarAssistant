@@ -41,9 +41,9 @@ jobs:
         working-directory: ./client_flutter/android
         run: |
           touch key.properties
-          echo storePassword=${{ secrets.FLUTTER_KEY_PASSWORD }} >> key.properties
-          echo keyPassword=${{ secrets.FLUTTER_KEY_PASSWORD }} >> key.properties
-          echo keyAlias=${{ secrets.FLUTTER_KEY_ALIAS }} >> key.properties
+          echo storePassword=${{secrets.FLUTTER_KEY_PASSWORD}} >> key.properties
+          echo keyPassword=${{secrets.FLUTTER_KEY_PASSWORD}} >> key.properties
+          echo keyAlias=${{secrets.FLUTTER_KEY_ALIAS}} >> key.properties
           echo "${{secrets.FLUTTER_KEY_STORE}}" > upload-keystore.encoded
           base64 -d -i upload-keystore.encoded > ~/upload-keystore.jks
           echo storeFile=~/upload-keystore.jks >> key.properties
@@ -52,7 +52,7 @@ jobs:
       - name: build apk
         working-directory: ./client_flutter
         run : |
-          flutter build apk --debug
+          flutter build apk --no-tree-shake-icons
       - uses: actions/upload-artifact@v1
         with:
           name: release-apk
