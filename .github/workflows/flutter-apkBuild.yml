@@ -38,7 +38,7 @@ jobs:
           flutter test
       # Create key.properties file
       - name: Create key.properties file
-        working-directory: ./android
+        working-directory: ./client_flutter
         run: |
           touch key.properties
           echo storePassword=${{ secrets.FLUTTER_KEY_PASSWORD }} >> key.properties
