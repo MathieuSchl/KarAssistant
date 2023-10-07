@@ -58,7 +58,7 @@ jobs:
         if: always()
         with:
           files: |
-            /tmp/test/*.json
+            /tmp/test/jest-output.json
       - name: Prepare data
         id: data
         run: |
