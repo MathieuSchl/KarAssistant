@@ -53,15 +53,13 @@ jobs:
         continue-on-error: true
         working-directory: ./clientDiscord
         run: |
-          mkdir /tmp/test/
-          export NODE_OPTIONS=--no-experimental-fetch && export JEST_JUNIT_OUTPUT_DIR="/tmp/report/" && npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
-          grep -rni "<testsuites name=" /tmp/report
+          jest --reporters=default --reporters=jest-junit 2>> /tmp/results.txt >> /tmp/coverage0.txt
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: |
-            /tmp/report/report.xml
+            clientDiscord/junit.xml
       - name: Prepare data
         id: data
         run: |
