@@ -55,8 +55,7 @@ jobs:
         run: |
           npm test
           npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
-          ls -l
-          ls -l report
+          cat jest.config.js
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
