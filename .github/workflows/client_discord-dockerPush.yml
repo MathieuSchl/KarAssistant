@@ -54,6 +54,9 @@ jobs:
         working-directory: ./clientDiscord
         run: |
           export NODE_OPTIONS=--no-experimental-fetch && npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
+      - name: Aaaaaaa
+        run: |
+          ls -l clientDiscord
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
