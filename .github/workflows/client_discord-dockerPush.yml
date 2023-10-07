@@ -55,6 +55,8 @@ jobs:
         run: |
           mkdir /tmp/test/
           export NODE_OPTIONS=--no-experimental-fetch && export JEST_JUNIT_OUTPUT_DIR="/tmp/report/" && npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
+          ls -l
+          ls -l report
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
