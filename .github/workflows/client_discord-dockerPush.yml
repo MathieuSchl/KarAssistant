@@ -50,7 +50,13 @@ jobs:
         continue-on-error: true
         working-directory: ./clientDiscord
         run: |
-          export NODE_OPTIONS=--no-experimental-fetch && npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
+          export NODE_OPTIONS=--no-experimental-fetch && npm test --json --outputFile=/tmp/test/jest-output.json 2>> /tmp/results.txt >> /tmp/coverage0.txt
+          - name: Publish Test Results
+      - uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            /tmp/test/*.json
       - name: Prepare data
         id: data
         run: |
