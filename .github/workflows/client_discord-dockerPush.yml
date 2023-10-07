@@ -55,15 +55,13 @@ jobs:
         run: |
           mkdir /tmp/test/
           export NODE_OPTIONS=--no-experimental-fetch && export JEST_JUNIT_OUTPUT_DIR="/tmp/report/" && npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
-          ls -l
-          grep -rni "<testsuites name="
-          grep -rni "<testsuites name=" /tmp
+          grep -rni "<testsuites name=" /tmp/report
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: |
-            /tmp/report/*.xml
+            /tmp/report/report.xml
       - name: Prepare data
         id: data
         run: |
