@@ -60,7 +60,7 @@ jobs:
         if: always()
         with:
           files: |
-            /tmp/tmp/report/*.xml
+            /tmp/report/*.xml
       - name: Prepare data
         id: data
         run: |
