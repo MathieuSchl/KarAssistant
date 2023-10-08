@@ -16,6 +16,7 @@ jobs:
     outputs:
       RUN_BUILD: ${{ steps.define_docker_data.outputs.run_build }}
       VERSION: ${{ steps.define_docker_data.outputs.version }}
+    if: github.event_name == 'push'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -101,7 +102,7 @@ jobs:
     needs:
       - Check
       - Tests
-    if: ${{ needs.Check.outputs.RUN_BUILD == 'yes' && needs.Tests.result == 'success' }}
+    if: ${{ github.event_name == 'push' && needs.Check.outputs.RUN_BUILD == 'yes' && needs.Tests.result == 'success' }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
