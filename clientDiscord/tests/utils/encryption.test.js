@@ -149,13 +149,75 @@ describe("Test aes decryption", () => {
 });
 
 describe("Test aes encryption and decryption", () => {
-  //Prepare
-  const message = JSON.stringify({ query: "Kara fait des tests" });
+  test("Encrypt and decrypt", async () => {
+    //Prepare
+    const message = JSON.stringify({ query: "Kara fait des tests" });
 
-  //Execute
-  const { messageHex, keyBase64, ivBase64 } = require("../../utils/encryption").aes.encrypt({ message });
-  const result = require("../../utils/encryption").aes.decrypt({ messageHex, keyBase64, ivBase64 });
+    //Execute
+    const { messageHex, keyBase64, ivBase64 } = require("../../utils/encryption").aes.encrypt({ message });
+    const result = require("../../utils/encryption").aes.decrypt({ messageHex, keyBase64, ivBase64 });
 
-  //Test
-  expect(result).toBe(message);
+    //Test
+    expect(result).toBe(message);
+  });
+});
+
+describe("Test encryption for request", () => {
+  test("Encryption", async () => {
+    //Prepare
+    const keyPublicString =
+      "-----BEGIN PUBLIC KEY-----\n" +
+      "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCwEbJyN+BDA4YrpNXNeCgEeYDb\n" +
+      "QYdiEl6FGmU+cyR8mH3jgbkw9SIjl19jpyaQL3rQYu6XJ8E8fV+izyauaUfGqA0X\n" +
+      "RbkGGEpZxkkAk8e+RpOjPOt8F6oaryTqg1SZassHTvWs9nfC/kYH/MLVncveHGVC\n" +
+      "bwLxzpkr1wfeUd9DAwIDAQAB\n" +
+      "-----END PUBLIC KEY-----";
+    const query = "This is a test message. Test avec des charactères très spéciaux";
+
+    //Execute
+    const result = await require("../../utils/encryption").encryptionForRequest({
+      query,
+      backPublicKey: keyPublicString,
+    });
+
+    //Test
+    expect(!!result.aes).toBe(true);
+    expect(!!result.data).toBe(true);
+  });
+});
+
+describe("Test decryption for result", () => {
+  test("Decryption", async () => {
+    //Prepare
+    const keyPrivateString =
+      "-----BEGIN RSA PRIVATE KEY-----\n" +
+      "MIICXAIBAAKBgQCwEbJyN+BDA4YrpNXNeCgEeYDbQYdiEl6FGmU+cyR8mH3jgbkw\n" +
+      "9SIjl19jpyaQL3rQYu6XJ8E8fV+izyauaUfGqA0XRbkGGEpZxkkAk8e+RpOjPOt8\n" +
+      "F6oaryTqg1SZassHTvWs9nfC/kYH/MLVncveHGVCbwLxzpkr1wfeUd9DAwIDAQAB\n" +
+      "AoGALzuAIG3m5nNSkfC1PlqGebTSoX7xv5hn7NMI5/jhh98snlSVhpGsJ9oax9P2\n" +
+      "X2WtT6vKj5glmYGUn0ts+ArcKvfPjcsZCLjUjkEjNmFAAdRsh/unqqtMHk0Zex20\n" +
+      "U/yT+a5RSkTGEA1EtqDvla4GN147Ir7Qz54k2q8hVUxeSvkCQQDUcKTBCkeNuZn+\n" +
+      "kZ8FaHaVmALQc3nHUxtAdBgNtPE+FgQi9fnDnxxH1LUBjmx1kO6YNxyhP7LWrZui\n" +
+      "Bm8jzfylAkEA1Cvhc0yPmRfrVkrkjmkFMuC9pTCNebnNGxVoVb4nDCnVOiNdyCbY\n" +
+      "5nRLzsaF74uKYekVmQ7EumC14IV7vGxohwJBALBwifWmcv1bvHG5Qmj8dRkTsqqs\n" +
+      "beVFuemTQnMH6CFXqcHbp8B4gsWJ/Xe4cY5HfFLB2y51uDQi5pLwYxhKud0CQGw7\n" +
+      "AiOFv46x4+u+An8e1XcRq8wTS2f3vsf9EJ8Eg/ixckLY/aL3JhfQ5UbSgEok3W96\n" +
+      "rfjIztPgN4cTsH36swsCQA4QJak5Omkb0KTnk6Q9e8qm0kLo2VOe3LPXFY73Rk+2\n" +
+      "CVm3BqS1NehnqgSxN98UgXRsT0z0NnFP8dQhh3qcbvQ=\n" +
+      "-----END RSA PRIVATE KEY-----";
+    const data = {
+      aes: "csq80fC5PEE1MGCGpqkIlP1QyZKvoQ74tzpmS+Utbi6nlyaI+ZRRLV4Gr4FNCVAUhKmO8mcmBhuto6EvlfVr5bnT9pmKj8rwu+Q4uVxE7tcPc+huHJ6ARAYQIklP/mtLLXJDxRiohq7ePJn73qch3iEKaVvpap2lva8+flc8luc=",
+      data: "daa9fe620ffdeb7cd78abd0071395c993b1dfad57be2738b6380174cfd328230ccaed52f539f9e10364dd15a4bdbe90c70de582af1cf3a14251a24d11ce25686316e8f6ddf925c9c8dbf211ade892a8f30836cc9e1eb6fc024db7ae0c6118cbae80089b8c120f6b095ea0bf889b550832c444531655d478d6d53911e02038b2a",
+    };
+
+    //Executeawait decryptionForResult({ clientPrivateKey, data: dataRequest });
+    const result = await require("../../utils/encryption").decryptionForResult({
+      clientPrivateKey: keyPrivateString,
+      data: data,
+    });
+
+    //Test
+    expect(result.query).toBe("This is a test message. Test avec des charactères très spéciaux");
+    expect(!!result.date).toBe(true);
+  });
 });

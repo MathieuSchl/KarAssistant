@@ -7,7 +7,7 @@ const api = axios.create({
   },
 });
 const prepareRequest = require("./prepareRequest").prepareRequest;
-const decryptResult = require("./prepareRequest").decryptResult;
+const decryptionForResult = require("../utils/encryption").decryptionForResult;
 
 module.exports.makeRequest = makeRequest;
 async function makeRequest({ clientToken, data }) {
@@ -58,20 +58,7 @@ async function heyKara({ userName, userId, messageContent, avatarUrl, retry = 0 
     return heyKara({ userName, userId, messageContent, avatarUrl, retry });
   }
 
-  const clientPrivateKeyLoaded = require("../utils/encryption").rsa.loadKey({ key: clientPrivateKey });
-  const { decryptClientAesError, decryptedData: dataAes } = await require("../utils/encryption").rsa.decrypt({
-    key: clientPrivateKeyLoaded,
-    data: dataRequest.aes,
-  });
-  if (decryptClientAesError) throw decryptClientAesError;
-
-  const resultDecryptedString = require("../utils/encryption").aes.decrypt({
-    messageHex: dataRequest.data,
-    keyBase64: dataAes.key,
-    ivBase64: dataAes.iv,
-  });
-
-  const resultDecrypted = JSON.parse(resultDecryptedString);
+  const resultDecrypted = await decryptionForResult({ clientPrivateKey, data: dataRequest });
   const phraseResult = resultDecrypted.result;
   return phraseResult;
 }

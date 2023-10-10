@@ -1,5 +1,5 @@
 const fs = require("fs");
-const encryptData = require("./RSA").encryptData;
+const encryptionForRequest = require("./encryption").encryptionForRequest;
 const updateUser = require("./updateUser").updateUser;
 const { stringify } = require("qs");
 const axios = require("axios");
@@ -87,15 +87,7 @@ module.exports.prepareRequest = async ({ userId, userName, avatarUrl, messageCon
   });
   if (err) return { err };
 
-  const { messageHex, keyBase64, ivBase64 } = require("../utils/encryption").aes.encrypt({
-    message: JSON.stringify({ query: messageContent, date: new Date() }),
-  });
-
-  const aes = await encryptData({
-    data: { key: keyBase64, iv: ivBase64 },
-    key: backPublicKey,
-  });
-  const data = { aes, data: messageHex };
+  const data = await encryptionForRequest({ query: messageContent, backPublicKey });
 
   return { clientToken, data, backPublicKey, clientPrivateKey };
 };
