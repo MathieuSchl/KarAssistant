@@ -48,7 +48,7 @@ async function decryptRSA({ key, data }) {
       /* c8 ignore start */
     } catch (e) {
       console.log(e);
-      resolve({ decryptError: 403 });
+      resolve({ decryptError: 406 });
     }
     /* c8 ignore stop */
   });
@@ -119,9 +119,9 @@ async function decryptionForResult({ data, clientPrivateKey }) {
     keyBase64: dataAes.key,
     ivBase64: dataAes.iv,
   });
-
   const resultDecrypted = JSON.parse(resultDecryptedString);
-  if (resultDecrypted.query) resultDecrypted.query = convertExceptionToString(resultDecrypted.query);
+  if (resultDecrypted.bestPhrase) resultDecrypted.bestPhrase = convertExceptionToString(resultDecrypted.bestPhrase);
+  if (resultDecrypted.result) resultDecrypted.result = convertExceptionToString(resultDecrypted.result);
   return resultDecrypted;
 }
 

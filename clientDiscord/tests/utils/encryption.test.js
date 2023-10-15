@@ -191,23 +191,23 @@ describe("Test decryption for result", () => {
     //Prepare
     const keyPrivateString =
       "-----BEGIN RSA PRIVATE KEY-----\n" +
-      "MIICXAIBAAKBgQCwEbJyN+BDA4YrpNXNeCgEeYDbQYdiEl6FGmU+cyR8mH3jgbkw\n" +
-      "9SIjl19jpyaQL3rQYu6XJ8E8fV+izyauaUfGqA0XRbkGGEpZxkkAk8e+RpOjPOt8\n" +
-      "F6oaryTqg1SZassHTvWs9nfC/kYH/MLVncveHGVCbwLxzpkr1wfeUd9DAwIDAQAB\n" +
-      "AoGALzuAIG3m5nNSkfC1PlqGebTSoX7xv5hn7NMI5/jhh98snlSVhpGsJ9oax9P2\n" +
-      "X2WtT6vKj5glmYGUn0ts+ArcKvfPjcsZCLjUjkEjNmFAAdRsh/unqqtMHk0Zex20\n" +
-      "U/yT+a5RSkTGEA1EtqDvla4GN147Ir7Qz54k2q8hVUxeSvkCQQDUcKTBCkeNuZn+\n" +
-      "kZ8FaHaVmALQc3nHUxtAdBgNtPE+FgQi9fnDnxxH1LUBjmx1kO6YNxyhP7LWrZui\n" +
-      "Bm8jzfylAkEA1Cvhc0yPmRfrVkrkjmkFMuC9pTCNebnNGxVoVb4nDCnVOiNdyCbY\n" +
-      "5nRLzsaF74uKYekVmQ7EumC14IV7vGxohwJBALBwifWmcv1bvHG5Qmj8dRkTsqqs\n" +
-      "beVFuemTQnMH6CFXqcHbp8B4gsWJ/Xe4cY5HfFLB2y51uDQi5pLwYxhKud0CQGw7\n" +
-      "AiOFv46x4+u+An8e1XcRq8wTS2f3vsf9EJ8Eg/ixckLY/aL3JhfQ5UbSgEok3W96\n" +
-      "rfjIztPgN4cTsH36swsCQA4QJak5Omkb0KTnk6Q9e8qm0kLo2VOe3LPXFY73Rk+2\n" +
-      "CVm3BqS1NehnqgSxN98UgXRsT0z0NnFP8dQhh3qcbvQ=\n" +
+      "MIICXgIBAAKBgQDKBVEb0V14yZe824p++J4WrldboXRXoBJZbFmJukFaRXqMhu2i\n" +
+      "o9Z+8onfbeMMfkbD21YLPivZYLx52v7qocq+znVtU/F77LrnsP6tUMLQKaUDMOM6\n" +
+      "J1i+lLjsFnxJO0IdQNOk6hHPcre88pGDlY8gUKGXzbYEu7v46szU9skpGwIDAQAB\n" +
+      "AoGAfVVNG7gJiI1xQS7nPpzZ33JsKiIBvvdFSwtIhYTzVKD0RcjUF2oUAhBQ7zgK\n" +
+      "e86/8nTabgE1TRiR9fui2UhlMl8iojR9agFJmjH6cqdXf/T6hRfe/mq7Kj561FFc\n" +
+      "zNoTGsIxQcCXhI+Vdf6dLl2oiw4kTPWfTxFrI2XtuCZfsNECQQDrqIAKc5JKU6a/\n" +
+      "0ahk4PkYMXkGNUXxSJVZb/c4P/yMk1xYQPrlQUsI97kEdBvwKcKSyxwNqpQEUUm+\n" +
+      "ibFYtPS5AkEA23WB4nF2OCgBLrLuOyHiRcOXC+JHyiKXJDimhCD/YKc7BdNFP3tA\n" +
+      "kFiW1Y7tPcdhysMG/IGN0DD2EyOwU3AKcwJBANz9rOUgMCXHgG4NnI7Ncoq/ijDK\n" +
+      "MIbufC/dEccMKjdh0Y1pkl7+9fC47iZBBBoZ7z9dfTdLqXbLDA7EbS00tPECQQC4\n" +
+      "849DB9xZ910HvkSIEUZhBTWHDmzyLbSzEgtDz4tqKYXUovj5RyZigEaeNJY8Ooxw\n" +
+      "FW0N4SFjE+BOwQUZTJOBAkEA6Ch5im1xvBW3iDo2JVKMzjNZu/FvOMxdgrox+JmU\n" +
+      "GJa5L3R9piU4RzntMb04KG3BLZ9jTUzIUafLlusDhI6mdw==\n" +
       "-----END RSA PRIVATE KEY-----";
     const data = {
-      aes: "csq80fC5PEE1MGCGpqkIlP1QyZKvoQ74tzpmS+Utbi6nlyaI+ZRRLV4Gr4FNCVAUhKmO8mcmBhuto6EvlfVr5bnT9pmKj8rwu+Q4uVxE7tcPc+huHJ6ARAYQIklP/mtLLXJDxRiohq7ePJn73qch3iEKaVvpap2lva8+flc8luc=",
-      data: "daa9fe620ffdeb7cd78abd0071395c993b1dfad57be2738b6380174cfd328230ccaed52f539f9e10364dd15a4bdbe90c70de582af1cf3a14251a24d11ce25686316e8f6ddf925c9c8dbf211ade892a8f30836cc9e1eb6fc024db7ae0c6118cbae80089b8c120f6b095ea0bf889b550832c444531655d478d6d53911e02038b2a",
+      aes: "a9eTCsLtKXNFzsKAdAOpOpfczmTu7Eh1o9yecGtWlmvxhlBeqV6KFljK7YYSWkD5SnaaAa76yPknhlpsCY8kyjpPayJw2B68QSAqZEDmjS3OTDZunC/Z4NRSG5a0h2fy9UKr9KYLvw4xDjxlPEj/yA9q0VSQGOxn3O+4m7r2h6o=",
+      data: "330c28589035ff92e6f86a786ddb98d6cc4a15f91b4b6c2601d2e891d405dacd22db25d4ed9e3037f0937fdda4835dcd68942cd3d1fd4a7eabc4e40b8d214861855ac9c618e495d8c5c7fe808c22bfa8c40ef99080193de7a03f91c7fb85bbda97136e78399b282eac6995dff0ec4948937e1391f6320c245bd05b28e3c4edb30935525e4652646ec576f97e11c28e4580b960ee772ca0f2663f54281cfaa3872d56b5ff64a4e959c41add36d38ebba495690973a16a626deabc4f9750673a7d661e27c9de610477084d2053de8c9bd8901699c2ab509b06e67e9398bd52676486287cc0df7610eab268cadcfbc0a1c2",
     };
 
     //Executeawait decryptionForResult({ clientPrivateKey, data: dataRequest });
@@ -217,7 +217,11 @@ describe("Test decryption for result", () => {
     });
 
     //Test
-    expect(result.query).toBe("This is a test message. Test avec des charactères très spéciaux");
-    expect(!!result.date).toBe(true);
+    expect(result.result).toBe("Quelle est la ville, dont vous souhaitez connaître la météo ?");
+    expect(!!result.similarity).toBe(true);
+    expect(!!result.bestPhrase).toBe(true);
+    expect(result.shortAnswerExpected).toBe(true);
+    expect(!!result.lang).toBe(true);
+    expect(!!result.skill).toBe(true);
   });
 });

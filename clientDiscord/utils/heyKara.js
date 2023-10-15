@@ -25,15 +25,15 @@ async function makeRequest({ clientToken, data }) {
       })
       .catch(function (error) {
         if (error.code === "ECONNREFUSED")
-          resolve({ err: "Access to the Kara server cannot be established", status: 420 });
-        if (error.response && error.response.status === 403)
-          resolve({ err: "Access to the Kara server is forbidden", status: error.response.status });
+          return resolve({ err: "Access to the Kara server cannot be established", status: 420 });
+        else if (error.response && error.response.status === 403)
+          return resolve({ err: "Access to the Kara server is forbidden", status: error.response.status });
         else if (error.response && error.response.status === 404)
           return resolve({ err: "User does not exist", status: error.response.status });
-        if (error.response && error.response.status === 500)
-          resolve({ err: "Kara as an internal error", status: error.response.status });
+        else if (error.response && error.response.status === 500)
+          return resolve({ err: "Kara as an internal error", status: error.response.status });
         else {
-          resolve({ err: error.code, status: error.response ? error.response.status : 420 });
+          return resolve({ err: error.code, status: error.response ? error.response.status : 420 });
         }
       });
   });
@@ -53,7 +53,8 @@ async function heyKara({ userName, userId, messageContent, avatarUrl, retry = 0 
   if (dataRequest.err && retry != 0) return dataRequest.err;
 
   if (!dataRequest || dataRequest.err) {
-    if (dataRequest && dataRequest.status === 404) fs.unlinkSync(__dirname + "/../data/clients/" + userId + ".json");
+    if (dataRequest && (dataRequest.status === 404 || dataRequest.status === 406))
+      fs.unlinkSync(__dirname + "/../data/clients/" + userId + ".json");
     retry++;
     return heyKara({ userName, userId, messageContent, avatarUrl, retry });
   }
