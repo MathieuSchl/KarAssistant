@@ -7,17 +7,15 @@ const api = axios.create({
   },
 });
 const prepareRequest = require("./prepareRequest").prepareRequest;
-const decryptResult = require("./prepareRequest").decryptResult;
+const decryptionForResult = require("../utils/encryption").decryptionForResult;
 
 module.exports.makeRequest = makeRequest;
-async function makeRequest({ query, clientToken, data }) {
+async function makeRequest({ clientToken, data }) {
   return await new Promise((resolve, reject) => {
     api({
       method: "GET",
       headers: { "Content-Type": "application/json", karaeatcookies: clientToken },
-      params: {
-        data,
-      },
+      params: data,
       url: process.env.BACK_URL + "/api/heyKara",
     })
       .then(function (response) {
@@ -27,15 +25,15 @@ async function makeRequest({ query, clientToken, data }) {
       })
       .catch(function (error) {
         if (error.code === "ECONNREFUSED")
-          resolve({ err: "Access to the Kara server cannot be established", status: 420 });
-        if (error.response && error.response.status === 403)
-          resolve({ err: "Access to the Kara server is forbidden", status: error.response.status });
+          return resolve({ err: "Access to the Kara server cannot be established", status: 420 });
+        else if (error.response && error.response.status === 403)
+          return resolve({ err: "Access to the Kara server is forbidden", status: error.response.status });
         else if (error.response && error.response.status === 404)
           return resolve({ err: "User does not exist", status: error.response.status });
-        if (error.response && error.response.status === 500)
-          resolve({ err: "Kara as an internal error", status: error.response.status });
+        else if (error.response && error.response.status === 500)
+          return resolve({ err: "Kara as an internal error", status: error.response.status });
         else {
-          resolve({ err: error.code, status: error.response ? error.response.status : 420 });
+          return resolve({ err: error.code, status: error.response ? error.response.status : 420 });
         }
       });
   });
@@ -43,21 +41,25 @@ async function makeRequest({ query, clientToken, data }) {
 
 module.exports.heyKara = heyKara;
 async function heyKara({ userName, userId, messageContent, avatarUrl, retry = 0 }) {
-  const { err, clientToken, data, publicKey } = await prepareRequest({ userId, userName, avatarUrl, messageContent });
+  const { err, clientToken, data, clientPrivateKey } = await prepareRequest({
+    userId,
+    userName,
+    avatarUrl,
+    messageContent,
+  });
   if (err) return err;
-  const dataRequest = data ? await makeRequest({ query: messageContent, clientToken, data }) : { clientExist: false };
+
+  const dataRequest = data ? await makeRequest({ clientToken, data }) : { clientExist: false };
   if (dataRequest.err && retry != 0) return dataRequest.err;
 
   if (!dataRequest || dataRequest.err) {
-    if (dataRequest && dataRequest.status === 404) fs.unlinkSync(__dirname + "/../data/clients/" + userId + ".json");
+    if (dataRequest && (dataRequest.status === 404 || dataRequest.status === 406))
+      fs.unlinkSync(__dirname + "/../data/clients/" + userId + ".json");
     retry++;
     return heyKara({ userName, userId, messageContent, avatarUrl, retry });
   }
 
-  const resultDecrypted = data
-    ? await decryptResult({ data: dataRequest, publicKey })
-    : { result: "Error with the request" };
-
+  const resultDecrypted = await decryptionForResult({ clientPrivateKey, data: dataRequest });
   const phraseResult = resultDecrypted.result;
   return phraseResult;
 }

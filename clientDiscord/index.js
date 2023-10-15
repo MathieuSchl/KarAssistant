@@ -24,7 +24,9 @@ async function start() {
     });
   });
 
-  client.login(TOKEN).then(() => {});
+  client.login(TOKEN).then(() => {
+    require("./utils/loadCommands").run(client);
+  });
 }
 
 start();

@@ -3,13 +3,20 @@ run-name: "[CLIENT_DISCORD] DockerPush : ${{ github.actor }} push '${{ github.ev
 on:
   push:
     paths:
-      - clientDiscord/**
+     - clientDiscord/**
+  pull_request:
+    paths:
+     - clientDiscord/**
+permissions:
+  checks: write
+  pull-requests: write
 jobs:
   Check:
     runs-on: ubuntu-latest
     outputs:
       RUN_BUILD: ${{ steps.define_docker_data.outputs.run_build }}
       VERSION: ${{ steps.define_docker_data.outputs.version }}
+    if: github.event_name == 'push'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -51,6 +58,12 @@ jobs:
         working-directory: ./clientDiscord
         run: |
           export NODE_OPTIONS=--no-experimental-fetch && npm test 2>> /tmp/results.txt >> /tmp/coverage0.txt
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            clientDiscord/reports/report.xml
       - name: Prepare data
         id: data
         run: |
@@ -68,20 +81,20 @@ jobs:
       - name: Echo errors
         if: steps.tests.outcome == 'failure'
         run: |
-          sed '$ d' /tmp/coverage1.txt > $GITHUB_STEP_SUMMARY
-          echo -e "\n" >> $GITHUB_STEP_SUMMARY
-          cat /tmp/results.txt >> $GITHUB_STEP_SUMMARY
-          echo -e "\n" >> $GITHUB_STEP_SUMMARY
-          echo "❌ Errors with the test" >> $GITHUB_STEP_SUMMARY
+          # sed '$ d' /tmp/coverage1.txt > $GITHUB_STEP_SUMMARY
+          # echo -e "\n" >> $GITHUB_STEP_SUMMARY
+          # cat /tmp/results.txt >> $GITHUB_STEP_SUMMARY
+          # echo -e "\n" >> $GITHUB_STEP_SUMMARY
+          # echo "❌ Errors with the test" >> $GITHUB_STEP_SUMMARY
           exit 1
-      - name: Echo success
-        if: steps.tests.outcome == 'success'
-        run: |
-          echo -e "\n" >> $GITHUB_STEP_SUMMARY
-          sed '$ d' /tmp/coverage1.txt > $GITHUB_STEP_SUMMARY
-          cat /tmp/results.txt >> $GITHUB_STEP_SUMMARY
-          echo -e "\n" >> $GITHUB_STEP_SUMMARY
-          echo "✅ All test are checked" >> $GITHUB_STEP_SUMMARY
+      # - name: Echo success
+      #   if: steps.tests.outcome == 'success'
+      #   run: |
+      #     echo -e "\n" >> $GITHUB_STEP_SUMMARY
+      #     sed '$ d' /tmp/coverage1.txt > $GITHUB_STEP_SUMMARY
+      #     cat /tmp/results.txt >> $GITHUB_STEP_SUMMARY
+      #     echo -e "\n" >> $GITHUB_STEP_SUMMARY
+      #     echo "✅ All test are checked" >> $GITHUB_STEP_SUMMARY
 
   Build_Push:
     runs-on: ubuntu-latest
@@ -89,7 +102,7 @@ jobs:
     needs:
       - Check
       - Tests
-    if: ${{ needs.Check.outputs.RUN_BUILD == 'yes' && needs.Tests.result == 'success' }}
+    if: ${{ github.event_name == 'push' && needs.Check.outputs.RUN_BUILD == 'yes' && needs.Tests.result == 'success' }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3

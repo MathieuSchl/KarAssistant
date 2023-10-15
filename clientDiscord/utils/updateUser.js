@@ -26,6 +26,8 @@ async function updateUserRequest({ data, clientToken }) {
       .catch(function (error) {
         if (error.code === "ECONNREFUSED")
           return resolve({ err: "Access to the Kara server cannot be established", status: 420 });
+        else if (error.response && error.response.status === 400)
+          return resolve({ err: "Bad request for PUT /api/user", status: error.response.status });
         else if (error.response && error.response.status === 403)
           return resolve({ err: "Access to the Kara server is forbidden", status: error.response.status });
         else if (error.response && error.response.status === 404)
@@ -49,7 +51,7 @@ async function updateUser({ userName, userId, data, retry = 0 }) {
   const clientToken = userData.clientToken;
   const dataEncrypted = await encryptData({
     data,
-    publicKey: userData.publicKey,
+    key: userData.backPublicKey,
   });
   const dataRequest = await updateUserRequest({ data: dataEncrypted, clientToken });
 
