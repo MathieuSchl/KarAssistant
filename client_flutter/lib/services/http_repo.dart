@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:kar_assistant/core/globals.dart' as globals;
 import 'package:http/http.dart' as http;
 import 'package:kar_assistant/services/http_repository.dart';
+import 'package:kar_assistant/services/utils_controller.dart';
 
 class HttpRepo implements HttpRepository {
   int timeOutSeconds = 20;
@@ -103,6 +104,47 @@ class HttpRepo implements HttpRepository {
         throw error['message'];
       }
       return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getRequestParamsSecure(
+    String url,
+    Map<String, dynamic> data, {
+    bool secondTry = false,
+  }) async {
+    http.Response response;
+    try {
+      Map<String, dynamic> parameters =
+          await UtilsController().encryptApi(data);
+      response = await http
+          .get(getUri(url, parameters: parameters), headers: header)
+          .timeout(
+            Duration(seconds: timeOutSeconds),
+            onTimeout: () => http.Response(responseTimeOut, 408),
+          )
+          .onError(
+            (error, stackTrace) => http.Response(responseOtherError, 503),
+          );
+      if (response.statusCode < 200 || response.statusCode > 299) {
+        if (response.statusCode == 404 && secondTry != true) {
+          print('recreateUser');
+          String newtoken = await UtilsController().setupToken();
+          globals.clientToken = newtoken;
+          return await HttpRepo()
+              .getRequestParamsSecure(url, data, secondTry: true);
+        }
+        final error = json.decode(response.body);
+        throw error['message'];
+      }
+
+      var parsedResponse = jsonDecode(response.body);
+
+      Map<String, dynamic> value =
+          await UtilsController().decryptApi(parsedResponse);
+      return value;
     } catch (e) {
       rethrow;
     }

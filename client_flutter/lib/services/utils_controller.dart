@@ -40,17 +40,25 @@ class UtilsController {
     await storage.delete(key: key);
   }
 
-  Future<void> setupLoginToken() async {
-    if (await readStorage('clientToken') != '') {
-      Map<String, String> data = {
-        "appType": 'mobile_app',
-      };
-      var result = await ClientRepo().newToken(data);
-      await setStorage('clientPrivateKey', result['clientPrivateKey']);
-      await setStorage('clientToken', result['clientToken']);
-      await setStorage('backPublicKey', result['backPublicKey']);
+  Future<void> verifTokenExistStorage() async {
+    String clientToken = await readStorage('clientToken');
+    if (clientToken == '') {
+      clientToken = await setupToken();
     }
-    globals.clientToken = await readStorage('clientToken');
+    globals.clientToken = clientToken;
+  }
+
+  Future<String> setupToken() async {
+    Map<String, String> data = {
+      "appType": 'mobile_app',
+    };
+    var result = await ClientRepo().newToken(data);
+    print(result);
+    await setStorage('clientPrivateKey', result['clientPrivateKey']);
+    await setStorage('clientToken', result['clientToken']);
+    await setStorage('backPublicKey', result['backPublicKey']);
+    String clientToken = result['clientToken'];
+    return clientToken;
   }
 
   Future<Encrypted> encryptRSA(String keyToEncrypt) async {

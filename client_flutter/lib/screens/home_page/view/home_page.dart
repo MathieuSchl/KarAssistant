@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> with RestorationMixin {
   @override
   void initState() {
     karaController = KaraController();
-    UtilsController().setupLoginToken();
+    UtilsController().verifTokenExistStorage();
     super.initState();
   }
 
