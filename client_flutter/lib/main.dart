@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:kar_assistant/screens/home_page/view/home_page.dart';
 import 'package:kar_assistant/services/utils_controller.dart';
 
-void main() {
-  UtilsController().initEnv();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await UtilsController().initEnv();
   runApp(const MyApp());
 }
 

@@ -1,12 +1,10 @@
-
 import 'package:kar_assistant/core/models/kara_response.dart';
 import 'package:kar_assistant/services/utils_controller.dart';
 import 'package:test/test.dart';
 import 'package:kar_assistant/screens/home_page/controller/kara_controller.dart';
 import 'package:mockito/annotations.dart';
 
-
-@GenerateNiceMocks([MockSpec<KaraController>(),MockSpec<KaraResponse>()])
+@GenerateNiceMocks([MockSpec<KaraController>(), MockSpec<KaraResponse>()])
 void main() {
   UtilsController().initEnv();
   group('verifIsToken', () {
@@ -38,7 +36,7 @@ void main() {
 
     test('token Should be in value', () {
       KaraController controller = KaraController();
-      controller.mockAskedKara();
+      // controller.mockAskedKara();
       expect(controller.verifIsToken(), isTrue);
     });
   });

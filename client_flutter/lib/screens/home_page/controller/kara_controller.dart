@@ -17,28 +17,12 @@ class KaraController {
     };
 
     KaraResponse result;
-    result = await karaRepo.heyKara(json, http.Client());
+    result = await karaRepo.heyKara(json);
     if (kDebugMode) {
       print(result.toJson());
     }
     karaLastResponse = result;
     return result;
-  }
-
-  mockAskedKara() {
-    KaraResponse result = KaraResponse.fromJson(
-      json.decode("""{
-      "similarity": 0.212,
-      "bestPhrase": "Bonjour",
-      "shortAnswerExpected": false,
-      "clientExist": false,
-      "lang": "fr",
-      "skill": "kara/greetings",
-      "result": "Bonjour je suis Kara",
-      "convToken": "Token"
-    }"""),
-    );
-    karaLastResponse = result;
   }
 
   bool verifIsToken() {

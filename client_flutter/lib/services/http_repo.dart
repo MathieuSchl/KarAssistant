@@ -98,6 +98,7 @@ class HttpRepo implements HttpRepository {
             (error, stackTrace) => http.Response(responseOtherError, 503),
           );
       if (response.statusCode < 200 || response.statusCode > 299) {
+        inspect(response);
         final error = json.decode(response.body);
         throw error['message'];
       }

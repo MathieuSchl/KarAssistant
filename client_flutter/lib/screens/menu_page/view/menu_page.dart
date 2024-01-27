@@ -12,6 +12,6 @@ class MenuPage extends StatefulWidget {
 class _MenuPageState extends State<MenuPage> {
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('Menu'));
+    return const Center(child: Text('Menu'));
   }
 }

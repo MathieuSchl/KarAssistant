@@ -30,7 +30,6 @@ enum TtsState { playing, stopped }
 
 class _KaraTalkingState extends State<KaraTalking> {
   final SpeechToText _speechToText = SpeechToText();
-  bool _speechEnabled = false;
   bool showKaraAnswer = false;
   GlobalKey<RippleCustomAnimationState> animationKey =
       GlobalKey<RippleCustomAnimationState>();
@@ -63,7 +62,7 @@ class _KaraTalkingState extends State<KaraTalking> {
 
   // ear Section
   void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize(
+    await _speechToText.initialize(
       onError: (errorNotification) => animationKey.currentState!.stopAnimate(),
       onStatus: (status) {
         if (status == 'notListening') {
