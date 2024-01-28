@@ -130,7 +130,7 @@ class HttpRepo implements HttpRepository {
           );
       if (response.statusCode < 200 || response.statusCode > 299) {
         if (response.statusCode == 404 && secondTry != true) {
-          print('recreateUser');
+          // create automatically a new user because the last one isnt found o nserver
           String newtoken = await UtilsController().setupToken();
           globals.clientToken = newtoken;
           return await HttpRepo()

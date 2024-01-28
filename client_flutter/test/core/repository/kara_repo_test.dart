@@ -11,30 +11,32 @@ import 'package:kar_assistant/core/globals.dart' as globals;
 import 'kara_repo_test.mocks.dart';
 
 @GenerateMocks([http.Client])
-void main() {
+void main() async {
   late MockClient client;
   late HttpRepo httpRepo;
-  late KaraRepo karaRepo;
   setUpAll(() {
     client = MockClient();
     globals.clientTest = client;
+    globals.clientToken = 'ezaezaeazeazezeaze';
     httpRepo = HttpRepo();
-    karaRepo = KaraRepo();
   });
-  UtilsController().initEnv();
+  await UtilsController().initEnv();
   group('heyKara', () {
     test('return a KaraResponse', () async {
-      // Use Mockito to return a successful response when it calls the
-      // provided http.Client.
       Map<String, String> data = {
         'query': 'Bonjour',
         'convToken': '',
         'clientToken': '',
         'timeZone': 'Europe/Paris',
       };
-      when(client.get(httpRepo.getUri("api/heyKara", parameters: data),
-              headers: httpRepo.header,),)
-          .thenAnswer(
+      Map<String, dynamic> parameters =
+          await UtilsController().encryptApi(data);
+      when(
+        client.get(
+          httpRepo.getUri("api/heyKara", parameters: parameters),
+          headers: httpRepo.header,
+        ),
+      ).thenAnswer(
         (_) async => http.Response(
           '''{
           "similarity": 0.212,
@@ -50,7 +52,7 @@ void main() {
         ),
       );
 
-      expect(await karaRepo.heyKara(data, client), isA<KaraResponse>());
+      expect(await KaraRepo().heyKara(data), isA<KaraResponse>());
     });
 
     test('throws an http exception', () {
@@ -63,13 +65,14 @@ void main() {
         'timeZone': 'Europe/Paris',
       };
 
-      // Use Mockito to return an unsuccessful response when it calls the
-      // provided http.Client.
-      when(client.get(httpRepo.getUri("api/heyKara", parameters: data),
-              headers: httpRepo.header,),)
-          .thenAnswer((_) async => http.Response('Not Found', 404));
+      when(
+        client.get(
+          httpRepo.getUri("api/heyKara", parameters: data),
+          headers: httpRepo.header,
+        ),
+      ).thenAnswer((_) async => http.Response('Not Found', 404));
 
-      expect(karaRepo.heyKara(data, client), throwsException);
+      expect(KaraRepo().heyKara(data), throwsException);
     });
   });
 }

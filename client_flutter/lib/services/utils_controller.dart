@@ -2,20 +2,15 @@ import 'dart:convert';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kar_assistant/core/globals.dart' as globals;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import 'package:kar_assistant/core/repository/client_repo.dart';
 import 'package:convert/convert.dart';
+import 'package:kar_assistant/services/secure_storage.dart';
 import 'package:pointycastle/export.dart';
 
 class UtilsController {
-  AndroidOptions secureOptions() => const AndroidOptions(
-        encryptedSharedPreferences: true,
-      );
-
-  final FlutterSecureStorage storage = const FlutterSecureStorage();
   Future<void> init() async {
     await Future.wait([initEnv()]);
   }
@@ -26,22 +21,8 @@ class UtilsController {
     globals.envMode = dotenv.env['MODE'].toString();
   }
 
-  Future<String> readStorage(String key) async {
-    String value;
-    value = await storage.read(key: key) ?? '';
-    return value;
-  }
-
-  Future<void> setStorage(String key, String value) async {
-    await storage.write(key: key, value: value);
-  }
-
-  Future<void> deleteStorage(String key) async {
-    await storage.delete(key: key);
-  }
-
   Future<void> verifTokenExistStorage() async {
-    String clientToken = await readStorage('clientToken');
+    String clientToken = await MySecureStorage().readStorage('clientToken');
     if (clientToken == '') {
       clientToken = await setupToken();
     }
@@ -53,17 +34,18 @@ class UtilsController {
       "appType": 'mobile_app',
     };
     var result = await ClientRepo().newToken(data);
-    print(result);
-    await setStorage('clientPrivateKey', result['clientPrivateKey']);
-    await setStorage('clientToken', result['clientToken']);
-    await setStorage('backPublicKey', result['backPublicKey']);
+    await MySecureStorage()
+        .setStorage('clientPrivateKey', result['clientPrivateKey']);
+    await MySecureStorage().setStorage('clientToken', result['clientToken']);
+    await MySecureStorage()
+        .setStorage('backPublicKey', result['backPublicKey']);
     String clientToken = result['clientToken'];
     return clientToken;
   }
 
   Future<Encrypted> encryptRSA(String keyToEncrypt) async {
     final stringPublicKey =
-        await UtilsController().readStorage('backPublicKey');
+        await MySecureStorage().readStorage('backPublicKey');
     RSAPublicKey publicKey =
         RSAKeyParser().parse(stringPublicKey) as RSAPublicKey;
     final encrypterRsa = Encrypter(
@@ -80,7 +62,7 @@ class UtilsController {
 
   Future<String> decryptRSA(Encrypted keyToDecrypt) async {
     final stringPrivateKey =
-        await UtilsController().readStorage('clientPrivateKey');
+        await MySecureStorage().readStorage('clientPrivateKey');
     RSAPrivateKey privateKey =
         RSAKeyParser().parse(stringPrivateKey) as RSAPrivateKey;
     final decrypter = Encrypter(
@@ -139,7 +121,6 @@ class UtilsController {
       RegExp(r'\\+x([0-9a-fA-F]{2})'),
       (match) => String.fromCharCode(int.parse(match.group(1)!, radix: 16)),
     );
-    print(message);
     // Décoder le JSON
     value = json.decode(message);
 
