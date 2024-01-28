@@ -4,8 +4,7 @@ import 'package:kar_assistant/screens/actions_page/view/actions_page.dart';
 import 'package:kar_assistant/screens/history_page/view/history_page.dart';
 import 'package:kar_assistant/screens/home_page/controller/kara_controller.dart';
 import 'package:kar_assistant/screens/home_page/view/kara_talking.dart';
-import 'package:kar_assistant/screens/menu_page/view/menu_page.dart';
-import 'package:kar_assistant/screens/parameters_page/view/parameters_page.dart';
+import 'package:kar_assistant/screens/home_page/view/my_profil.dart';
 import 'package:kar_assistant/services/utils_controller.dart';
 
 class HomePage extends StatefulWidget {
@@ -47,45 +46,29 @@ class _HomePageState extends State<HomePage> with RestorationMixin {
         <BottomNavigationBarItem>[
       BottomNavigationBarItem(
         icon: Icon(
-          Icons.home,
-          color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.38),
-        ),
-        activeIcon:
-            Icon(Icons.home, color: Theme.of(context).colorScheme.onPrimary),
-        label: 'Menu',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(
-          Icons.pending_actions,
-          color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.38),
-        ),
-        activeIcon: Icon(
-          Icons.pending_actions,
-          color: Theme.of(context).colorScheme.onPrimary,
-        ),
-        label: 'Actions',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(
           Icons.list_sharp,
+          size: 35,
           color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.38),
         ),
         activeIcon: Icon(
           Icons.list_sharp,
+          size: 35,
           color: Theme.of(context).colorScheme.onPrimary,
         ),
         label: 'Historique',
       ),
       BottomNavigationBarItem(
         icon: Icon(
-          Icons.settings,
+          Icons.pending_actions,
+          size: 35,
           color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.38),
         ),
         activeIcon: Icon(
-          Icons.settings,
+          Icons.pending_actions,
+          size: 35,
           color: Theme.of(context).colorScheme.onPrimary,
         ),
-        label: 'Paramètres',
+        label: 'Actions',
       ),
     ];
 
@@ -93,9 +76,13 @@ class _HomePageState extends State<HomePage> with RestorationMixin {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("My name is Kara"),
+        title: const Text(
+          "Karasistant",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: colorScheme.primary,
         automaticallyImplyLeading: false,
+        actions: const [MyProfil()],
       ),
       body: Center(
         child: PageTransitionSwitcher(
@@ -114,15 +101,10 @@ class _HomePageState extends State<HomePage> with RestorationMixin {
               });
             },
             children: [
-              MenuPage(bottomNavigationBarItems[_currentIndexPage.value]),
-              ActionsPage(bottomNavigationBarItems[_currentIndexPage.value]),
               HystoryPage(
-                bottomNavigationBarItems[_currentIndexPage.value],
                 karaController: karaController,
               ),
-              ParametersPage(
-                bottomNavigationBarItems[_currentIndexPage.value],
-              ),
+              const ActionsPage(),
             ],
           ),
         ),
@@ -136,13 +118,13 @@ class _HomePageState extends State<HomePage> with RestorationMixin {
       bottomNavigationBar: BottomAppBar(
         color: Theme.of(context).colorScheme.primary,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(bottomNavigationBarItems.length + 1, (index) {
-            if (index == 2) {
-              return const Spacer();
-            }
             int usedIndex = index >= 2 ? index - 1 : index;
             BottomNavigationBarItem item = bottomNavigationBarItems[usedIndex];
+            if (index == 1) {
+              return const SizedBox(width: 150);
+            }
             return InkResponse(
               onTap: () {
                 controllerPage.animateToPage(

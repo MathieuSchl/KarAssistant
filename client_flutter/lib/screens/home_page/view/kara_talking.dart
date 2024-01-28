@@ -228,7 +228,7 @@ class _KaraTalkingState extends State<KaraTalking> {
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        showKaraAnswer && widget.currentIndexPage != 2
+        showKaraAnswer && widget.currentIndexPage != 0
             ? MessageBubble(
                 msg: widget.karaController.listResponse[0].text,
               )

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:kar_assistant/core/widgets/work_in_progress.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class ActionsPage extends StatefulWidget {
-  final BottomNavigationBarItem item;
-  const ActionsPage(this.item, {super.key});
+  const ActionsPage({super.key});
 
   @override
   State<ActionsPage> createState() => _ActionsPageState();
@@ -11,11 +12,6 @@ class ActionsPage extends StatefulWidget {
 class _ActionsPageState extends State<ActionsPage> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Semantics(
-        label: widget.item.label,
-        child: widget.item.icon,
-      ),
-    );
+    return WorkInProgress();
   }
 }
