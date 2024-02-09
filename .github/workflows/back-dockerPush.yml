@@ -44,7 +44,7 @@ jobs:
       - name: Install dependencies
         working-directory: ./back_node
         run: |
-          npm install
+          npm install --force
       - name: Run tests and create summary
         id: tests
         continue-on-error: true
