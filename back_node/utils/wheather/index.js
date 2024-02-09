@@ -1,3 +1,5 @@
+const skiStationData = require("./skiinfo").data;
+
 async function mockWeatherJs() {
   if (process.env.DISABLE_WEATHER_JS === "true") return null;
   return [
@@ -14,9 +16,7 @@ async function mockWeatherJs() {
 }
 
 /* c8 ignore start */
-const weatherJs = process.env.IS_TEST
-  ? mockWeatherJs
-  : require("./weather-js").getWheather;
+const weatherJs = process.env.IS_TEST ? mockWeatherJs : require("./weather-js").getWheather;
 /* c8 ignore stop */
 
 module.exports.getWheather = async ({ city, forceNoData }) => {
@@ -30,7 +30,9 @@ module.exports.getWheather = async ({ city, forceNoData }) => {
       const humidity = cityResult.current.humidity;
       const windSpeed = cityResult.current.windspeed;
       const imageUrl = cityResult.current.imageUrl;
-      return { location, temperature, humidity, windSpeed, imageUrl };
+      return { type: "weatherJs", location, temperature, humidity, windSpeed, imageUrl };
+    } else if (skiStationData[city]) {
+      return { type: "skiinfo", data: skiStationData[city] };
     }
   }
   return null;
