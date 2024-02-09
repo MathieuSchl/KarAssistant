@@ -4,6 +4,6 @@ ARG project_path
 COPY ./$project_path/package*.json /home/node/Karassistant/
 WORKDIR /home/node/Karassistant/
 RUN npm install --force --omit=dev
-RUN npm install @tensorflow/tfjs-node
+RUN npm install --force @tensorflow/tfjs-node
 COPY ./$project_path .
 CMD ["npm", "run", "startSever"]
