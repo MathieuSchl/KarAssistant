@@ -123,6 +123,9 @@ module.exports.start = (app) => {
       const ipValid = ipFunctions.antiSpam({ ipAddress, limit: 2 });
       logger({ route: "GET /api/client/newToken", ipAddress, ipValid });
       if (!ipValid) return res.sendStatus(403);
+      if (process.env.DEBUG==="true") {
+        console.log("###User creation###");
+      }
       const defaultUserFile = newUserToken();
       const { userFile, clientFile, backPublicKey, clientPrivateKey } = newClientToken({
         userFile: defaultUserFile,

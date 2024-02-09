@@ -1,5 +1,5 @@
 const fs = require("fs");
-const forge = require("node-forge");
+require("dotenv").config();
 const text = require("./text.json");
 const encodeSentence = require("./universalSentenceEncoder").encodeSentence;
 const compareSentences = require("./universalSentenceEncoder").compareSentences;
@@ -17,6 +17,12 @@ module.exports.query = async ({ clientToken, data, aes, ipAddress }) => {
 
   const userToken = clientContent.userToken;
   const decryptedData = await decryption({ data, aes, clientPrivateKey: clientContent.backPrivateKey });
+  if (process.env.DEBUG==="true") {
+    console.log("###Request query START###");
+    console.log("User data :");
+    console.log(decryptedData);
+    //console.log("###Request query END###");
+  }
   // const backPrivateKey = loadKey({ key: clientContent.backPrivateKey });
 
   // const { decryptClientAesError, decryptedData: dataAes } = await decrypt({ key: backPrivateKey, data: aes });
@@ -169,6 +175,12 @@ module.exports.query = async ({ clientToken, data, aes, ipAddress }) => {
   if (initialUserData !== newUserData)
     fs.writeFileSync(__dirname + "/../data/users/users/" + userToken + ".json", newUserData);
 
+  if (process.env.DEBUG==="true") {
+    //console.log("###Request query START###");
+    console.log("result :");
+    console.log(result);
+    console.log("###Request query END###");
+  }
   const resultData = encryption({ query: result, publicKey: clientContent.clientPublicKey });
 
   return resultData;

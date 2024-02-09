@@ -1,6 +1,7 @@
 const fs = require("fs");
 
 module.exports.loadClient = ({ clientToken }) => {
+  console.log(clientToken);
   if (!fs.existsSync(__dirname + "/../../data/users/clients/" + clientToken + ".json")) throw 404;
   const initialClientData = fs.readFileSync(__dirname + "/../../data/users/clients/" + clientToken + ".json", "utf8");
   const clientData = JSON.parse(initialClientData);

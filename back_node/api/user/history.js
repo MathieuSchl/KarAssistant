@@ -1,3 +1,4 @@
+require("dotenv").config();
 const ipFunctions = require("../../utils/antiSpam");
 const logger = require("../../utils/logger").logger;
 const useSavedData = require("../../utils/user/useSavedData");
@@ -56,6 +57,8 @@ module.exports.start = (app) => {
       const clientToken = req.headers.karaeatcookies;
       const data = req.query.data;
 
+      
+      //const decryptedData = await decryption({ data, aes, clientPrivateKey: clientContent.backPrivateKey });
       const { clientData } = useSavedData.loadClient({ clientToken });
       const backPrivateKey = RSA.loadKey({ key: clientData.backPrivateKey });
       const { decryptError, decryptedData } = await RSA.decrypt({ key: backPrivateKey, data });
@@ -66,6 +69,12 @@ module.exports.start = (app) => {
       if (!resultTimeValid) return res.sendStatus(403);
 
       const { userData } = useSavedData.loadUser({ userToken: clientData.userToken });
+      
+      if (process.env.DEBUG==="true") {
+        console.log("###Request history START###");
+        console.log(userData.history);
+        console.log("###Request history END###");
+      }
 
       const clientPublicKey = RSA.loadKey({ key: clientData.clientPublicKey });
       const { encryptError, encryptedData } = await RSA.encrypt({ key: clientPublicKey, data: userData.history });
