@@ -2,6 +2,7 @@ const text = require("./text.json");
 const cities = require("cities-list");
 const getWheather = require("../../../utils/wheather/index").getWheather;
 const replaceVariables = require("../../../utils/replaceVariables").replaceVariables;
+const skiStationData = require("../../../utils/wheather/skiinfo").data;
 const unit = { C: "Celsius", F: "Fahrenheit" };
 
 /* Some cities are banned because the name is to close from a word in some language */
@@ -13,9 +14,8 @@ function getCity(query) {
   for (const word of words) {
     if (word.length !== 0) {
       const testCity = word[0].toUpperCase() + word.slice(1);
-      if (cities[testCity]) {
-        return testCity;
-      }
+      if (cities[testCity]) return testCity;
+      else if (skiStationData[testCity]) return testCity;
     }
   }
 
@@ -42,17 +42,50 @@ async function getCityWeather({ city, lang, forceNoData, forceData }) {
       text: replaceVariables(textResult, { location: city }),
     };
   }
-  const { location, temperature, humidity, windSpeed, imageUrl } = wheatherResult;
+  if (wheatherResult.type === "weatherJs") {
+    const { location, temperature, humidity, windSpeed, imageUrl } = wheatherResult;
 
-  const textResult = text.response[lang].wheatherIs;
-  return {
-    text: replaceVariables(textResult, {
-      location,
-      temperature,
-      humidity,
-      windSpeed,
-      unit: unit["C"],
-    }),
-    metadata: { weatherImageUrl: imageUrl },
-  };
+    const textResult = text.response[lang].wheatherIs;
+    return {
+      text: replaceVariables(textResult, {
+        location,
+        temperature,
+        humidity,
+        windSpeed,
+        unit: unit["C"],
+      }),
+      metadata: { weatherImageUrl: imageUrl },
+    };
+  } else if (wheatherResult.type === "skiinfo") {
+    const cityData = skiStationData[city];
+    if (cityData.status === "Fermée") {
+      const textResult = text.response[lang].skiinfo_stationClose;
+      return {
+        text: replaceVariables(textResult, {
+          stationName: cityData.name,
+          tempMin: cityData.min,
+          tempMax: cityData.max,
+          unit: unit["C"],
+        }),
+        metadata: {},
+      };
+    }
+    const textResult = text.response[lang].skiinfo_stationOpen;
+    return {
+      text: replaceVariables(textResult, {
+        stationName: cityData.name,
+        tempMin: cityData.min,
+        tempMax: cityData.max,
+        tempMax: cityData.skiLiftOpen,
+        tempMax: cityData.openTrack,
+        unit: unit["C"],
+      }),
+      metadata: {},
+    };
+  } else {
+    return {
+      text: `Error weather.type unknown '${wheatherResult.type}'`,
+      metadata: {},
+    };
+  }
 }
