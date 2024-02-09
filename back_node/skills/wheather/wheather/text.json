@@ -9,14 +9,14 @@
       "wheatherIs": "At <@location@> it is currently <@temperature@> degree <@unit@>, there is <@humidity@>% humidity and the wind is <@windSpeed@>",
       "noDataForCity": "I don't have weather data for <@location@>",
       "skiinfo_stationClose": "The station <@stationName@> is currently closed and the temperature, today, varies between <@tempMin@> and <@tempMax@> degree <@unit@>",
-      "skiinfo_stationOpen": "In the station <@stationName@> the temperature, today, varies between <@tempMin@> and <@tempMax@> degree <@unit@>. There is <@skiLiftOpen@> lift and <@openTrack@> open."
+      "skiinfo_stationOpen": "In the station <@stationName@> the temperature, today, varies between <@tempMin@> and <@tempMax@> degree <@unit@>. There is <@skiLiftOpen@> lift and <@openTrack@> tracks open."
     },
     "fr": {
       "noCity": "Quelle est la ville, dont vous souhaitez connaître la météo ?",
       "wheatherIs": "A <@location@> il fait actuellement <@temperature@> degré <@unit@>, il y a <@humidity@>% d'humidité et le vent est de <@windSpeed@>",
       "noDataForCity": "Je n'ai pas de données météo pour <@location@>",
       "skiinfo_stationClose": "La station <@stationName@> est actuellement fermé et la température, aujourd'hui, varie entre <@tempMin@> et <@tempMax@> degré <@unit@>",
-      "skiinfo_stationOpen": "Dans la station <@stationName@> la température, aujourd'hui, varie entre <@tempMin@> et <@tempMax@> degré <@unit@>. Il y a <@skiLiftOpen@> remontée et <@openTrack@> d'ouvert."
+      "skiinfo_stationOpen": "Dans la station <@stationName@> la température, aujourd'hui, varie entre <@tempMin@> et <@tempMax@> degré <@unit@>. Il y a <@skiLiftOpen@> remontée et <@openTrack@> pistes d'ouvert."
     }
   },
   "error": "Undefined language for wheather/wheather"

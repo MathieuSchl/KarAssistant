@@ -15,7 +15,7 @@ function getCity(query) {
     if (word.length !== 0) {
       const testCity = word[0].toUpperCase() + word.slice(1);
       if (cities[testCity]) return testCity;
-      else if (skiStationData[testCity]) return testCity;
+      else if (skiStationData[testCity.toLowerCase()]) return testCity;
     }
   }
 
@@ -57,7 +57,7 @@ async function getCityWeather({ city, lang, forceNoData, forceData }) {
       metadata: { weatherImageUrl: imageUrl },
     };
   } else if (wheatherResult.type === "skiinfo") {
-    const cityData = skiStationData[city];
+    const cityData = skiStationData[city.toLowerCase()];
     if (cityData.status === "Fermée") {
       const textResult = text.response[lang].skiinfo_stationClose;
       return {
@@ -76,16 +76,16 @@ async function getCityWeather({ city, lang, forceNoData, forceData }) {
         stationName: cityData.name,
         tempMin: cityData.min,
         tempMax: cityData.max,
-        tempMax: cityData.skiLiftOpen,
-        tempMax: cityData.openTrack,
+        skiLiftOpen: cityData.skiLiftOpen,
+        openTrack: cityData.openTrack,
         unit: unit["C"],
       }),
       metadata: {},
-    };
+    }; /* c8 ignore start */
   } else {
     return {
       text: `Error weather.type unknown '${wheatherResult.type}'`,
       metadata: {},
     };
-  }
+  } /* c8 ignore stop */
 }
