@@ -3,6 +3,7 @@ import 'package:animations/animations.dart';
 import 'package:kar_assistant/screens/actions_page/view/actions_page.dart';
 import 'package:kar_assistant/screens/history_page/view/history_page.dart';
 import 'package:kar_assistant/screens/home_page/controller/kara_controller.dart';
+import 'package:kar_assistant/screens/home_page/controller/user_controller.dart';
 import 'package:kar_assistant/screens/home_page/view/kara_talking.dart';
 import 'package:kar_assistant/screens/home_page/view/my_profil.dart';
 import 'package:kar_assistant/services/utils_controller.dart';
@@ -20,11 +21,16 @@ class _HomePageState extends State<HomePage> with RestorationMixin {
   final RestorableInt _currentIndexPage = RestorableInt(0);
   final PageController controllerPage = PageController(initialPage: 0);
   late KaraController karaController;
+  late UserController userController;
 
   @override
   void initState() {
+    print('restart App');
     karaController = KaraController();
-    UtilsController().verifTokenExistStorage();
+    userController = UserController();
+    UtilsController().verifTokenExistStorage().then((value) {
+      userController.initInfoUser();
+    });
     super.initState();
   }
 

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:kar_assistant/core/models/kara_response.dart';
 import 'package:kar_assistant/core/repository/kara_repository.dart';
 import 'package:kar_assistant/services/http_repo.dart';
@@ -18,12 +16,4 @@ class KaraRepo implements KaraRepository {
       rethrow;
     }
   }
-
-  // @override
-  // Future getHistory(
-  //   Map<String, String> data,
-  // ) {
-  //   print(data);
-  //   return object =
-  // }
 }

@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
 import 'package:kar_assistant/core/models/conversation/message_conversation.dart';
 import 'package:kar_assistant/core/models/kara_response.dart';
 import 'package:kar_assistant/core/repository/kara_repo.dart';

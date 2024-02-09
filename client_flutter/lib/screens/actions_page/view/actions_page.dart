@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kar_assistant/core/widgets/work_in_progress.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class ActionsPage extends StatefulWidget {
   const ActionsPage({super.key});
@@ -12,6 +11,6 @@ class ActionsPage extends StatefulWidget {
 class _ActionsPageState extends State<ActionsPage> {
   @override
   Widget build(BuildContext context) {
-    return WorkInProgress();
+    return const WorkInProgress();
   }
 }

@@ -29,10 +29,11 @@ class DiscordDialogConfigure extends StatelessWidget {
       actionsAlignment: MainAxisAlignment.start,
       actions: [
         ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Annuler'))
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Annuler'),
+        ),
       ],
     );
   }

@@ -1,8 +1,8 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kar_assistant/core/globals.dart' as globals;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -45,6 +45,7 @@ class UtilsController {
     if (clientToken == '') {
       clientToken = await setupToken();
     }
+    print('Client token ${clientToken}');
     globals.clientToken = clientToken;
   }
 
@@ -53,12 +54,17 @@ class UtilsController {
       "appType": 'mobile_app',
     };
     var result = await ClientRepo().newToken(data);
-    print(result);
     await setStorage('clientPrivateKey', result['clientPrivateKey']);
     await setStorage('clientToken', result['clientToken']);
     await setStorage('backPublicKey', result['backPublicKey']);
     String clientToken = result['clientToken'];
     return clientToken;
+  }
+
+  Future<void> removeToken() async {
+    await deleteStorage('clientPrivateKey');
+    await deleteStorage('clientToken');
+    await deleteStorage('backPublicKey');
   }
 
   Future<Encrypted> encryptRSA(String keyToEncrypt) async {

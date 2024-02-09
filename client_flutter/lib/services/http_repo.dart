@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:kar_assistant/core/globals.dart' as globals;
 import 'package:http/http.dart' as http;
 import 'package:kar_assistant/services/http_repository.dart';
@@ -99,7 +101,6 @@ class HttpRepo implements HttpRepository {
             (error, stackTrace) => http.Response(responseOtherError, 503),
           );
       if (response.statusCode < 200 || response.statusCode > 299) {
-        inspect(response);
         final error = json.decode(response.body);
         throw error['message'];
       }
@@ -128,6 +129,8 @@ class HttpRepo implements HttpRepository {
           .onError(
             (error, stackTrace) => http.Response(responseOtherError, 503),
           );
+      print(response.statusCode);
+      print(response.body);
       if (response.statusCode < 200 || response.statusCode > 299) {
         if (response.statusCode == 404 && secondTry != true) {
           print('recreateUser');
@@ -136,8 +139,7 @@ class HttpRepo implements HttpRepository {
           return await HttpRepo()
               .getRequestParamsSecure(url, data, secondTry: true);
         }
-        final error = json.decode(response.body);
-        throw error['message'];
+        throw response.body;
       }
 
       var parsedResponse = jsonDecode(response.body);
