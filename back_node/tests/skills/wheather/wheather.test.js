@@ -103,7 +103,6 @@ describe("Skill wheather/wheather", () => {
     });
 
     //Test
-    console.log(result);
     expect(result.text).toBe(
       "La station Station NON valide est actuellement fermé et la température, aujourd'hui, varie entre 1 et 4 degré Celsius"
     );
