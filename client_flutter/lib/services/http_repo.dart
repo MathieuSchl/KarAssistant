@@ -1,8 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:kar_assistant/core/globals.dart' as globals;
 import 'package:http/http.dart' as http;
 import 'package:kar_assistant/services/http_repository.dart';
@@ -133,7 +130,6 @@ class HttpRepo implements HttpRepository {
       print(response.body);
       if (response.statusCode < 200 || response.statusCode > 299) {
         if (response.statusCode == 404 && secondTry != true) {
-          print('recreateUser');
           String newtoken = await UtilsController().setupToken();
           globals.clientToken = newtoken;
           return await HttpRepo()

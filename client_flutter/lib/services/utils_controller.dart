@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/services.dart';
@@ -45,7 +44,6 @@ class UtilsController {
     if (clientToken == '') {
       clientToken = await setupToken();
     }
-    print('Client token ${clientToken}');
     globals.clientToken = clientToken;
   }
 
@@ -145,7 +143,6 @@ class UtilsController {
       RegExp(r'\\+x([0-9a-fA-F]{2})'),
       (match) => String.fromCharCode(int.parse(match.group(1)!, radix: 16)),
     );
-    print(message);
     // Décoder le JSON
     value = json.decode(message);
 

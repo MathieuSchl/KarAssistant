@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:kar_assistant/core/widgets/work_in_progress.dart';
 import 'package:kar_assistant/main.dart';
 import 'package:kar_assistant/services/utils_controller.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class OptionsPage extends StatelessWidget {
   const OptionsPage({super.key});

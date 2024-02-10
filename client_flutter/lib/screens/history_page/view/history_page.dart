@@ -15,6 +15,7 @@ class _HystoryPageState extends State<HystoryPage> {
   @override
   void initState() {
     super.initState();
+    // UserRepo().getHistory();
   }
 
   @override
