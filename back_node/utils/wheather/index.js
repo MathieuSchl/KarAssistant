@@ -25,7 +25,9 @@ const weatherJs = process.env.IS_TEST ? mockWeatherJs : require("./weather-js").
 module.exports.getWheather = async ({ city, forceNoData }) => {
   if (!forceNoData) {
     const resultWeatherJs = await weatherJs({ city });
-    if (resultWeatherJs && resultWeatherJs.length !== 0) {
+    if (skiStationData[city.toLowerCase()]) {
+      return { type: "skiinfo", data: skiStationData[city] };
+    } else if (resultWeatherJs && resultWeatherJs.length !== 0) {
       const cityResult = resultWeatherJs[0];
 
       const location = cityResult.location.name;
@@ -34,8 +36,6 @@ module.exports.getWheather = async ({ city, forceNoData }) => {
       const windSpeed = cityResult.current.windspeed;
       const imageUrl = cityResult.current.imageUrl;
       return { type: "weatherJs", location, temperature, humidity, windSpeed, imageUrl };
-    } else if (skiStationData[city.toLowerCase()]) {
-      return { type: "skiinfo", data: skiStationData[city] };
     }
   }
   return null;
