@@ -16,7 +16,7 @@
       "wheatherIs": "A <@location@> il fait actuellement <@temperature@> degré <@unit@>, il y a <@humidity@>% d'humidité et le vent est de <@windSpeed@>",
       "noDataForCity": "Je n'ai pas de données météo pour <@location@>",
       "skiinfo_stationClose": "La station <@stationName@> est actuellement fermé et la température, aujourd'hui, varie entre <@tempMin@> et <@tempMax@> degré <@unit@>",
-      "skiinfo_stationOpen": "Dans la station <@stationName@> la température, aujourd'hui, varie entre <@tempMin@> et <@tempMax@> degré <@unit@>. Il y a <@skiLiftOpen@> remontée et <@openTrack@> pistes d'ouvert."
+      "skiinfo_stationOpen": "Dans la station <@stationName@> la température, aujourd'hui, varie entre <@tempMin@> et <@tempMax@> degré <@unit@>. Il y a <@skiLiftOpen@> remontées mécaniqies et <@openTrack@> pistes d'ouvertes."
     }
   },
   "error": "Undefined language for wheather/wheather"
