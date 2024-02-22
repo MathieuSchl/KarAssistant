@@ -7,7 +7,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
 import 'components/components.dart';
-import 'package:kar_assistant/config.dart';
+import 'package:kar_assistant/screens/my_games/touch_play/config.dart';
 
 enum PlayState { welcome, playing, gameOver }
 
@@ -57,6 +57,7 @@ class TouchPlay extends FlameGame with HasCollisionDetection, TapDetector {
     playState = PlayState.welcome;
     score.value = 0;
     bestScore.value = 0;
+    debugMode = true;
   }
 
   void startGame() {
@@ -86,7 +87,6 @@ class TouchPlay extends FlameGame with HasCollisionDetection, TapDetector {
         position: Vector2(width / 2, height * 0.95),
       ),
     );
-    debugMode = false;
   }
 
   @override

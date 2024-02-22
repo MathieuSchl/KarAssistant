@@ -2,7 +2,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
-import 'package:kar_assistant/screens/my_game/components/components.dart';
+import 'package:kar_assistant/screens/my_games/touch_play/components/components.dart';
 
 import '../touch_play.dart';
 

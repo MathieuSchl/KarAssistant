@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 import 'package:flutter/material.dart';
-import 'package:kar_assistant/screens/my_game/touch_play.dart';
+import 'package:kar_assistant/screens/my_games/touch_play/touch_play.dart';
 
 class PlayArea extends RectangleComponent with HasGameReference<TouchPlay> {
   PlayArea()

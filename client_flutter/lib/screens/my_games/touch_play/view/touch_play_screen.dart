@@ -1,19 +1,19 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:kar_assistant/screens/my_game/touch_play.dart';
-import 'package:kar_assistant/config.dart';
+import 'package:kar_assistant/screens/my_games/touch_play/touch_play.dart';
+import 'package:kar_assistant/screens/my_games/touch_play/config.dart';
 import 'overlay_screen.dart';
 import 'score_card.dart';
 
-class MyGameScreen extends StatefulWidget {
-  const MyGameScreen({super.key});
+class TouchPlayScreen extends StatefulWidget {
+  const TouchPlayScreen({super.key});
 
   @override
-  State<MyGameScreen> createState() => _MyGameScreenState();
+  State<TouchPlayScreen> createState() => _MyGameScreenState();
 }
 
-class _MyGameScreenState extends State<MyGameScreen> {
+class _MyGameScreenState extends State<TouchPlayScreen> {
   late final TouchPlay game;
 
   @override

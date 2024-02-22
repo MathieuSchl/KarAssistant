@@ -3,7 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
-import 'package:kar_assistant/screens/my_game/touch_play.dart';
+import 'package:kar_assistant/screens/my_games/touch_play/touch_play.dart';
 
 class Raquette extends PositionComponent
     with DragCallbacks, HasGameReference<TouchPlay> {
